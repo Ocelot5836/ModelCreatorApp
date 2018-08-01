@@ -1,15 +1,9 @@
 package com.ocelot.mod.application.component;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.lwjgl.opengl.GL11;
-import org.lwjgl.util.vector.Matrix4f;
-import org.lwjgl.util.vector.Vector2f;
 import org.lwjgl.util.vector.Vector3f;
 
-import com.ocelot.mod.game.core.gfx.Camera;
-import com.ocelot.mod.lib.Maths;
+import com.ocelot.mod.application.Camera;
 
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.GlStateManager;
@@ -38,10 +32,10 @@ public class Cube implements Cloneable {
 		this.name = I18n.format("default.cube.name");
 	}
 
-	public void render(float x, float y, float z, Camera camera, Matrix4f projectionMatrix, float partialTicks) {
+	public void render(float x, float y, float z, Camera camera, float partialTicks) {
 		Tessellator tessellator = Tessellator.getInstance();
 		BufferBuilder buffer = tessellator.getBuffer();
-		
+
 		camera.rotate(partialTicks);
 
 		float scale = 16f;

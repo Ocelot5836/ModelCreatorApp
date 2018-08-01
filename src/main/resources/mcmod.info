@@ -1,14 +1,14 @@
 [
 {
-  "modid": "examplemod",
-  "name": "Example Mod",
-  "description": "Example placeholder mod.",
-  "version": "${version}",
-  "mcversion": "${mcversion}",
+  "modid": "mca",
+  "name": "Model Creator Application",
+  "description": "A recreation of MrCrayfish's Model Creator in Minecraft",
+  "version": "1.0",
+  "mcversion": "[1.12,1.2.2]",
   "url": "",
   "updateUrl": "",
-  "authorList": ["ExampleDude"],
-  "credits": "The Forge and FML guys, for making this example",
+  "authorList": ["Ocelot5836"],
+  "credits": "MrCrayfish for making the origionl model creator as well as the device mod",
   "logoFile": "",
   "screenshots": [],
   "dependencies": []

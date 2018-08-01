@@ -2,15 +2,12 @@ package com.ocelot.mod.application;
 
 import java.util.List;
 
-import javax.swing.Icon;
-
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.util.vector.Vector3f;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.mrcrayfish.device.api.app.Application;
-import com.mrcrayfish.device.api.app.IIcon;
 import com.mrcrayfish.device.api.app.Icons;
 import com.mrcrayfish.device.api.app.Layout;
 import com.mrcrayfish.device.api.app.Layout.Background;
@@ -22,8 +19,6 @@ import com.ocelot.mod.application.component.MenuBarButtonDivider;
 import com.ocelot.mod.application.component.MenuBarItem;
 import com.ocelot.mod.application.component.Model;
 import com.ocelot.mod.application.layout.LayoutCubeUI;
-import com.ocelot.mod.game.core.gfx.Camera;
-import com.ocelot.mod.lib.Maths;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
@@ -170,7 +165,6 @@ public class ApplicationModelCreator extends Application {
 	@Override
 	public void onClose() {
 		running = false;
-		Maths.cleanUp();
 		this.modelArea.cleanUp();
 	}
 

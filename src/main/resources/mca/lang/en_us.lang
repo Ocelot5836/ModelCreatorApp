@@ -1,0 +1,3 @@
+default.cube.name=Cube
+default.json.comment=Model generated using %s's Model Creator. Original model creator: (%s)
+default.model_creator.author_note=Model Creator by %s

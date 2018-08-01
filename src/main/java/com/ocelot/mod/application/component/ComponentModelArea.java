@@ -5,13 +5,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.lwjgl.opengl.GL11;
-import org.lwjgl.util.vector.Matrix4f;
 
 import com.mrcrayfish.device.api.app.Component;
 import com.mrcrayfish.device.core.Laptop;
 import com.mrcrayfish.device.util.GLHelper;
-import com.ocelot.mod.game.core.gfx.Camera;
-import com.ocelot.mod.lib.Maths;
+import com.ocelot.mod.application.Camera;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BufferBuilder;
@@ -28,7 +26,6 @@ public class ComponentModelArea extends Component {
 
 	private Camera camera;
 	private List<Cube> cubes;
-	private Matrix4f projectionMatrix;
 
 	public ComponentModelArea(int x, int y, int width, int height, Camera camera) {
 		super(x, y);
@@ -36,7 +33,6 @@ public class ComponentModelArea extends Component {
 		this.height = height;
 		this.camera = camera;
 		this.cubes = new ArrayList<Cube>();
-		this.projectionMatrix = Maths.createProjectionMatrix(width / height, 90, 0.3f, 1000.0f);
 	}
 
 	@Override
@@ -101,7 +97,7 @@ public class ComponentModelArea extends Component {
 				GlStateManager.pushMatrix();
 				GlStateManager.scale(0.5, 0.5, 0.5);
 				RenderHelper.enableGUIStandardItemLighting();
-				cube.render(0, 0, 0, this.camera, this.projectionMatrix, partialTicks);
+				cube.render(0, 0, 0, this.camera, partialTicks);
 				GlStateManager.popMatrix();
 			}
 			mc.entityRenderer.setupOverlayRendering();

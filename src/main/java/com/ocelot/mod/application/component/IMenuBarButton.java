@@ -70,6 +70,11 @@ public interface IMenuBarButton {
 	 * @return Whether or not the list should close when the mouse is pressed
 	 */
 	boolean handleMouseClick(int mouseX, int mouseY, int mouseButton);
+	
+	/**
+	 * Causes the button to no longer be selected.
+	 */
+	void deselect();
 
 	/**
 	 * @return The width of this button

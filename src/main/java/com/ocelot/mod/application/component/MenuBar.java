@@ -14,6 +14,7 @@ import com.mrcrayfish.device.core.Laptop;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
 
+// MrCrayfish, if you ever want to add this component in any way, just let me know so I can add more documentation. -Ocelot5836
 public class MenuBar extends Component implements Iterable<MenuBarItem> {
 
 	private MenuBarItem selectedItem;
@@ -73,13 +74,24 @@ public class MenuBar extends Component implements Iterable<MenuBarItem> {
 
 	@Override
 	protected void handleMouseClick(int mouseX, int mouseY, int mouseButton) {
+		if (this.selectedItem != null && this.selectedItem.handleMouseClick(mouseX, mouseY, mouseButton)) {
+			this.deselect();
+			return;
+		}
+
 		this.selectedItem = null;
 		for (MenuBarItem item : this.items) {
-			item.handleMouseClick(mouseX, mouseY, mouseButton);
 			if (item.isHovered()) {
+				item.handleMouseClick(mouseX, mouseY, mouseButton);
 				this.selectedItem = item;
+				break;
 			}
 		}
+	}
+
+	public void deselect() {
+		this.selectedItem.deselect();
+		this.selectedItem = null;
 	}
 
 	public void add(MenuBarItem item) {

@@ -15,7 +15,6 @@ import com.ocelot.mod.application.component.ComponentModelArea;
 import com.ocelot.mod.application.component.Cube;
 import com.ocelot.mod.application.component.MenuBar;
 import com.ocelot.mod.application.component.MenuBarButton;
-import com.ocelot.mod.application.component.MenuBarButtonDivider;
 import com.ocelot.mod.application.component.MenuBarItem;
 import com.ocelot.mod.application.component.Model;
 import com.ocelot.mod.application.layout.LayoutCubeUI;
@@ -78,12 +77,11 @@ public class ApplicationModelCreator extends Application {
 			menuBarFile.setHighlightBorderColor(0xffc9c9c9);
 
 			{
-				for (int i = 0; i < 5; i++) {
-					Icons icon = Icons.values()[i];
-					MenuBarButtonDivider divider = new MenuBarButtonDivider();
-					menuBarFile.add(divider);
-					menuBarFile.add(new MenuBarButton(icon.toString(), icon));
-				}
+				MenuBarButton fileNew = new MenuBarButton("New", Icons.FILE);
+				fileNew.setClickListener((mouseX, mouseY, mouseButton) -> {
+					System.out.println("s1");
+				});
+				menuBarFile.add(fileNew);
 			}
 
 			menuBar.add(menuBarFile);

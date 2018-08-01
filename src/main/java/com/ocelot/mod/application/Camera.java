@@ -40,6 +40,7 @@ public class Camera {
 		this.angleAroundCenter = 0;
 		this.pitch = -45;
 		this.rotation.set(this.pitch, 45, 0);
+		this.lastRotation.set(this.pitch, 45, 0);
 	}
 
 	public void update() {
@@ -50,6 +51,7 @@ public class Camera {
 		// rotation.x = pitch;
 		// rotation.y = 180 - angleAroundCenter;
 
+		this.lastPosition.set(this.origin.x, this.origin.y, this.origin.z);
 		this.position.set(this.origin.x, this.origin.y, this.origin.z);
 	}
 

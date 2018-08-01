@@ -37,6 +37,10 @@ public class MenuBarButtonDivider implements IMenuBarButton {
 	public boolean handleMouseClick(int mouseX, int mouseY, int mouseButton) {
 		return false;
 	}
+	
+	@Override
+	public void deselect() {		
+	}
 
 	@Override
 	public int getWidth() {

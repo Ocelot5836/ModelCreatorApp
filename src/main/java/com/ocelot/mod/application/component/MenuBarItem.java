@@ -161,16 +161,17 @@ public class MenuBarItem implements Iterable<IMenuBarButton> {
 		}
 	}
 
-	public void handleMouseClick(int mouseX, int mouseY, int mouseButton) {
+	public boolean handleMouseClick(int mouseX, int mouseY, int mouseButton) {
 		if (this.hovered && this.clickListener != null) {
 			this.clickListener.onClick(mouseX, mouseY, mouseButton);
 		}
 
 		for (IMenuBarButton button : this.buttons) {
-			if (button.handleMouseClick(mouseX, mouseY, mouseButton)) {
-				return;
+			if (button.isHovered() && button.handleMouseClick(mouseX, mouseY, mouseButton)) {
+				return true;
 			}
 		}
+		return false;
 	}
 
 	private void updateMenuSize() {
@@ -210,6 +211,13 @@ public class MenuBarItem implements Iterable<IMenuBarButton> {
 	@Override
 	public Iterator<IMenuBarButton> iterator() {
 		return this.buttons.iterator();
+	}
+
+	public void deselect() {
+		this.hovered = false;
+		for (IMenuBarButton button : this.buttons) {
+			button.deselect();
+		}
 	}
 
 	public boolean isVisible() {

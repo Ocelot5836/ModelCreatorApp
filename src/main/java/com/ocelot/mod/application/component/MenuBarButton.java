@@ -117,6 +117,11 @@ public class MenuBarButton implements IMenuBarButton {
 		return false;
 	}
 
+	@Override
+	public void deselect() {
+		this.hovered = false;
+	}
+
 	public void removeIcon() {
 		this.iconResource = null;
 		updateSize();

@@ -89,7 +89,7 @@ public class MenuBarButton implements IMenuBarButton {
 			if (this.iconResource != null) {
 				TextureUtils.bindTexture(this.iconResource);
 				GlStateManager.color(1, 1, 1);
-				RenderUtil.drawRectWithTexture(x, y + this.height / 2 - this.iconHeight / 2 - 1, iconU, iconV, iconWidth, iconHeight, iconWidth, iconHeight, iconSourceWidth, iconSourceHeight);
+				RenderUtil.drawRectWithTexture(x, y + this.height / 2 - this.iconHeight / 2, iconU, iconV, iconWidth, iconHeight, iconWidth, iconHeight, iconSourceWidth, iconSourceHeight);
 			}
 
 			if (!StringUtils.isNullOrEmpty(this.text)) {
@@ -214,6 +214,18 @@ public class MenuBarButton implements IMenuBarButton {
 
 	public int getTooltipDelay() {
 		return tooltipDelay;
+	}
+	
+	public int getTextColor() {
+		return textColor;
+	}
+	
+	public int getHighlightedTextColor() {
+		return highlightedTextColor;
+	}
+	
+	public int getDisabledTextColor() {
+		return disabledTextColor;
 	}
 
 	public void setVisible(boolean visible) {

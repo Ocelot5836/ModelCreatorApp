@@ -52,7 +52,13 @@ public class MenuBar extends Component implements Iterable<MenuBarItem> {
 			}
 
 			if (this.selectedItem != null) {
-				this.selectedItem.renderButtons(laptop, mc, x, y, mouseX, mouseY, windowActive, partialTicks);
+				currentX = 0;
+				for (MenuBarItem item : this.items) {
+					if (item == this.selectedItem) {
+						this.selectedItem.renderButtons(laptop, mc, x + currentX, y, mouseX, mouseY, windowActive, partialTicks);
+					}
+					currentX += item.getWidth() + this.itemPadding;
+				}
 			}
 		}
 	}

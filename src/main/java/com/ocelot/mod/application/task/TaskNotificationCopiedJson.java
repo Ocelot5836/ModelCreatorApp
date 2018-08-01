@@ -24,7 +24,7 @@ public class TaskNotificationCopiedJson extends Task {
 	@Override
 	public void processRequest(NBTTagCompound nbt, World world, EntityPlayer player) {
 		if (player instanceof EntityPlayerMP) {
-			Notification notification = new Notification(Icons.EXPORT, TextFormatting.BOLD + "Export", "Json copied to Clipboard");
+			Notification notification = new Notification(Icons.EXPORT, TextFormatting.BOLD + "Exported", "Copied to Clipboard");
 			notification.pushTo((EntityPlayerMP) player);
 		}
 	}

@@ -18,7 +18,11 @@ import com.mrcrayfish.device.api.app.Layout;
 import com.mrcrayfish.device.api.app.Layout.Background;
 import com.mrcrayfish.device.api.io.File;
 import com.mrcrayfish.device.api.task.TaskManager;
+import com.mrcrayfish.device.api.utils.RenderUtil;
 import com.mrcrayfish.device.core.Laptop;
+import com.ocelot.api.utils.GuiUtils;
+import com.ocelot.api.utils.TextureUtils;
+import com.ocelot.mod.Mod;
 import com.ocelot.mod.application.component.ComponentModelArea;
 import com.ocelot.mod.application.component.Cube;
 import com.ocelot.mod.application.component.MenuBar;
@@ -28,9 +32,12 @@ import com.ocelot.mod.application.component.MenuBarItem;
 import com.ocelot.mod.application.component.Model;
 import com.ocelot.mod.application.layout.LayoutCubeUI;
 import com.ocelot.mod.application.task.TaskNotificationCopiedJson;
+import com.ocelot.mod.lib.Lib;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
+import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.NBTTagCompound;
@@ -182,6 +189,32 @@ public class ApplicationModelCreator extends Application {
 			menuBarOptions.setHighlightBorderColor(0xffc9c9c9);
 			menuBar.add(menuBarOptions);
 
+			{
+				MenuBarButton optionsToggleTransparency = new MenuBarButton("Toggle Transparency", Icons.ARROW_RIGHT) {
+					@Override
+					public void render(Laptop laptop, Minecraft mc, int x, int y, int mouseX, int mouseY, boolean windowActive, int buttonsWidth, int buttonsHeight, float partialTicks) {
+						if (this.isVisible()) {
+							this.setHovered(GuiUtils.isMouseInside(x, y, buttonsWidth, this.getHeight(), mouseX, mouseY));
+
+							int contentWidth = 13 + Lib.getDefaultTextWidth(this.getText());
+							int contentX = (int) Math.ceil((this.getWidth() - contentWidth) / 2.0);
+
+							TextureUtils.bindTexture(Mod.MOD_ID, "textures/app/icons.png");
+							GlStateManager.pushMatrix();
+							GlStateManager.translate(0.5, 0.5, 0);
+							RenderUtil.drawRectWithTexture(x, y + this.getHeight() / 2 - 5, 20, 0, 10, 10, 20, 20, 200, 200);
+							GlStateManager.popMatrix();
+
+							int textY = (this.getHeight() - mc.fontRenderer.FONT_HEIGHT) / 2;
+							int textOffsetX = 13;
+							int textColor = !this.isEnabled() ? this.getDisabledTextColor() : (this.isHovered() ? this.getHighlightedTextColor() : this.getTextColor());
+							mc.fontRenderer.drawString(this.getText(), x + textOffsetX, y + textY + 1, textColor, false);
+						}
+					}
+				};
+				menuBarOptions.add(optionsToggleTransparency);
+			}
+
 			MenuBarItem menuBarScreeenshot = new MenuBarItem("Screeenshot");
 			menuBarScreeenshot.setTextPadding(6);
 			menuBarScreeenshot.setTextColor(0xff000000);
@@ -189,6 +222,7 @@ public class ApplicationModelCreator extends Application {
 			menuBarScreeenshot.setBorderColor(0x00ffffff);
 			menuBarScreeenshot.setHighlightColor(0xffc9c9c9);
 			menuBarScreeenshot.setHighlightBorderColor(0xffc9c9c9);
+			menuBarScreeenshot.setVisible(false);
 			menuBar.add(menuBarScreeenshot);
 
 			MenuBarItem menuBarMore = new MenuBarItem("More");
@@ -238,7 +272,7 @@ public class ApplicationModelCreator extends Application {
 	@Override
 	public void handleKeyTyped(char character, int code) {
 		super.handleKeyTyped(character, code);
-		if (code == Keyboard.KEY_Y) {
+		if (Mod.isDebug() && code == Keyboard.KEY_Y) {
 			String json = ApplicationModelCreator.createModelJson(this.modelArea.getCubes());
 			System.out.println("\n\n" + json + "\n");
 		}

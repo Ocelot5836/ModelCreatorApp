@@ -15,6 +15,7 @@ import com.ocelot.mod.application.component.ComponentModelArea;
 import com.ocelot.mod.application.component.Cube;
 import com.ocelot.mod.application.component.MenuBar;
 import com.ocelot.mod.application.component.MenuBarButton;
+import com.ocelot.mod.application.component.MenuBarButtonDivider;
 import com.ocelot.mod.application.component.MenuBarItem;
 import com.ocelot.mod.application.component.Model;
 import com.ocelot.mod.application.layout.LayoutCubeUI;
@@ -78,10 +79,18 @@ public class ApplicationModelCreator extends Application {
 
 			{
 				MenuBarButton fileNew = new MenuBarButton("New", Icons.FILE);
-				fileNew.setClickListener((mouseX, mouseY, mouseButton) -> {
-					System.out.println("s1");
-				});
+				// fileNew.setClickListener((mouseX, mouseY, mouseButton) -> {
+				// TODO Empty workspace and attempt to save to file
+				// });
 				menuBarFile.add(fileNew);
+
+				menuBarFile.add(new MenuBarButtonDivider());
+
+				MenuBarButton fileOpen = new MenuBarButton("Load Project", Icons.FOLDER);
+				// fileOpen.setClickListener((mouseX, mouseY, mouseButton) -> {
+				// TODO Open a file
+				// });
+				menuBarFile.add(fileOpen);
 			}
 
 			menuBar.add(menuBarFile);

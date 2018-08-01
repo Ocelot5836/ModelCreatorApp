@@ -1,3 +1,7 @@
 default.cube.name=Cube
 default.json.comment=Model generated using %s's Model Creator. Original model creator: (%s)
 default.model_creator.author_note=Model Creator by %s
+
+dialog.confirmation.save=Do you want to save your progress?
+dialog.error.fail_file_open=Could not open file \'%s\'
+dialog.error.wrong_version=This project was designed for version \'%s\' of the model creator and could not be opened.

@@ -93,11 +93,11 @@ public class ComponentModelArea extends Component {
 			GlStateManager.enableBlend();
 			GlStateManager.tryBlendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
 
-			for (Cube cube : this.cubes) {
+			for (int i = 0; i < this.cubes.size(); i++) {
 				GlStateManager.pushMatrix();
 				GlStateManager.scale(0.5, 0.5, 0.5);
 				RenderHelper.enableGUIStandardItemLighting();
-				cube.render(0, 0, 0, this.camera, partialTicks);
+				this.cubes.get(i).render(0, 0, 0, this.camera, partialTicks);
 				GlStateManager.popMatrix();
 			}
 			mc.entityRenderer.setupOverlayRendering();

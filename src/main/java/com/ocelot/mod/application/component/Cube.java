@@ -4,21 +4,29 @@ import org.lwjgl.opengl.GL11;
 import org.lwjgl.util.vector.Vector3f;
 
 import com.ocelot.mod.application.Camera;
+import com.ocelot.mod.lib.NBTHelper;
 
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.client.resources.I18n;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
+import net.minecraftforge.common.util.Constants;
+import net.minecraftforge.common.util.INBTSerializable;
 
-public class Cube implements Cloneable {
+public class Cube implements Cloneable, INBTSerializable<NBTTagCompound> {
 
 	private Vector3f position;
 	private Vector3f size;
 	private Vector3f rotation;
 	private Face[] faces;
 	private String name;
+
+	protected Cube() {
+		this(0, 0, 0, 0, 0, 0, 0, 0, 0);
+	}
 
 	protected Cube(Vector3f position, Vector3f size, Vector3f rotation) {
 		this(position.x, position.y, position.z, size.x, size.y, size.z, rotation.x, rotation.y, rotation.z);
@@ -292,5 +300,46 @@ public class Cube implements Cloneable {
 	@Override
 	public String toString() {
 		return this.getName();
+	}
+
+	@Override
+	public NBTTagCompound serializeNBT() {
+		NBTTagCompound nbt = new NBTTagCompound();
+		nbt.setTag("position", NBTHelper.setVector(this.position));
+		nbt.setTag("size", NBTHelper.setVector(this.size));
+		nbt.setTag("rotation", NBTHelper.setVector(this.rotation));
+		for (int i = 0; i < EnumFacing.values().length; i++) {
+			EnumFacing facing = EnumFacing.values()[i];
+			Face face = this.getFace(facing);
+			if (face != Face.NULL_FACE) {
+				nbt.setTag(facing.getName2(), face.serializeNBT());
+			}
+		}
+		nbt.setString("name", this.name);
+		return nbt;
+	}
+
+	@Override
+	public void deserializeNBT(NBTTagCompound nbt) {
+		this.position = NBTHelper.getVector3f(nbt.getCompoundTag("position"));
+		this.size = NBTHelper.getVector3f(nbt.getCompoundTag("size"));
+		this.rotation = NBTHelper.getVector3f(nbt.getCompoundTag("rotation"));
+		for (int i = 0; i < EnumFacing.values().length; i++) {
+			EnumFacing facing = EnumFacing.values()[i];
+			if (nbt.hasKey(facing.getName2(), Constants.NBT.TAG_COMPOUND)) {
+				Face face = new Face();
+				face.deserializeNBT(nbt.getCompoundTag(facing.getName2()));
+				this.setFace(facing, face);
+			} else {
+				this.setFace(facing, Face.NULL_FACE);
+			}
+		}
+		this.name = nbt.getString("name");
+	}
+
+	public static Cube fromTag(NBTTagCompound nbt) {
+		Cube cube = new Cube();
+		cube.deserializeNBT(nbt);
+		return cube;
 	}
 }

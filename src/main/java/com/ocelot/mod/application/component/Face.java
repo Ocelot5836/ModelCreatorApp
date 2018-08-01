@@ -1,17 +1,15 @@
 package com.ocelot.mod.application.component;
 
-import java.lang.reflect.Type;
-
 import org.lwjgl.util.vector.Vector4f;
 
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonSerializationContext;
-import com.google.gson.JsonSerializer;
+import com.ocelot.mod.lib.NBTHelper;
 
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.common.util.Constants;
+import net.minecraftforge.common.util.INBTSerializable;
 
-public class Face implements Cloneable {
+public class Face implements Cloneable, INBTSerializable<NBTTagCompound> {
 
 	public static final Face NULL_FACE = null;
 
@@ -51,13 +49,13 @@ public class Face implements Cloneable {
 		this.cullFace = cullFace;
 		return this;
 	}
-	
+
 	public Face copy() {
 		return copy(this);
 	}
-	
+
 	public Face copy(Face face) {
-		if(face == NULL_FACE)
+		if (face == NULL_FACE)
 			return NULL_FACE;
 		Face newFace = new Face();
 		newFace.texture = face.texture;
@@ -65,9 +63,33 @@ public class Face implements Cloneable {
 		newFace.cullFace = face.cullFace;
 		return newFace;
 	}
-	
+
 	@Override
 	public Object clone() throws CloneNotSupportedException {
 		return this.copy();
+	}
+
+	@Override
+	public NBTTagCompound serializeNBT() {
+		NBTTagCompound nbt = new NBTTagCompound();
+		if (this.texture != null) {
+			nbt.setString("texture", this.texture.toString());
+		}
+		if (this.textureCoords != null) {
+			nbt.setTag("textureCoords", NBTHelper.setVector(this.textureCoords));
+		}
+		nbt.setBoolean("cullFace", this.cullFace);
+		return nbt;
+	}
+
+	@Override
+	public void deserializeNBT(NBTTagCompound nbt) {
+		if (nbt.hasKey("texture", Constants.NBT.TAG_STRING)) {
+			this.texture = new ResourceLocation(nbt.getString("texture"));
+		}
+		if (nbt.hasKey("textureCoords", Constants.NBT.TAG_COMPOUND)) {
+			this.textureCoords = NBTHelper.getVector4f(nbt.getCompoundTag("textureCoords"));
+		}
+		this.cullFace = nbt.getBoolean("cullFace");
 	}
 }

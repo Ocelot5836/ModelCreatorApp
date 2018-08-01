@@ -118,7 +118,7 @@ public class LayoutCubeUI extends Layout {
 		});
 		this.addComponent(cubeName);
 
-		options = new ScrollableLayout(0, cubes.top + buttonHeight + cubes.getHeight() + 16, this.width, 83, this.height - (cubes.top + buttonHeight + cubes.getHeight() + 16));
+		options = new ScrollableLayout(0, cubes.top + buttonHeight + cubes.getHeight() + 16, this.width, 85, this.height - (cubes.top + buttonHeight + cubes.getHeight() + 16));
 
 		positionX = new LayoutNumberIncrementer(2 + (options.width / 3 - 3) * 0, 2, options.width / 3 - 4, 40, 0);
 		options.addComponent(positionX);

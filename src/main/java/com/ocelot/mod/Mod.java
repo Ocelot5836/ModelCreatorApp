@@ -3,7 +3,9 @@ package com.ocelot.mod;
 import org.apache.logging.log4j.Logger;
 
 import com.mrcrayfish.device.api.ApplicationManager;
+import com.mrcrayfish.device.api.task.TaskManager;
 import com.ocelot.mod.application.ApplicationModelCreator;
+import com.ocelot.mod.application.task.TaskNotificationCopiedJson;
 
 import net.minecraft.launchwrapper.Launch;
 import net.minecraft.util.ResourceLocation;
@@ -52,6 +54,8 @@ public class Mod {
 
 	@EventHandler
 	public void init(FMLInitializationEvent event) {
+		TaskManager.registerTask(TaskNotificationCopiedJson.class);
+		
 		ApplicationManager.registerApplication(MODEL_CREATOR_ID, ApplicationModelCreator.class);
 	}
 

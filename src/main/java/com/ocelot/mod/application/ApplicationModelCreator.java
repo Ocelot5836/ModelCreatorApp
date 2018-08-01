@@ -1,6 +1,10 @@
 package com.ocelot.mod.application;
 
+import java.awt.Toolkit;
+import java.awt.datatransfer.StringSelection;
 import java.util.List;
+
+import javax.annotation.Nullable;
 
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.util.vector.Vector3f;
@@ -8,9 +12,13 @@ import org.lwjgl.util.vector.Vector3f;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.mrcrayfish.device.api.app.Application;
+import com.mrcrayfish.device.api.app.Dialog;
 import com.mrcrayfish.device.api.app.Icons;
 import com.mrcrayfish.device.api.app.Layout;
 import com.mrcrayfish.device.api.app.Layout.Background;
+import com.mrcrayfish.device.api.io.File;
+import com.mrcrayfish.device.api.task.TaskManager;
+import com.mrcrayfish.device.core.Laptop;
 import com.ocelot.mod.application.component.ComponentModelArea;
 import com.ocelot.mod.application.component.Cube;
 import com.ocelot.mod.application.component.MenuBar;
@@ -19,10 +27,15 @@ import com.ocelot.mod.application.component.MenuBarButtonDivider;
 import com.ocelot.mod.application.component.MenuBarItem;
 import com.ocelot.mod.application.component.Model;
 import com.ocelot.mod.application.layout.LayoutCubeUI;
+import com.ocelot.mod.application.task.TaskNotificationCopiedJson;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
+import net.minecraft.client.resources.I18n;
+import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.NBTTagList;
+import net.minecraftforge.common.util.Constants;
 
 /**
  * <em><b>Copyright (c) 2018 Ocelot5836.</b></em>
@@ -35,6 +48,8 @@ import net.minecraft.nbt.NBTTagCompound;
  * @author Ocelot5836
  */
 public class ApplicationModelCreator extends Application {
+
+	public static final String MODEL_CREATOR_SAVE_VERSION = "1.0";
 
 	private static ApplicationModelCreator app;
 	private static boolean running;
@@ -49,7 +64,7 @@ public class ApplicationModelCreator extends Application {
 	private Cube selectedCube;
 
 	@Override
-	public void init(NBTTagCompound intent) {
+	public void init(@Nullable NBTTagCompound intent) {
 		running = true;
 		app = this;
 
@@ -79,18 +94,81 @@ public class ApplicationModelCreator extends Application {
 
 			{
 				MenuBarButton fileNew = new MenuBarButton("New", Icons.FILE);
-				// fileNew.setClickListener((mouseX, mouseY, mouseButton) -> {
-				// TODO Empty workspace and attempt to save to file
-				// });
+				fileNew.setClickListener((mouseX, mouseY, mouseButton) -> {
+					List<Cube> cubes = modelArea.getCubes();
+					if (!cubes.isEmpty()) {
+						ApplicationModelCreator.getApp().removeAllCubes();
+					} else {
+						Dialog.Confirmation confirmation = new Dialog.Confirmation(I18n.format("dialog.confirmation.save"));
+						confirmation.setPositiveListener((mouseX1, mouseY1, mouseButton1) -> {
+							ApplicationModelCreator.getApp().saveProjectToFile(cubes);
+						});
+						confirmation.setNegativeListener((mouseX2, mouseY2, mouseButton2) -> {
+							ApplicationModelCreator.getApp().removeAllCubes();
+						});
+					}
+				});
 				menuBarFile.add(fileNew);
 
 				menuBarFile.add(new MenuBarButtonDivider());
 
-				MenuBarButton fileOpen = new MenuBarButton("Load Project", Icons.FOLDER);
-				// fileOpen.setClickListener((mouseX, mouseY, mouseButton) -> {
-				// TODO Open a file
+				MenuBarButton fileLoadProject = new MenuBarButton("Load Project", Icons.FOLDER);
+				fileLoadProject.setClickListener((mouseX, mouseY, mouseButton) -> {
+					Dialog.OpenFile openDialog = new Dialog.OpenFile(this);
+					openDialog.setResponseHandler((success, file) -> {
+						if (success) {
+							Dialog.Confirmation confirmation = new Dialog.Confirmation(I18n.format("dialog.confirmation.save"));
+							confirmation.setPositiveListener((mouseX1, mouseY1, mouseButton1) -> {
+								ApplicationModelCreator.getApp().saveProjectToFile(modelArea.getCubes());
+								loadProjectFromFile(file);
+							});
+							confirmation.setNegativeListener((mouseX2, mouseY2, mouseButton2) -> {
+								loadProjectFromFile(file);
+							});
+						} else {
+							openErrorDialog(I18n.format("dialog.error.fail_file_open", file != null ? file.getName() : "Null"));
+						}
+						return true;
+					});
+					openDialog(openDialog);
+				});
+				menuBarFile.add(fileLoadProject);
+
+				MenuBarButton fileSaveProject = new MenuBarButton("Save Project", Icons.SAVE);
+				fileSaveProject.setClickListener((mouseX, mouseY, mouseButton) -> {
+					saveProjectToFile(modelArea.getCubes());
+				});
+				menuBarFile.add(fileSaveProject);
+
+				menuBarFile.add(new MenuBarButtonDivider());
+
+				MenuBarButton fileImportJson = new MenuBarButton("Import JSON", Icons.IMPORT);
+				// fileImportJson.setClickListener((mouseX, mouseY, mouseButton) -> {
 				// });
-				menuBarFile.add(fileOpen);
+				menuBarFile.add(fileImportJson);
+
+				MenuBarButton fileExportJson = new MenuBarButton("Export JSON", Icons.EXPORT);
+				fileExportJson.setClickListener((mouseX, mouseY, mouseButton) -> {
+					StringSelection json = new StringSelection(ApplicationModelCreator.createModelJson(modelArea.getCubes()));
+					Toolkit.getDefaultToolkit().getSystemClipboard().setContents(json, null);
+					TaskManager.sendTask(new TaskNotificationCopiedJson());
+				});
+				menuBarFile.add(fileExportJson);
+
+				menuBarFile.add(new MenuBarButtonDivider());
+
+				MenuBarButton fileSetTexturePath = new MenuBarButton("Set Texture Path", Icons.PICTURE);
+				// fileExportJson.setClickListener((mouseX, mouseY, mouseButton) -> {
+				// });
+				menuBarFile.add(fileSetTexturePath);
+
+				menuBarFile.add(new MenuBarButtonDivider());
+
+				MenuBarButton fileExit = new MenuBarButton("Exit", Icons.POWER_OFF);
+				fileExit.setClickListener((mouseX, mouseY, mouseButton) -> {
+					Laptop.getSystem().closeApplication(this.getInfo());
+				});
+				menuBarFile.add(fileExit);
 			}
 
 			menuBar.add(menuBarFile);
@@ -132,6 +210,11 @@ public class ApplicationModelCreator extends Application {
 		mainLayout.addComponent(cubeUI);
 
 		setCurrentLayout(this.mainLayout);
+	}
+
+	@Override
+	public boolean handleFile(File file) {
+		return loadProjectFromFile(file);
 	}
 
 	@Override
@@ -185,6 +268,11 @@ public class ApplicationModelCreator extends Application {
 		cubeUI.updateCubes(modelArea.getCubes());
 	}
 
+	public void removeAllCubes() {
+		modelArea.getCubes().clear();
+		cubeUI.updateCubes(modelArea.getCubes());
+	}
+
 	public void removeCube(int index) {
 		modelArea.removeCube(index);
 		cubeUI.updateCubes(modelArea.getCubes());
@@ -194,6 +282,55 @@ public class ApplicationModelCreator extends Application {
 		Model model = new Model(cubes);
 		Gson gson = new GsonBuilder().registerTypeAdapter(Model.class, new Model.Serializer()).setPrettyPrinting().create();
 		return gson.toJson(model);
+	}
+
+	public static void saveProjectToFile(List<Cube> cubes) {
+		NBTTagCompound data = new NBTTagCompound();
+		data.setString("version", MODEL_CREATOR_SAVE_VERSION);
+
+		NBTTagList cubesList = new NBTTagList();
+		for (Cube cube : cubes) {
+			cubesList.appendTag(cube.serializeNBT());
+		}
+		data.setTag("cubes", cubesList);
+
+		Dialog.SaveFile saveDialog = new Dialog.SaveFile(ApplicationModelCreator.getApp(), data);
+		ApplicationModelCreator.getApp().openDialog(saveDialog);
+	}
+
+	public static boolean loadProjectFromFile(File file) {
+		NBTTagCompound data = file.getData();
+		if (data.hasKey("version", Constants.NBT.TAG_STRING)) {
+			String version = data.getString("version");
+			if (MODEL_CREATOR_SAVE_VERSION.equalsIgnoreCase(version)) {
+				ApplicationModelCreator.getApp().removeAllCubes();
+				if (data.hasKey("cubes", Constants.NBT.TAG_LIST)) {
+					NBTTagList list = data.getTagList("cubes", Constants.NBT.TAG_COMPOUND);
+					for (NBTBase base : list) {
+						if (base instanceof NBTTagCompound) {
+							ApplicationModelCreator.getApp().addCube(Cube.fromTag((NBTTagCompound) base));
+						}
+					}
+				}
+				return true;
+			} else {
+				openErrorDialog(I18n.format("dialog.error.wrong_version", version));
+				return false;
+			}
+		} else {
+			openErrorDialog(I18n.format("dialog.error.wrong_version", "Unknown"));
+			return false;
+		}
+	}
+
+	public static void openErrorDialog(String content) {
+		openMessageDialog("Error", content);
+	}
+
+	public static void openMessageDialog(String title, String content) {
+		Dialog.Message error = new Dialog.Message(content);
+		error.setTitle(title);
+		ApplicationModelCreator.getApp().openDialog(error);
 	}
 
 	public static ApplicationModelCreator getApp() {

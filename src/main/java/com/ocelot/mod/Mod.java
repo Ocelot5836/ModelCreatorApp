@@ -7,13 +7,11 @@ import com.ocelot.mod.application.ApplicationModelCreator;
 
 import net.minecraft.launchwrapper.Launch;
 import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.Mod.EventHandler;
 import net.minecraftforge.fml.common.Mod.Instance;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
-import net.minecraftforge.fml.relauncher.Side;
 
 /**
  * <em><b>Copyright (c) 2018 Ocelot5836.</b></em>
@@ -33,7 +31,7 @@ public class Mod {
 	/** The current version of the mod */
 	public static final String VERSION = "1.0";
 	/** The id for the model creator app */
-	public static final ResourceLocation MODEL_CREATOR_ID = new ResourceLocation(MOD_ID, "omc");
+	public static final ResourceLocation MODEL_CREATOR_ID = new ResourceLocation(MOD_ID, "mc");
 
 	/** The mod's instance. Probably not too useful but might as well have it */
 	@Instance(MOD_ID)
@@ -47,9 +45,9 @@ public class Mod {
 		logger = event.getModLog();
 
 		// ModConfig.pre();
-		if (FMLCommonHandler.instance().getSide() == Side.CLIENT) {
-			// ModConfig.clientPre();
-		}
+		// if (FMLCommonHandler.instance().getSide() == Side.CLIENT) {
+		// ModConfig.clientPre();
+		// }
 	}
 
 	@EventHandler

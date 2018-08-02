@@ -3,14 +3,12 @@
   "modid": "mca",
   "name": "Model Creator Application",
   "description": "A recreation of MrCrayfish's Model Creator in Minecraft",
-  "version": "1.0",
+  "version": "0.2",
   "mcversion": "[1.12,1.2.2]",
   "url": "",
   "updateUrl": "",
   "authorList": ["Ocelot5836"],
   "credits": "MrCrayfish for making the origionl model creator as well as the device mod",
-  "logoFile": "",
-  "screenshots": [],
-  "dependencies": []
+  "dependencies": ["required-after:cdm@[0.4.0,)"]
 }
 ]

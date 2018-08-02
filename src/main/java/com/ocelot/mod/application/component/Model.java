@@ -17,6 +17,7 @@ import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
 import com.ocelot.mod.Mod;
 import com.ocelot.mod.application.ApplicationModelCreator;
+import com.ocelot.mod.application.dialog.NamedBufferedImage;
 
 import net.minecraft.client.resources.I18n;
 import net.minecraft.util.EnumFacing;
@@ -29,11 +30,13 @@ public class Model {
 	private Map<ResourceLocation, BufferedImage> images;
 	private List<Cube> cubes;
 	private boolean ambientOcclusion;
+	private NamedBufferedImage particle;
 
-	public Model(List<Cube> cubes, boolean ambientOcclusion) {
+	public Model(List<Cube> cubes, boolean ambientOcclusion, NamedBufferedImage particle) {
 		this.textures = new HashMap<ResourceLocation, Integer>();
 		this.cubes = new ArrayList<Cube>(cubes);
 		this.ambientOcclusion = ambientOcclusion;
+		this.particle = particle;
 
 		for (Cube cube : cubes) {
 			Face[] faces = cube.getFaces();
@@ -60,12 +63,15 @@ public class Model {
 			/** Comment */
 			json.addProperty("_comment", I18n.format("default.json.comment", "Ocelot5836", "https://mrcrayfish.com/tools?id=mc"));
 
-			/**global properties*/
+			/** global properties */
 			json.addProperty("ambientOcclusion", src.ambientOcclusion);
-			
+
 			/** Textures */
 			for (ResourceLocation location : src.textures.keySet()) {
-				textures.addProperty(Integer.toString(src.textures.get(location)), String.valueOf(location));
+				textures.addProperty(Integer.toString(src.textures.get(location)), String.valueOf(location).replaceAll("textures/", ""));
+			}
+			if (src.particle != null && src.particle.getLocation() != null) {
+				textures.addProperty("particle", src.particle.getLocation().toString().replaceAll("textures/", ""));
 			}
 			json.add("textures", textures);
 
@@ -127,12 +133,12 @@ public class Model {
 			}
 			json.add("elements", elements);
 
-			this.saveTexturesToDisc(src.textures, src.images);
+			this.saveTexturesToDisc(src.textures, src.images, src.particle);
 
 			return json;
 		}
 
-		private void saveTexturesToDisc(Map<ResourceLocation, Integer> textures, Map<ResourceLocation, BufferedImage> images) {
+		private void saveTexturesToDisc(Map<ResourceLocation, Integer> textures, Map<ResourceLocation, BufferedImage> images, NamedBufferedImage particle) {
 			try {
 				File folder = new File(Loader.instance().getConfigDir(), Mod.MOD_ID + "/export/" + ApplicationModelCreator.getJsonSaveName() + "/textures");
 				if (folder.exists()) {
@@ -142,7 +148,19 @@ public class Model {
 				folder.mkdirs();
 
 				for (ResourceLocation location : textures.keySet()) {
-					ImageIO.write(images.get(location), "png", new File(folder, "assets/" + location.getResourceDomain() + "/" + location.getResourcePath() + ".png"));
+					File file = new File(folder, location.getResourcePath().toString().substring(9));
+					if(!file.getParentFile().exists()) {
+						file.getParentFile().mkdirs();
+					}
+					ImageIO.write(images.get(location), "png", file);
+				}
+
+				if (particle != null) {
+					File file = new File(folder, particle.getLocation().getResourcePath().toString().substring(9));
+					if(!file.getParentFile().exists()) {
+						file.getParentFile().mkdirs();
+					}
+					ImageIO.write(particle.getImage(), "png", file);
 				}
 			} catch (Exception e) {
 				e.printStackTrace();

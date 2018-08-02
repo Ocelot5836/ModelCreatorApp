@@ -10,6 +10,7 @@ import com.mrcrayfish.device.api.app.Component;
 import com.mrcrayfish.device.core.Laptop;
 import com.mrcrayfish.device.util.GLHelper;
 import com.ocelot.mod.application.Camera;
+import com.ocelot.mod.application.dialog.NamedBufferedImage;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BufferBuilder;
@@ -18,6 +19,7 @@ import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.client.resources.I18n;
+import net.minecraft.util.ResourceLocation;
 
 public class ComponentModelArea extends Component {
 
@@ -27,6 +29,7 @@ public class ComponentModelArea extends Component {
 	private Camera camera;
 	private List<Cube> cubes;
 	private boolean ambientOcclusion;
+	private NamedBufferedImage particle;
 
 	public ComponentModelArea(int x, int y, int width, int height, Camera camera) {
 		super(x, y);
@@ -34,6 +37,7 @@ public class ComponentModelArea extends Component {
 		this.height = height;
 		this.camera = camera;
 		this.cubes = new ArrayList<Cube>();
+		this.particle = null;
 	}
 
 	@Override
@@ -137,7 +141,15 @@ public class ComponentModelArea extends Component {
 		return ambientOcclusion;
 	}
 	
+	public NamedBufferedImage getParticle() {
+		return particle;
+	}
+	
 	public void setAmbientOcclusion(boolean ambientOcclusion) {
 		this.ambientOcclusion = ambientOcclusion;
+	}
+	
+	public void setParticle(NamedBufferedImage particle) {
+		this.particle = particle;
 	}
 }

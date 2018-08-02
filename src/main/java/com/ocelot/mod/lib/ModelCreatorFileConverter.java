@@ -15,7 +15,7 @@ public class ModelCreatorFileConverter {
 
 	public static NBTTagCompound convert10To11(NBTTagCompound nbt) {
 		NBTTagCompound newNbt = nbt.copy();
-		newNbt.setString("version", "1.1");
+		newNbt.setString("version", MODEL_CREATOR_SAVE_VERSION_11);
 		NBTTagList oldCubes = nbt.getTagList("cubes", Constants.NBT.TAG_COMPOUND);
 		NBTTagList cubes = new NBTTagList();
 		for (NBTBase base : oldCubes) {
@@ -29,6 +29,8 @@ public class ModelCreatorFileConverter {
 	
 	public static NBTTagCompound convert11To12(NBTTagCompound nbt) {
 		NBTTagCompound newNbt = nbt.copy();
+		newNbt.setString("version", MODEL_CREATOR_SAVE_VERSION_12);
+		newNbt.setBoolean("ambientOcclusion", true);
 		return newNbt;
 	}
 

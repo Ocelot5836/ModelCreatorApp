@@ -98,7 +98,7 @@ public class Cube implements Cloneable, INBTSerializable<NBTTagCompound> {
 
 		if (faces[2] != Face.NULL_FACE) {
 			Face face = faces[2];
-			GlStateManager.color(1, 1, 0);
+			GlStateManager.color(1, 0, 0);
 			buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_NORMAL);
 			{
 				this.pos(size.x * scale, 0, size.z * scale, EnumFacing.NORTH);
@@ -112,7 +112,7 @@ public class Cube implements Cloneable, INBTSerializable<NBTTagCompound> {
 
 		if (faces[3] != Face.NULL_FACE) {
 			Face face = faces[3];
-			GlStateManager.color(0, 1, 0);
+			GlStateManager.color(0, 0, 1);
 			buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_NORMAL);
 			{
 				this.pos(size.x * scale, 0, 0, EnumFacing.SOUTH);
@@ -126,7 +126,7 @@ public class Cube implements Cloneable, INBTSerializable<NBTTagCompound> {
 
 		if (faces[4] != Face.NULL_FACE) {
 			Face face = faces[4];
-			GlStateManager.color(0, 0, 1);
+			GlStateManager.color(1, 1, 0);
 			buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_NORMAL);
 			{
 				this.pos(0, 0, size.z * scale, EnumFacing.WEST);
@@ -140,7 +140,7 @@ public class Cube implements Cloneable, INBTSerializable<NBTTagCompound> {
 
 		if (faces[5] != Face.NULL_FACE) {
 			Face face = faces[5];
-			GlStateManager.color(1, 0, 0);
+			GlStateManager.color(0, 1, 0);
 			buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_NORMAL);
 			{
 				this.pos(0, 0, 0, EnumFacing.EAST);

@@ -20,6 +20,8 @@ import com.ocelot.mod.Mod;
 import com.ocelot.mod.application.ApplicationModelCreator;
 import com.ocelot.mod.application.component.Cube;
 import com.ocelot.mod.application.component.SmoothItemList;
+import com.ocelot.mod.application.dialog.DialogTextureManager;
+import com.ocelot.mod.application.dialog.NamedBufferedImage;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
@@ -51,7 +53,9 @@ public class LayoutCubeUI extends Layout {
 	private LayoutNumberIncrementer sizeY;
 	private LayoutNumberIncrementer sizeZ;
 	private CheckBox shade;
+
 	private CheckBox ambientOcclusion;
+	private Button particle;
 
 	private Slider rotationX;
 	private Slider rotationY;
@@ -156,7 +160,7 @@ public class LayoutCubeUI extends Layout {
 		this.addComponent(cubeName);
 
 		{
-			objectOptions = new ScrollableLayout(0, cubes.top + buttonHeight + cubes.getHeight() + 16 + 12, this.width, 144, this.height - (cubes.top + buttonHeight + cubes.getHeight() + 16 + 12));
+			objectOptions = new ScrollableLayout(0, cubes.top + buttonHeight + cubes.getHeight() + 16 + 12, this.width, 164, this.height - (cubes.top + buttonHeight + cubes.getHeight() + 16 + 12));
 
 			positionX = new LayoutNumberIncrementer(2 + (objectOptions.width / 3 - 3) * 0, 15, objectOptions.width / 3 - 4, 40, 0);
 			objectOptions.addComponent(positionX);
@@ -196,6 +200,18 @@ public class LayoutCubeUI extends Layout {
 				ApplicationModelCreator.getApp().setAmbientOcclusion(this.ambientOcclusion.isSelected());
 			});
 			objectOptions.addComponent(ambientOcclusion);
+
+			particle = new Button(5, 145, objectOptions.width - 10, 16, "Particle", Icons.PICTURE);
+			particle.setClickListener((mouseX, mouseY, mouseButton) -> {
+				DialogTextureManager textureManager = new DialogTextureManager();
+				textureManager.setCloseListener(() -> {
+					if (textureManager.getSelectedImage() != null) {
+						ApplicationModelCreator.getApp().setParticle(textureManager.getSelectedImage());
+					}
+				});
+				ApplicationModelCreator.getApp().openDialog(textureManager);
+			});
+			objectOptions.addComponent(particle);
 
 			this.addComponent(objectOptions);
 		}
@@ -300,5 +316,9 @@ public class LayoutCubeUI extends Layout {
 
 	public void setAmbientOcclusion(boolean ambientOcclusion) {
 		this.ambientOcclusion.setSelected(ambientOcclusion);
+	}
+
+	public void setParticle(NamedBufferedImage particle) {
+		this.particle.setText(particle == null ? "Particle" : "Particle Set");
 	}
 }

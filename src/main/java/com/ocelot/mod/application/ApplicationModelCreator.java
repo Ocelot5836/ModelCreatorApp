@@ -6,6 +6,7 @@ import java.awt.image.BufferedImage;
 import java.io.FileOutputStream;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import javax.annotation.Nullable;
@@ -36,7 +37,7 @@ import com.ocelot.mod.application.component.MenuBarButton;
 import com.ocelot.mod.application.component.MenuBarButtonDivider;
 import com.ocelot.mod.application.component.MenuBarItem;
 import com.ocelot.mod.application.component.Model;
-import com.ocelot.mod.application.dialog.DialogTextureManager;
+import com.ocelot.mod.application.dialog.NamedBufferedImage;
 import com.ocelot.mod.application.layout.LayoutCubeUI;
 import com.ocelot.mod.application.task.TaskNotificationCopiedJson;
 import com.ocelot.mod.lib.Lib;
@@ -49,6 +50,7 @@ import net.minecraft.client.resources.I18n;
 import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.StringUtils;
 import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.fml.common.Loader;
@@ -71,7 +73,7 @@ public class ApplicationModelCreator extends Application {
 	private static boolean running;
 	private static String jsonName;
 
-	private List<BufferedImage> loadedImages;
+	private List<NamedBufferedImage> loadedImages;
 	private Camera camera;
 
 	private Layout mainLayout;
@@ -86,7 +88,7 @@ public class ApplicationModelCreator extends Application {
 		running = true;
 		app = this;
 
-		loadedImages = new ArrayList<BufferedImage>();
+		loadedImages = new ArrayList<NamedBufferedImage>();
 		camera = new Camera(new Vector3f(-5 * 8, -12 * 8, -8 * 8));
 
 		mainLayout = new Layout(362, 164);
@@ -121,7 +123,7 @@ public class ApplicationModelCreator extends Application {
 					} else {
 						Dialog.Confirmation confirmation = new Dialog.Confirmation(I18n.format("dialog.confirmation.save"));
 						confirmation.setPositiveListener((mouseX1, mouseY1, mouseButton1) -> {
-							saveProjectToFile(cubes);
+							saveProjectToFile(cubes, loadedImages, modelArea.hasAmbientOcclusion(), modelArea.getParticle());
 						});
 						confirmation.setNegativeListener((mouseX2, mouseY2, mouseButton2) -> {
 							removeAllCubes();
@@ -142,7 +144,7 @@ public class ApplicationModelCreator extends Application {
 							} else {
 								Dialog.Confirmation confirmation = new Dialog.Confirmation(I18n.format("dialog.confirmation.save"));
 								confirmation.setPositiveListener((mouseX1, mouseY1, mouseButton1) -> {
-									saveProjectToFile(modelArea.getCubes(), (success1, file1) -> {
+									saveProjectToFile(modelArea.getCubes(), loadedImages, modelArea.hasAmbientOcclusion(), modelArea.getParticle(), (success1, file1) -> {
 										if (success1) {
 											return loadProjectFromFile(file1);
 										}
@@ -166,7 +168,7 @@ public class ApplicationModelCreator extends Application {
 
 				MenuBarButton fileSaveProject = new MenuBarButton("Save Project", Icons.SAVE);
 				fileSaveProject.setClickListener((mouseX, mouseY, mouseButton) -> {
-					saveProjectToFile(modelArea.getCubes());
+					saveProjectToFile(modelArea.getCubes(), loadedImages, modelArea.hasAmbientOcclusion(), modelArea.getParticle());
 				});
 				menuBarFile.add(fileSaveProject);
 
@@ -186,7 +188,7 @@ public class ApplicationModelCreator extends Application {
 							if (success) {
 								if (!StringUtils.isNullOrEmpty(input)) {
 									jsonName = input;
-									String json = ApplicationModelCreator.createModelJson(modelArea.getCubes(), modelArea.hasAmbientOcclusion());
+									String json = ApplicationModelCreator.createModelJson(modelArea.getCubes(), modelArea.hasAmbientOcclusion(), modelArea.getParticle());
 									java.io.File jsonFile = ApplicationModelCreator.this.saveToDisc(json);
 									Toolkit.getDefaultToolkit().getSystemClipboard().setContents(new StringSelection(jsonFile.getParentFile().getAbsolutePath()), null);
 									TaskManager.sendTask(new TaskNotificationCopiedJson());
@@ -216,7 +218,7 @@ public class ApplicationModelCreator extends Application {
 					} else {
 						Dialog.Confirmation confirmation = new Dialog.Confirmation(I18n.format("dialog.confirmation.save"));
 						confirmation.setPositiveListener((mouseX1, mouseY1, mouseButton1) -> {
-							saveProjectToFile(modelArea.getCubes(), (success1, file1) -> {
+							saveProjectToFile(modelArea.getCubes(), loadedImages, modelArea.hasAmbientOcclusion(), modelArea.getParticle(), (success1, file1) -> {
 								Laptop.getSystem().closeApplication(this.getInfo());
 								return true;
 							});
@@ -303,8 +305,9 @@ public class ApplicationModelCreator extends Application {
 		mainLayout.addComponent(cubeUI);
 
 		setCurrentLayout(this.mainLayout);
-		
+
 		setAmbientOcclusion(true);
+		setParticle(null);
 	}
 
 	@Override
@@ -328,14 +331,13 @@ public class ApplicationModelCreator extends Application {
 	public void handleMouseScroll(int mouseX, int mouseY, boolean direction) {
 		super.handleMouseScroll(mouseX, mouseY, direction);
 		this.camera.handleMouseScroll(mouseX, mouseY, direction);
-		this.openDialog(new DialogTextureManager());
 	}
 
 	@Override
 	public void handleKeyTyped(char character, int code) {
 		super.handleKeyTyped(character, code);
 		if (Mod.isDebug() && code == Keyboard.KEY_Y) {
-			String json = ApplicationModelCreator.createModelJson(this.modelArea.getCubes(), modelArea.hasAmbientOcclusion());
+			String json = ApplicationModelCreator.createModelJson(this.modelArea.getCubes(), modelArea.hasAmbientOcclusion(), modelArea.getParticle());
 			System.out.println("\n\n" + json + "\n");
 		}
 	}
@@ -354,7 +356,7 @@ public class ApplicationModelCreator extends Application {
 		this.modelArea.cleanUp();
 	}
 
-	public List<BufferedImage> getLoadedImages() {
+	public List<NamedBufferedImage> getLoadedImages() {
 		return loadedImages;
 	}
 
@@ -377,10 +379,15 @@ public class ApplicationModelCreator extends Application {
 		modelArea.removeCube(index);
 		cubeUI.updateCubes(modelArea.getCubes());
 	}
-	
+
 	public void setAmbientOcclusion(boolean ambientOcclusion) {
 		modelArea.setAmbientOcclusion(ambientOcclusion);
 		cubeUI.setAmbientOcclusion(ambientOcclusion);
+	}
+
+	public void setParticle(NamedBufferedImage image) {
+		modelArea.setParticle(image);
+		cubeUI.setParticle(image);
 	}
 
 	private java.io.File saveToDisc(String json) {
@@ -400,27 +407,39 @@ public class ApplicationModelCreator extends Application {
 		return jsonFile;
 	}
 
-	public static void loadTexture(BufferedImage texture) {
-		List<BufferedImage> textures = ApplicationModelCreator.getApp().loadedImages;
-		for (int i = 0; i < textures.size(); i++) {
-			if (textures.get(i) == texture) {
-				return;
+	public static boolean addImage(ResourceLocation location, BufferedImage image) {
+		if (image == null || image.getWidth() != image.getHeight() || Math.sqrt(image.getWidth()) != 4 || Math.sqrt(image.getHeight()) != 4)
+			return false;
+
+		List<NamedBufferedImage> images = ApplicationModelCreator.getApp().getLoadedImages();
+		boolean imageIsCopy = false;
+		int[] pixels = image.getRGB(0, 0, image.getWidth(), image.getHeight(), null, 0, image.getWidth());
+
+		for (int i = 0; i < images.size(); i++) {
+			int[] imagePixels = images.get(i).getImage().getRGB(0, 0, images.get(i).getImage().getWidth(), images.get(i).getImage().getHeight(), null, 0, images.get(i).getImage().getWidth());
+
+			if (Arrays.equals(pixels, imagePixels)) {
+				imageIsCopy = true;
+				break;
 			}
 		}
-		textures.add(texture);
+		if (!imageIsCopy) {
+			images.add(new NamedBufferedImage(image, location));
+		}
+		return true;
 	}
 
-	public static String createModelJson(List<Cube> cubes, boolean ambientOcclusion) {
-		Model model = new Model(cubes, ambientOcclusion);
+	public static String createModelJson(List<Cube> cubes, boolean ambientOcclusion, NamedBufferedImage particle) {
+		Model model = new Model(cubes, ambientOcclusion, particle);
 		Gson gson = new GsonBuilder().registerTypeAdapter(Model.class, new Model.Serializer()).setPrettyPrinting().create();
 		return gson.toJson(model);
 	}
 
-	public static void saveProjectToFile(List<Cube> cubes) {
-		saveProjectToFile(cubes, null);
+	public static void saveProjectToFile(List<Cube> cubes, List<NamedBufferedImage> textures, boolean ambientOcclusion, NamedBufferedImage particle) {
+		saveProjectToFile(cubes, textures, ambientOcclusion, particle, null);
 	}
 
-	public static void saveProjectToFile(List<Cube> cubes, ResponseHandler<File> responseHandler) {
+	public static void saveProjectToFile(List<Cube> cubes, List<NamedBufferedImage> textures, boolean ambientOcclusion, NamedBufferedImage particle, ResponseHandler<File> responseHandler) {
 		NBTTagCompound data = new NBTTagCompound();
 		data.setString("version", MODEL_CREATOR_SAVE_VERSION);
 
@@ -429,6 +448,17 @@ public class ApplicationModelCreator extends Application {
 			cubesList.appendTag(cube.serializeNBT());
 		}
 		data.setTag("cubes", cubesList);
+
+		data.setBoolean("ambientOcclusion", ambientOcclusion);
+		if (particle != null) {
+			data.setTag("particle", particle.serializeNBT());
+		}
+
+		NBTTagList texturesList = new NBTTagList();
+		for (NamedBufferedImage image : textures) {
+			texturesList.appendTag(image.serializeNBT());
+		}
+		data.setTag("textures", texturesList);
 
 		Dialog.SaveFile saveDialog = new Dialog.SaveFile(ApplicationModelCreator.getApp(), data);
 		saveDialog.setResponseHandler(responseHandler);
@@ -440,7 +470,9 @@ public class ApplicationModelCreator extends Application {
 		if (data.hasKey("version", Constants.NBT.TAG_STRING)) {
 			String version = data.getString("version");
 			if (MODEL_CREATOR_SAVE_VERSION.equalsIgnoreCase(version)) {
+
 				ApplicationModelCreator.getApp().removeAllCubes();
+				ApplicationModelCreator.getApp().loadedImages.clear();
 				if (data.hasKey("cubes", Constants.NBT.TAG_LIST)) {
 					NBTTagList list = data.getTagList("cubes", Constants.NBT.TAG_COMPOUND);
 					for (NBTBase base : list) {
@@ -449,6 +481,20 @@ public class ApplicationModelCreator extends Application {
 						}
 					}
 				}
+
+				ApplicationModelCreator.getApp().setAmbientOcclusion(data.getBoolean("ambientOcclusion"));
+				if (data.hasKey("particle", Constants.NBT.TAG_COMPOUND)) {
+					ApplicationModelCreator.getApp().setParticle(NamedBufferedImage.fromTag(data.getCompoundTag("particle")));
+				}
+
+				NBTTagList textures = data.getTagList("textures", Constants.NBT.TAG_COMPOUND);
+				for (NBTBase base : textures) {
+					if (base instanceof NBTTagCompound) {
+						NamedBufferedImage image = NamedBufferedImage.fromTag((NBTTagCompound) base);
+						ApplicationModelCreator.getApp().addImage(image.getLocation(), image.getImage());
+					}
+				}
+
 				return true;
 			} else {
 				if (version.equalsIgnoreCase(ModelCreatorFileConverter.MODEL_CREATOR_SAVE_VERSION_10)) {

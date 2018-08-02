@@ -1,8 +1,8 @@
 package com.ocelot.mod.application.dialog;
 
 import java.awt.image.BufferedImage;
+import java.io.File;
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -29,9 +29,9 @@ import net.minecraftforge.common.util.Constants;
 
 public class DialogTextureManager extends Dialog {
 
-	private static final Map<BufferedImage, ResourceLocation> TEXTURE_LOCATIONS = Maps.<BufferedImage, ResourceLocation>newHashMap();
+	private static final Map<NamedBufferedImage, ResourceLocation> TEXTURE_LOCATIONS = Maps.<NamedBufferedImage, ResourceLocation>newHashMap();
 
-	private CloseListener closeListener;
+	private Runnable closeListener;
 	private Layout layoutMain;
 
 	private Button buttonApply;
@@ -40,7 +40,7 @@ public class DialogTextureManager extends Dialog {
 
 	private ScrollableLayout textures;
 
-	private BufferedImage selectedImage;
+	private NamedBufferedImage selectedImage;
 	private Image selectedImageComponent;
 
 	@Override
@@ -68,7 +68,13 @@ public class DialogTextureManager extends Dialog {
 
 					Button buttonOpenPixelPainterFile = new Button(5, this.getHeight() - 40, this.getWidth() - 10, 16, "Open Pixel Painter File", Icons.PICTURE);
 					buttonOpenPixelPainterFile.setClickListener((mouseX, mouseY, mouseButton) -> {
-						Dialog.OpenFile openFile = new Dialog.OpenFile(ApplicationModelCreator.getApp());
+						Dialog.OpenFile openFile = new Dialog.OpenFile(ApplicationModelCreator.getApp()) {
+							@Override
+							public void onClose() {
+								super.onClose();
+								DialogTextureManager.this.init(null);
+							}
+						};
 						openFile.setFilter((file) -> {
 							AppInfo pixelPainterId = ApplicationManager.getApplication(Reference.MOD_ID + ".pixel_painter");
 							return file.getOpeningApp() == null ? true : file.getOpeningApp().equals(pixelPainterId.getFormattedId());
@@ -88,7 +94,7 @@ public class DialogTextureManager extends Dialog {
 											}
 										}
 
-										return addImage(image);
+										return ApplicationModelCreator.addImage(new ResourceLocation("textures/" + Reference.MOD_ID + ".pixel_painter/" + file.getName() + ".png"), image);
 									}
 								}
 							}
@@ -112,9 +118,12 @@ public class DialogTextureManager extends Dialog {
 				}
 
 				try {
-					addImage(Lib.loadImageE(location));
+					String name = location.toString();
+					System.out.println(name.substring(name.lastIndexOf("/") + 1));
+					ApplicationModelCreator.addImage(location, Lib.loadImageE(location));
+					DialogTextureManager.this.init(null);
 					return true;
-				} catch (IOException e) {
+				} catch (Exception e) {
 					return false;
 				}
 			});
@@ -129,7 +138,7 @@ public class DialogTextureManager extends Dialog {
 		});
 		layoutMain.addComponent(buttonClose);
 
-		List<BufferedImage> images = ApplicationModelCreator.getApp().getLoadedImages();
+		List<NamedBufferedImage> images = ApplicationModelCreator.getApp().getLoadedImages();
 		int maxCols = 2;
 
 		textures = new ScrollableLayout(0, 0, layoutMain.width, Math.max(layoutMain.height - 20, (int) Math.ceil((float) images.size() / 2f) * (layoutMain.width / maxCols)), layoutMain.height - 20) {
@@ -137,17 +146,17 @@ public class DialogTextureManager extends Dialog {
 			public void init() {
 				this.clear();
 				for (int i = 0; i < images.size(); i++) {
-					BufferedImage image = images.get(i);
+					NamedBufferedImage image = images.get(i);
 					int x = (i % maxCols) * (layoutMain.width / maxCols);
 					int y = (i / maxCols) * (layoutMain.width / maxCols);
-					final ResourceLocation location = TextureUtils.createBufferedImageTexture(image);
+					final ResourceLocation location = TextureUtils.createBufferedImageTexture(image.getImage());
 
 					TEXTURE_LOCATIONS.put(image, location);
-					CustomImage c = new CustomImage(DialogTextureManager.this, x, y, layoutMain.width / maxCols, layoutMain.width / maxCols, 0, 0, image.getWidth(), image.getHeight(), image.getWidth(), image.getHeight(), location) {
+					CustomImage c = new CustomImage(DialogTextureManager.this, x, y, layoutMain.width / maxCols, layoutMain.width / maxCols, 0, 0, image.getImage().getWidth(), image.getImage().getHeight(), image.getImage().getWidth(), image.getImage().getHeight(), location) {
 						@Override
 						protected void handleMouseClick(int mouseX, int mouseY, int mouseButton) {
 							if (this.hovered) {
-								for (BufferedImage image : TEXTURE_LOCATIONS.keySet()) {
+								for (NamedBufferedImage image : TEXTURE_LOCATIONS.keySet()) {
 									ResourceLocation tempLocation = TEXTURE_LOCATIONS.get(image);
 									if (tempLocation == location) {
 										selectedImage = image;
@@ -177,35 +186,12 @@ public class DialogTextureManager extends Dialog {
 	public void onClose() {
 		super.onClose();
 		if (closeListener != null) {
-			closeListener.onClose();
+			closeListener.run();
 		}
 		TEXTURE_LOCATIONS.clear();
 	}
 
-	private boolean addImage(BufferedImage image) {		
-		if (image == null || image.getWidth() != image.getHeight() || Math.sqrt(image.getWidth()) != 4 || Math.sqrt(image.getHeight()) != 4)
-			return false;
-
-		List<BufferedImage> images = ApplicationModelCreator.getApp().getLoadedImages();
-		boolean imageIsCopy = false;
-		int[] pixels = image.getRGB(0, 0, image.getWidth(), image.getHeight(), null, 0, image.getWidth());
-
-		for (int i = 0; i < images.size(); i++) {
-			int[] imagePixels = images.get(i).getRGB(0, 0, images.get(i).getWidth(), images.get(i).getHeight(), null, 0, images.get(i).getWidth());
-
-			if (Arrays.equals(pixels, imagePixels)) {
-				imageIsCopy = true;
-				break;
-			}
-		}
-		if (!imageIsCopy) {
-			images.add(image);
-			textures.init();
-		}
-		return true;
-	}
-
-	public BufferedImage getSelectedImage() {
+	public NamedBufferedImage getSelectedImage() {
 		return selectedImage;
 	}
 
@@ -213,7 +199,7 @@ public class DialogTextureManager extends Dialog {
 		return selectedImageComponent;
 	}
 
-	public void setCloseListener(CloseListener closeListener) {
+	public void setCloseListener(Runnable closeListener) {
 		this.closeListener = closeListener;
 	}
 }

@@ -68,8 +68,6 @@ public class NBTHelper {
 		nbt.setInteger("width", width);
 		nbt.setInteger("height", height);
 		nbt.setString("pixels", compressedPixels.toString().substring(0, compressedPixels.length() - 1));
-
-		System.out.println(compressedPixels);
 		
 		return nbt;
 	}
@@ -116,8 +114,6 @@ public class NBTHelper {
 				image.setRGB(x, y, pixelColor);
 			}
 		}
-
-		System.out.println(Arrays.toString(pixels));
 
 		return image;
 	}

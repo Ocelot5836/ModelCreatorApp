@@ -36,6 +36,7 @@ import com.ocelot.mod.application.component.MenuBarButton;
 import com.ocelot.mod.application.component.MenuBarButtonDivider;
 import com.ocelot.mod.application.component.MenuBarItem;
 import com.ocelot.mod.application.component.Model;
+import com.ocelot.mod.application.dialog.DialogTextureManager;
 import com.ocelot.mod.application.layout.LayoutCubeUI;
 import com.ocelot.mod.application.task.TaskNotificationCopiedJson;
 import com.ocelot.mod.lib.Lib;
@@ -327,6 +328,7 @@ public class ApplicationModelCreator extends Application {
 	public void handleMouseScroll(int mouseX, int mouseY, boolean direction) {
 		super.handleMouseScroll(mouseX, mouseY, direction);
 		this.camera.handleMouseScroll(mouseX, mouseY, direction);
+		this.openDialog(new DialogTextureManager());
 	}
 
 	@Override

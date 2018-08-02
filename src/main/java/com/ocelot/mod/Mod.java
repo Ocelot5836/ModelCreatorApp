@@ -55,7 +55,7 @@ public class Mod {
 	@EventHandler
 	public void init(FMLInitializationEvent event) {
 		TaskManager.registerTask(TaskNotificationCopiedJson.class);
-		
+
 		ApplicationManager.registerApplication(MODEL_CREATOR_ID, ApplicationModelCreator.class);
 	}
 

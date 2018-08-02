@@ -80,17 +80,29 @@ public class Lib {
 	 * @param location
 	 *            The location of the file
 	 * @return The image loaded
-	 * @throws IOException
-	 *             If the image could not be found or had an error loading
 	 */
 	@SideOnly(Side.CLIENT)
 	public static BufferedImage loadImage(ResourceLocation location) {
 		try {
-			return ImageIO.read(Minecraft.getMinecraft().getResourceManager().getResource(location).getInputStream());
+			return loadImageE(location);
 		} catch (IOException e) {
 			e.printStackTrace();
 			return new BufferedImage(16, 16, BufferedImage.TYPE_INT_RGB);
 		}
+	}
+
+	/**
+	 * Loads an image from file. This one throws an exception.
+	 * 
+	 * @param location
+	 *            The location of the file
+	 * @return The image loaded
+	 * @throws IOException
+	 *             If the image could not be found or had an error loading
+	 */
+	@SideOnly(Side.CLIENT)
+	public static BufferedImage loadImageE(ResourceLocation location) throws IOException {
+		return ImageIO.read(Minecraft.getMinecraft().getResourceManager().getResource(location).getInputStream());
 	}
 
 	/**

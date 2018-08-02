@@ -94,7 +94,6 @@ public class ComponentModelArea extends Component {
 			GlStateManager.popMatrix();
 
 			GlStateManager.enableLighting();
-			GlStateManager.disableCull();
 			GlStateManager.enableBlend();
 			GlStateManager.tryBlendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
 
@@ -109,7 +108,6 @@ public class ComponentModelArea extends Component {
 
 			GlStateManager.enableTexture2D();
 			GlStateManager.disableDepth();
-			GlStateManager.enableCull();
 			RenderHelper.disableStandardItemLighting();
 		}
 		GlStateManager.popMatrix();

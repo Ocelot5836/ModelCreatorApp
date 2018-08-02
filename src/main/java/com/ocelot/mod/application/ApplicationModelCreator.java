@@ -71,7 +71,7 @@ public class ApplicationModelCreator extends Application {
 
 	private static ApplicationModelCreator app;
 	private static boolean running;
-	private static String jsonName;
+	private static boolean enableTransparency;
 
 	private List<NamedBufferedImage> loadedImages;
 	private Camera camera;
@@ -82,6 +82,7 @@ public class ApplicationModelCreator extends Application {
 	private LayoutCubeUI cubeUI;
 
 	private Cube selectedCube;
+	
 
 	@Override
 	public void init(@Nullable NBTTagCompound intent) {
@@ -118,7 +119,7 @@ public class ApplicationModelCreator extends Application {
 				MenuBarButton fileNew = new MenuBarButton("New", Icons.FILE);
 				fileNew.setClickListener((mouseX, mouseY, mouseButton) -> {
 					List<Cube> cubes = modelArea.getCubes();
-					if (!cubes.isEmpty()) {
+					if (cubes.isEmpty()) {
 						removeAllCubes();
 					} else {
 						Dialog.Confirmation confirmation = new Dialog.Confirmation(I18n.format("dialog.confirmation.save"));
@@ -128,6 +129,7 @@ public class ApplicationModelCreator extends Application {
 						confirmation.setNegativeListener((mouseX2, mouseY2, mouseButton2) -> {
 							removeAllCubes();
 						});
+						openDialog(confirmation);
 					}
 				});
 				menuBarFile.add(fileNew);
@@ -187,9 +189,8 @@ public class ApplicationModelCreator extends Application {
 						public boolean onResponse(boolean success, String input) {
 							if (success) {
 								if (!StringUtils.isNullOrEmpty(input)) {
-									jsonName = input;
 									String json = ApplicationModelCreator.createModelJson(modelArea.getCubes(), modelArea.hasAmbientOcclusion(), modelArea.getParticle());
-									java.io.File jsonFile = ApplicationModelCreator.this.saveToDisc(json);
+									java.io.File jsonFile = ApplicationModelCreator.this.saveToDisc(json, input);
 									Toolkit.getDefaultToolkit().getSystemClipboard().setContents(new StringSelection(jsonFile.getParentFile().getAbsolutePath()), null);
 									TaskManager.sendTask(new TaskNotificationCopiedJson());
 									return true;
@@ -293,6 +294,29 @@ public class ApplicationModelCreator extends Application {
 				menuBarMore.add(moreExamples);
 
 				menuBarMore.add(new MenuBarButtonDivider());
+				
+				MenuBarButton moreGithub = new MenuBarButton("GitHub") {
+					@Override
+					public void render(Laptop laptop, Minecraft mc, int x, int y, int mouseX, int mouseY, boolean windowActive, int buttonsWidth, int buttonsHeight, float partialTicks) {
+						if (this.isVisible()) {
+							this.setHovered(GuiUtils.isMouseInside(x, y, buttonsWidth, this.getHeight(), mouseX, mouseY));
+
+							int contentWidth = 13 + Lib.getDefaultTextWidth(this.getText());
+							int contentX = (int) Math.ceil((this.getWidth() - contentWidth) / 2.0);
+
+							TextureUtils.bindTexture(Mod.MOD_ID, "textures/app/icons.png");
+							GlStateManager.pushMatrix();
+							GlStateManager.translate(0.5, 0.5, 0);
+							RenderUtil.drawRectWithTexture(x, y + this.getHeight() / 2 - 5, 40, 0, 10, 10, 20, 20, 200, 200);
+							GlStateManager.popMatrix();
+
+							int textY = (this.getHeight() - mc.fontRenderer.FONT_HEIGHT) / 2;
+							int textOffsetX = 13;
+							int textColor = !this.isEnabled() ? this.getDisabledTextColor() : (this.isHovered() ? this.getHighlightedTextColor() : this.getTextColor());
+							mc.fontRenderer.drawString(this.getText(), x + textOffsetX, y + textY + 1, textColor, false);
+						}
+					}
+				};
 			}
 		}
 
@@ -352,8 +376,12 @@ public class ApplicationModelCreator extends Application {
 
 	@Override
 	public void onClose() {
+		clearProject();
 		running = false;
 		this.modelArea.cleanUp();
+		this.mainLayout.clear();
+		this.cubeUI.clear();
+		this.selectedCube = null;
 	}
 
 	public List<NamedBufferedImage> getLoadedImages() {
@@ -390,9 +418,9 @@ public class ApplicationModelCreator extends Application {
 		cubeUI.setParticle(image);
 	}
 
-	private java.io.File saveToDisc(String json) {
-		java.io.File folder = new java.io.File(Loader.instance().getConfigDir(), Mod.MOD_ID + "/export/" + ApplicationModelCreator.getJsonSaveName());
-		java.io.File jsonFile = new java.io.File(folder, ApplicationModelCreator.getJsonSaveName() + ".json");
+	private java.io.File saveToDisc(String json, String jsonName) {
+		java.io.File folder = new java.io.File(Loader.instance().getConfigDir(), Mod.MOD_ID + "/export/" + jsonName);
+		java.io.File jsonFile = new java.io.File(folder, jsonName + ".json");
 		try {
 			if (jsonFile.createNewFile()) {
 			} else {
@@ -405,6 +433,11 @@ public class ApplicationModelCreator extends Application {
 			e.printStackTrace();
 		}
 		return jsonFile;
+	}
+
+	public static void clearProject() {
+		ApplicationModelCreator.getApp().removeAllCubes();
+		ApplicationModelCreator.getApp().loadedImages.clear();
 	}
 
 	public static boolean addImage(ResourceLocation location, BufferedImage image) {
@@ -543,8 +576,8 @@ public class ApplicationModelCreator extends Application {
 	public static boolean isRunning() {
 		return running;
 	}
-
-	public static String getJsonSaveName() {
-		return jsonName;
+	
+	public static boolean isTransparencyEnabled() {
+		return enableTransparency;
 	}
 }

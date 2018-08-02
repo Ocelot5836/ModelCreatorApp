@@ -121,7 +121,6 @@ public class NBTHelper {
 	public static void main(String[] args) {
 		BufferedImage image = new BufferedImage(16, 16, BufferedImage.TYPE_INT_RGB);
 		NBTTagCompound nbt = NBTHelper.setBufferedImage(image);
-		System.out.println(Arrays.toString(image.getRGB(0, 0, image.getWidth(), image.getHeight(), null, 0, image.getWidth())));
 		getBufferedImage(nbt);
 	}
 }

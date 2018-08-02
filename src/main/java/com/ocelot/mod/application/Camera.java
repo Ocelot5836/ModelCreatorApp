@@ -51,8 +51,8 @@ public class Camera {
 		// rotation.x = pitch;
 		// rotation.y = 180 - angleAroundCenter;
 
-		this.lastPosition.set(this.origin.x, this.origin.y, this.origin.z);
-		this.position.set(this.origin.x, this.origin.y, this.origin.z);
+		 this.lastPosition.set(this.origin.x, this.origin.y, this.origin.z);
+		 this.position.set(this.origin.x, this.origin.y, this.origin.z);
 	}
 
 	public void transform(float partialTicks) {
@@ -87,7 +87,7 @@ public class Camera {
 	}
 
 	public void handleMouseScroll(int mouseX, int mouseY, boolean direction) {
-		 distanceFromCenter -= Mouse.getDWheel() * 0.1f;
+		distanceFromCenter -= Mouse.getDWheel() * 0.1f;
 	}
 
 	public Vector3f getOrigin() {

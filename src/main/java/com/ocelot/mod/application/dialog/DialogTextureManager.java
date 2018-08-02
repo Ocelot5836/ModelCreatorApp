@@ -119,7 +119,6 @@ public class DialogTextureManager extends Dialog {
 
 				try {
 					String name = location.toString();
-					System.out.println(name.substring(name.lastIndexOf("/") + 1));
 					ApplicationModelCreator.addImage(location, Lib.loadImageE(location));
 					DialogTextureManager.this.init(null);
 					return true;

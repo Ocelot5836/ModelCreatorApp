@@ -1,7 +1,6 @@
 package com.ocelot.mod.lib;
 
 import java.awt.image.BufferedImage;
-import java.awt.image.DataBufferInt;
 
 import org.lwjgl.util.vector.Vector2f;
 import org.lwjgl.util.vector.Vector3f;
@@ -40,7 +39,7 @@ public class NBTHelper {
 		NBTTagCompound nbt = new NBTTagCompound();
 		int width = image.getWidth();
 		int height = image.getHeight();
-		int[] pixels = ((DataBufferInt) image.getRaster().getDataBuffer()).getData();
+		int[] pixels = image.getRGB(0, 0, width, height, null, 0, width);
 		StringBuilder compressedPixels = new StringBuilder();
 
 		int lastPixel = 0;
@@ -60,11 +59,17 @@ public class NBTHelper {
 			}
 			lastPixel = pixel;
 		}
+		
+		if(length > 0) {
+			compressedPixels.append(Integer.toHexString(startingPixelColor) + ":" + Integer.toHexString(startingPixel) + "_" + Integer.toHexString(startingPixel + length) + ",");
+		}
 
 		nbt.setInteger("type", image.getType());
 		nbt.setInteger("width", width);
 		nbt.setInteger("height", height);
 		nbt.setString("pixels", compressedPixels.toString().substring(0, compressedPixels.length() - 1));
+
+		System.out.println(compressedPixels);
 		
 		return nbt;
 	}
@@ -112,18 +117,15 @@ public class NBTHelper {
 			}
 		}
 
+		System.out.println(Arrays.toString(pixels));
+
 		return image;
 	}
 
 	public static void main(String[] args) {
 		BufferedImage image = new BufferedImage(16, 16, BufferedImage.TYPE_INT_RGB);
-		image.setRGB(4, 7, -1);
-		image.setRGB(5, 7, -1);
-		image.setRGB(6, 7, -1);
-		image.setRGB(6, 8, -1);
-		image.setRGB(9, 8, -1);
 		NBTTagCompound nbt = NBTHelper.setBufferedImage(image);
-		System.out.println(nbt);
+		System.out.println(Arrays.toString(image.getRGB(0, 0, image.getWidth(), image.getHeight(), null, 0, image.getWidth())));
 		getBufferedImage(nbt);
 	}
 }

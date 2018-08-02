@@ -26,6 +26,7 @@ public class ComponentModelArea extends Component {
 
 	private Camera camera;
 	private List<Cube> cubes;
+	private boolean ambientOcclusion;
 
 	public ComponentModelArea(int x, int y, int width, int height, Camera camera) {
 		super(x, y);
@@ -130,5 +131,13 @@ public class ComponentModelArea extends Component {
 
 	public List<Cube> getCubes() {
 		return cubes;
+	}
+	
+	public boolean hasAmbientOcclusion() {
+		return ambientOcclusion;
+	}
+	
+	public void setAmbientOcclusion(boolean ambientOcclusion) {
+		this.ambientOcclusion = ambientOcclusion;
 	}
 }

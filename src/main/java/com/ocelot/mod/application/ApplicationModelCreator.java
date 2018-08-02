@@ -2,10 +2,15 @@ package com.ocelot.mod.application;
 
 import java.awt.Toolkit;
 import java.awt.datatransfer.StringSelection;
+import java.awt.image.BufferedImage;
+import java.io.FileOutputStream;
+import java.nio.charset.Charset;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.annotation.Nullable;
 
+import org.apache.commons.io.IOUtils;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.util.vector.Vector3f;
 
@@ -13,6 +18,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.mrcrayfish.device.api.app.Application;
 import com.mrcrayfish.device.api.app.Dialog;
+import com.mrcrayfish.device.api.app.Dialog.ResponseHandler;
 import com.mrcrayfish.device.api.app.Icons;
 import com.mrcrayfish.device.api.app.Layout;
 import com.mrcrayfish.device.api.app.Layout.Background;
@@ -33,16 +39,18 @@ import com.ocelot.mod.application.component.Model;
 import com.ocelot.mod.application.layout.LayoutCubeUI;
 import com.ocelot.mod.application.task.TaskNotificationCopiedJson;
 import com.ocelot.mod.lib.Lib;
+import com.ocelot.mod.lib.ModelCreatorFileConverter;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
+import net.minecraft.util.StringUtils;
 import net.minecraftforge.common.util.Constants;
+import net.minecraftforge.fml.common.Loader;
 
 /**
  * <em><b>Copyright (c) 2018 Ocelot5836.</b></em>
@@ -56,11 +64,13 @@ import net.minecraftforge.common.util.Constants;
  */
 public class ApplicationModelCreator extends Application {
 
-	public static final String MODEL_CREATOR_SAVE_VERSION = "1.0";
+	public static final String MODEL_CREATOR_SAVE_VERSION = ModelCreatorFileConverter.MODEL_CREATOR_SAVE_VERSION_12;
 
 	private static ApplicationModelCreator app;
 	private static boolean running;
+	private static String jsonName;
 
+	private List<BufferedImage> loadedImages;
 	private Camera camera;
 
 	private Layout mainLayout;
@@ -75,6 +85,7 @@ public class ApplicationModelCreator extends Application {
 		running = true;
 		app = this;
 
+		loadedImages = new ArrayList<BufferedImage>();
 		camera = new Camera(new Vector3f(-5 * 8, -12 * 8, -8 * 8));
 
 		mainLayout = new Layout(362, 164);
@@ -83,6 +94,7 @@ public class ApplicationModelCreator extends Application {
 			public void render(Gui gui, Minecraft mc, int x, int y, int width, int height, int mouseX, int mouseY, boolean windowActive) {
 				gui.drawRect(x, y, x + width - (int) (width * (1 - 0.75)) - 1, y + height, 0xffeaeaed);
 				gui.drawRect(x + width - (int) (width * (1 - 0.75)) - 1, y, x + width, y + height, 0xffdddde4);
+				mc.fontRenderer.drawString("v" + Mod.VERSION + ", Save format v" + MODEL_CREATOR_SAVE_VERSION, x + 2, y + 12, 0xffdddde4, false);
 			}
 		});
 
@@ -104,14 +116,14 @@ public class ApplicationModelCreator extends Application {
 				fileNew.setClickListener((mouseX, mouseY, mouseButton) -> {
 					List<Cube> cubes = modelArea.getCubes();
 					if (!cubes.isEmpty()) {
-						ApplicationModelCreator.getApp().removeAllCubes();
+						removeAllCubes();
 					} else {
 						Dialog.Confirmation confirmation = new Dialog.Confirmation(I18n.format("dialog.confirmation.save"));
 						confirmation.setPositiveListener((mouseX1, mouseY1, mouseButton1) -> {
-							ApplicationModelCreator.getApp().saveProjectToFile(cubes);
+							saveProjectToFile(cubes);
 						});
 						confirmation.setNegativeListener((mouseX2, mouseY2, mouseButton2) -> {
-							ApplicationModelCreator.getApp().removeAllCubes();
+							removeAllCubes();
 						});
 					}
 				});
@@ -124,18 +136,28 @@ public class ApplicationModelCreator extends Application {
 					Dialog.OpenFile openDialog = new Dialog.OpenFile(this);
 					openDialog.setResponseHandler((success, file) -> {
 						if (success) {
-							Dialog.Confirmation confirmation = new Dialog.Confirmation(I18n.format("dialog.confirmation.save"));
-							confirmation.setPositiveListener((mouseX1, mouseY1, mouseButton1) -> {
-								ApplicationModelCreator.getApp().saveProjectToFile(modelArea.getCubes());
+							if (modelArea.getCubes().isEmpty()) {
 								loadProjectFromFile(file);
-							});
-							confirmation.setNegativeListener((mouseX2, mouseY2, mouseButton2) -> {
-								loadProjectFromFile(file);
-							});
+							} else {
+								Dialog.Confirmation confirmation = new Dialog.Confirmation(I18n.format("dialog.confirmation.save"));
+								confirmation.setPositiveListener((mouseX1, mouseY1, mouseButton1) -> {
+									saveProjectToFile(modelArea.getCubes(), (success1, file1) -> {
+										if (success1) {
+											return loadProjectFromFile(file1);
+										}
+										return true;
+									});
+
+								});
+								confirmation.setNegativeListener((mouseX1, mouseY1, mouseButton1) -> {
+									loadProjectFromFile(file);
+								});
+								openDialog(confirmation);
+							}
 						} else {
 							openErrorDialog(I18n.format("dialog.error.fail_file_open", file != null ? file.getName() : "Null"));
 						}
-						return true;
+						return success;
 					});
 					openDialog(openDialog);
 				});
@@ -156,9 +178,24 @@ public class ApplicationModelCreator extends Application {
 
 				MenuBarButton fileExportJson = new MenuBarButton("Export JSON", Icons.EXPORT);
 				fileExportJson.setClickListener((mouseX, mouseY, mouseButton) -> {
-					StringSelection json = new StringSelection(ApplicationModelCreator.createModelJson(modelArea.getCubes()));
-					Toolkit.getDefaultToolkit().getSystemClipboard().setContents(json, null);
-					TaskManager.sendTask(new TaskNotificationCopiedJson());
+					Dialog.Input input = new Dialog.Input("Enter the name of the json");
+					input.setResponseHandler(new ResponseHandler<String>() {
+						@Override
+						public boolean onResponse(boolean success, String input) {
+							if (success) {
+								if (!StringUtils.isNullOrEmpty(input)) {
+									jsonName = input;
+									String json = ApplicationModelCreator.createModelJson(modelArea.getCubes(), modelArea.hasAmbientOcclusion());
+									java.io.File jsonFile = ApplicationModelCreator.this.saveToDisc(json);
+									Toolkit.getDefaultToolkit().getSystemClipboard().setContents(new StringSelection(jsonFile.getParentFile().getAbsolutePath()), null);
+									TaskManager.sendTask(new TaskNotificationCopiedJson());
+									return true;
+								}
+							}
+							return false;
+						}
+					});
+					openDialog(input);
 				});
 				menuBarFile.add(fileExportJson);
 
@@ -173,7 +210,21 @@ public class ApplicationModelCreator extends Application {
 
 				MenuBarButton fileExit = new MenuBarButton("Exit", Icons.POWER_OFF);
 				fileExit.setClickListener((mouseX, mouseY, mouseButton) -> {
-					Laptop.getSystem().closeApplication(this.getInfo());
+					if (modelArea.getCubes().isEmpty()) {
+						Laptop.getSystem().closeApplication(this.getInfo());
+					} else {
+						Dialog.Confirmation confirmation = new Dialog.Confirmation(I18n.format("dialog.confirmation.save"));
+						confirmation.setPositiveListener((mouseX1, mouseY1, mouseButton1) -> {
+							saveProjectToFile(modelArea.getCubes(), (success1, file1) -> {
+								Laptop.getSystem().closeApplication(this.getInfo());
+								return true;
+							});
+						});
+						confirmation.setNegativeListener((mouseX1, mouseY1, mouseButton1) -> {
+							Laptop.getSystem().closeApplication(this.getInfo());
+						});
+						openDialog(confirmation);
+					}
 				});
 				menuBarFile.add(fileExit);
 			}
@@ -233,6 +284,13 @@ public class ApplicationModelCreator extends Application {
 			menuBarMore.setHighlightColor(0xffc9c9c9);
 			menuBarMore.setHighlightBorderColor(0xffc9c9c9);
 			menuBar.add(menuBarMore);
+
+			{
+				MenuBarButton moreExamples = new MenuBarButton("Examples", Icons.FILE);
+				menuBarMore.add(moreExamples);
+
+				menuBarMore.add(new MenuBarButtonDivider());
+			}
 		}
 
 		modelArea = new ComponentModelArea(0, menuBar.getHeight(), (int) (mainLayout.width * 0.75), mainLayout.height - menuBar.getHeight(), camera);
@@ -244,6 +302,8 @@ public class ApplicationModelCreator extends Application {
 		mainLayout.addComponent(cubeUI);
 
 		setCurrentLayout(this.mainLayout);
+		
+		setAmbientOcclusion(true);
 	}
 
 	@Override
@@ -273,7 +333,7 @@ public class ApplicationModelCreator extends Application {
 	public void handleKeyTyped(char character, int code) {
 		super.handleKeyTyped(character, code);
 		if (Mod.isDebug() && code == Keyboard.KEY_Y) {
-			String json = ApplicationModelCreator.createModelJson(this.modelArea.getCubes());
+			String json = ApplicationModelCreator.createModelJson(this.modelArea.getCubes(), modelArea.hasAmbientOcclusion());
 			System.out.println("\n\n" + json + "\n");
 		}
 	}
@@ -290,6 +350,10 @@ public class ApplicationModelCreator extends Application {
 	public void onClose() {
 		running = false;
 		this.modelArea.cleanUp();
+	}
+
+	public List<BufferedImage> getLoadedImages() {
+		return loadedImages;
 	}
 
 	public void addCube(float x, float y, float z, float sizeX, float sizeY, float sizeZ, float rotationX, float rotationY, float rotationZ) {
@@ -311,14 +375,50 @@ public class ApplicationModelCreator extends Application {
 		modelArea.removeCube(index);
 		cubeUI.updateCubes(modelArea.getCubes());
 	}
+	
+	public void setAmbientOcclusion(boolean ambientOcclusion) {
+		modelArea.setAmbientOcclusion(ambientOcclusion);
+		cubeUI.setAmbientOcclusion(ambientOcclusion);
+	}
 
-	public static String createModelJson(List<Cube> cubes) {
-		Model model = new Model(cubes);
+	private java.io.File saveToDisc(String json) {
+		java.io.File folder = new java.io.File(Loader.instance().getConfigDir(), Mod.MOD_ID + "/export/" + ApplicationModelCreator.getJsonSaveName());
+		java.io.File jsonFile = new java.io.File(folder, ApplicationModelCreator.getJsonSaveName() + ".json");
+		try {
+			if (jsonFile.createNewFile()) {
+			} else {
+			}
+
+			FileOutputStream stream = new FileOutputStream(jsonFile);
+			IOUtils.write(json, stream, Charset.defaultCharset());
+			stream.close();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return jsonFile;
+	}
+
+	public static void loadTexture(BufferedImage texture) {
+		List<BufferedImage> textures = ApplicationModelCreator.getApp().loadedImages;
+		for (int i = 0; i < textures.size(); i++) {
+			if (textures.get(i) == texture) {
+				return;
+			}
+		}
+		textures.add(texture);
+	}
+
+	public static String createModelJson(List<Cube> cubes, boolean ambientOcclusion) {
+		Model model = new Model(cubes, ambientOcclusion);
 		Gson gson = new GsonBuilder().registerTypeAdapter(Model.class, new Model.Serializer()).setPrettyPrinting().create();
 		return gson.toJson(model);
 	}
 
 	public static void saveProjectToFile(List<Cube> cubes) {
+		saveProjectToFile(cubes, null);
+	}
+
+	public static void saveProjectToFile(List<Cube> cubes, ResponseHandler<File> responseHandler) {
 		NBTTagCompound data = new NBTTagCompound();
 		data.setString("version", MODEL_CREATOR_SAVE_VERSION);
 
@@ -329,6 +429,7 @@ public class ApplicationModelCreator extends Application {
 		data.setTag("cubes", cubesList);
 
 		Dialog.SaveFile saveDialog = new Dialog.SaveFile(ApplicationModelCreator.getApp(), data);
+		saveDialog.setResponseHandler(responseHandler);
 		ApplicationModelCreator.getApp().openDialog(saveDialog);
 	}
 
@@ -348,11 +449,31 @@ public class ApplicationModelCreator extends Application {
 				}
 				return true;
 			} else {
-				openErrorDialog(I18n.format("dialog.error.wrong_version", version));
+				if (version.equalsIgnoreCase(ModelCreatorFileConverter.MODEL_CREATOR_SAVE_VERSION_10)) {
+					Dialog.Confirmation confirm = new Dialog.Confirmation(I18n.format("dialog.project.can_convert", version, ModelCreatorFileConverter.MODEL_CREATOR_SAVE_VERSION_11));
+					confirm.setPositiveListener((mouseX, mouseY, mouseButton) -> {
+						file.setData(ModelCreatorFileConverter.convert10To11(file.getData()));
+						loadProjectFromFile(file);
+					});
+					ApplicationModelCreator.getApp().openDialog(confirm);
+					return false;
+				}
+
+				if (version.equalsIgnoreCase(ModelCreatorFileConverter.MODEL_CREATOR_SAVE_VERSION_11)) {
+					Dialog.Confirmation confirm = new Dialog.Confirmation(I18n.format("dialog.project.can_convert", version, ModelCreatorFileConverter.MODEL_CREATOR_SAVE_VERSION_12));
+					confirm.setPositiveListener((mouseX, mouseY, mouseButton) -> {
+						file.setData(ModelCreatorFileConverter.convert11To12(file.getData()));
+						loadProjectFromFile(file);
+					});
+					ApplicationModelCreator.getApp().openDialog(confirm);
+					return false;
+				}
+
+				openErrorDialog(I18n.format("dialog.project.wrong_version", version));
 				return false;
 			}
 		} else {
-			openErrorDialog(I18n.format("dialog.error.wrong_version", "Unknown"));
+			openErrorDialog(I18n.format("dialog.project.wrong_version", "Unknown"));
 			return false;
 		}
 	}
@@ -373,5 +494,9 @@ public class ApplicationModelCreator extends Application {
 
 	public static boolean isRunning() {
 		return running;
+	}
+
+	public static String getJsonSaveName() {
+		return jsonName;
 	}
 }

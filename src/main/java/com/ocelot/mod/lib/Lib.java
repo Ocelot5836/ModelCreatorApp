@@ -6,6 +6,8 @@ import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.imageio.ImageIO;
+
 import org.apache.commons.io.IOUtils;
 
 import com.ocelot.mod.Mod;
@@ -15,6 +17,8 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 /**
  * <em><b>Copyright (c) 2018 Ocelot5836.</b></em>
@@ -60,6 +64,7 @@ public class Lib {
 	 *            The location of the text file
 	 * @return The text compressed into a string
 	 */
+	@SideOnly(Side.CLIENT)
 	public static String loadTextToString(ResourceLocation location) {
 		try {
 			return IOUtils.toString(Minecraft.getMinecraft().getResourceManager().getResource(location).getInputStream(), Charset.defaultCharset());
@@ -67,6 +72,25 @@ public class Lib {
 			Mod.logger().warn("Could not load text " + location + ". Could cause issues later on.");
 		}
 		return "";
+	}
+
+	/**
+	 * Loads an image from file.
+	 * 
+	 * @param location
+	 *            The location of the file
+	 * @return The image loaded
+	 * @throws IOException
+	 *             If the image could not be found or had an error loading
+	 */
+	@SideOnly(Side.CLIENT)
+	public static BufferedImage loadImage(ResourceLocation location) {
+		try {
+			return ImageIO.read(Minecraft.getMinecraft().getResourceManager().getResource(location).getInputStream());
+		} catch (IOException e) {
+			e.printStackTrace();
+			return new BufferedImage(16, 16, BufferedImage.TYPE_INT_RGB);
+		}
 	}
 
 	/**
@@ -80,31 +104,6 @@ public class Lib {
 	 */
 	public static <T> T[] asArray(T... obj) {
 		return obj;
-	}
-
-	/**
-	 * Helps when calculating the score obtained from multiple jumps.
-	 * 
-	 * @param enemyJumpCount
-	 *            The number of jumps to get the score for
-	 * @return The amount of score calculated from the jumps
-	 */
-	public static int getScoreFromJumps(int enemyJumpCount) {
-		if (enemyJumpCount == 1)
-			return 200;
-		if (enemyJumpCount == 2)
-			return 400;
-		if (enemyJumpCount == 3)
-			return 800;
-		if (enemyJumpCount == 4)
-			return 1000;
-		if (enemyJumpCount == 5)
-			return 2000;
-		if (enemyJumpCount == 6)
-			return 4000;
-		if (enemyJumpCount == 7)
-			return 8000;
-		return 0;
 	}
 
 	/**

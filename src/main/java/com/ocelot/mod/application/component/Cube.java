@@ -8,6 +8,7 @@ import com.ocelot.mod.lib.NBTHelper;
 
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.client.resources.I18n;
@@ -23,6 +24,7 @@ public class Cube implements Cloneable, INBTSerializable<NBTTagCompound> {
 	private Vector3f rotation;
 	private Face[] faces;
 	private String name;
+	private boolean shade;
 
 	protected Cube() {
 		this(0, 0, 0, 0, 0, 0, 0, 0, 0);
@@ -38,6 +40,7 @@ public class Cube implements Cloneable, INBTSerializable<NBTTagCompound> {
 		this.rotation = new Vector3f(rotationX, rotationY, rotationZ);
 		this.faces = new Face[] { new Face(), new Face(), new Face(), new Face(), new Face(), new Face() };
 		this.name = I18n.format("default.cube.name");
+		this.shade = true;
 	}
 
 	public void render(float x, float y, float z, Camera camera, float partialTicks) {
@@ -47,14 +50,23 @@ public class Cube implements Cloneable, INBTSerializable<NBTTagCompound> {
 		camera.rotate(partialTicks);
 
 		float scale = 16f;
-
+		
 		GlStateManager.translate(position.x * scale, -(position.y + size.y - 1) * scale, position.z * scale);
-
+		
 		GlStateManager.translate(8, -8, 8);
 		GlStateManager.rotate(this.rotation.x, 1, 0, 0);
 		GlStateManager.rotate(this.rotation.y, 0, 1, 0);
 		GlStateManager.rotate(this.rotation.z, 0, 0, 1);
 		GlStateManager.translate(-8, -8, -8);
+		
+		if (this.shade) {
+			GlStateManager.pushMatrix();
+			GlStateManager.rotate(168, 0, 0, 1);
+			RenderHelper.enableStandardItemLighting();
+			GlStateManager.popMatrix();
+		} else {
+			RenderHelper.disableStandardItemLighting();
+		}
 
 		if (faces[0] != Face.NULL_FACE) {
 			Face face = faces[0];
@@ -217,6 +229,10 @@ public class Cube implements Cloneable, INBTSerializable<NBTTagCompound> {
 	public String getName() {
 		return name;
 	}
+	
+	public boolean shouldShade() {
+		return shade;
+	}
 
 	public Cube setPosition(Vector3f position) {
 		return this.setPosition(position.x, position.y, position.z);
@@ -278,6 +294,10 @@ public class Cube implements Cloneable, INBTSerializable<NBTTagCompound> {
 		this.name = name;
 		return this;
 	}
+	
+	public void setShade(boolean shade) {
+		this.shade = shade;
+	}
 
 	public Cube copy() {
 		return copy(this);
@@ -289,6 +309,7 @@ public class Cube implements Cloneable, INBTSerializable<NBTTagCompound> {
 			newCube.faces[i] = cube.faces[i].copy();
 		}
 		newCube.name = cube.name;
+		newCube.shade = cube.shade;
 		return newCube;
 	}
 
@@ -316,6 +337,7 @@ public class Cube implements Cloneable, INBTSerializable<NBTTagCompound> {
 			}
 		}
 		nbt.setString("name", this.name);
+		nbt.setBoolean("shade", this.shade);
 		return nbt;
 	}
 
@@ -335,6 +357,7 @@ public class Cube implements Cloneable, INBTSerializable<NBTTagCompound> {
 			}
 		}
 		this.name = nbt.getString("name");
+		this.shade = nbt.getBoolean("shade");
 	}
 
 	public static Cube fromTag(NBTTagCompound nbt) {

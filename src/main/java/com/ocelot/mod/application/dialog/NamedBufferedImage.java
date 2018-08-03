@@ -12,6 +12,7 @@ public class NamedBufferedImage implements INBTSerializable<NBTTagCompound> {
 
 	private BufferedImage image;
 	private ResourceLocation location;
+	private boolean hasTransparency;
 
 	private NamedBufferedImage() {
 	}
@@ -19,6 +20,7 @@ public class NamedBufferedImage implements INBTSerializable<NBTTagCompound> {
 	public NamedBufferedImage(BufferedImage image, ResourceLocation location) {
 		this.image = image;
 		this.location = location;
+		this.hasTransparency = image.getTransparency() == BufferedImage.TRANSLUCENT;
 	}
 
 	public BufferedImage getImage() {
@@ -27,6 +29,10 @@ public class NamedBufferedImage implements INBTSerializable<NBTTagCompound> {
 
 	public ResourceLocation getLocation() {
 		return location;
+	}
+	
+	public boolean hasTransparency() {
+		return hasTransparency;
 	}
 
 	@Override
@@ -46,6 +52,7 @@ public class NamedBufferedImage implements INBTSerializable<NBTTagCompound> {
 	public static NamedBufferedImage fromTag(NBTTagCompound nbt) {
 		NamedBufferedImage image = new NamedBufferedImage();
 		image.deserializeNBT(nbt);
+		image.hasTransparency = image.getImage().getTransparency() == BufferedImage.TRANSLUCENT;
 		return image;
 	}
 }

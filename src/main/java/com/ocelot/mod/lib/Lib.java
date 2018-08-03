@@ -9,6 +9,7 @@ import java.util.List;
 import javax.imageio.ImageIO;
 
 import org.apache.commons.io.IOUtils;
+import org.lwjgl.util.vector.Vector3f;
 
 import com.ocelot.mod.Mod;
 import com.ocelot.mod.Usernames;
@@ -199,6 +200,35 @@ public class Lib {
 	}
 
 	/**
+	 * Checks the distance between two points in space.
+	 * 
+	 * @param vec1
+	 *            The first point
+	 * @param vec2
+	 *            The second point
+	 * @return The distance between those points
+	 */
+	public static double distance(Vector3f vec1, Vector3f vec2) {
+		return distance(vec1.x, vec1.y, vec1.z, vec2.x, vec2.y, vec2.z);
+	}
+
+	/**
+	 * Checks the distance between two points in space.
+	 * 
+	 * @param vec1
+	 *            The first point
+	 * @param vec2
+	 *            The second point
+	 * @return The distance between those points
+	 */
+	public static double distance(double x1, double y1, double z1, double x2, double y2, double z2) {
+		double d0 = x2 - x1;
+		double d1 = y2 - y1;
+		double d2 = z2 - z1;
+		return Math.sqrt(d0 * d0 + d1 * d1 + d2 * d2);
+	}
+
+	/**
 	 * Gets the width of a default string of text.
 	 * 
 	 * @param text
@@ -212,5 +242,20 @@ public class Lib {
 		int width = fontRenderer.getStringWidth(text);
 		fontRenderer.setUnicodeFlag(flag);
 		return width;
+	}
+
+	/**
+	 * Checks to see if the specified resource exists in the files.
+	 * 
+	 * @param location
+	 *            The location to check
+	 * @return Whether or not the file could be found
+	 */
+	public static boolean resourceExists(ResourceLocation location) {
+		try {
+			return Minecraft.getMinecraft().getResourceManager().getResource(location) != null;
+		} catch (Exception e) {
+			return false;
+		}
 	}
 }

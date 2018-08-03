@@ -3,15 +3,19 @@ package com.ocelot.mod.application.layout;
 import java.awt.Color;
 import java.util.List;
 
+import org.lwjgl.util.vector.Vector4f;
+
 import com.mrcrayfish.device.api.app.Icons;
 import com.mrcrayfish.device.api.app.Layout;
 import com.mrcrayfish.device.api.app.ScrollableLayout;
 import com.mrcrayfish.device.api.app.component.Button;
 import com.mrcrayfish.device.api.app.component.CheckBox;
+import com.mrcrayfish.device.api.app.component.ComboBox;
 import com.mrcrayfish.device.api.app.component.Label;
 import com.mrcrayfish.device.api.app.component.RadioGroup;
 import com.mrcrayfish.device.api.app.component.Slider;
 import com.mrcrayfish.device.api.app.component.TextField;
+import com.mrcrayfish.device.api.app.renderer.ItemRenderer;
 import com.mrcrayfish.device.api.app.renderer.ListItemRenderer;
 import com.mrcrayfish.device.api.utils.RenderUtil;
 import com.mrcrayfish.device.core.Laptop;
@@ -25,10 +29,14 @@ import com.ocelot.mod.application.dialog.NamedBufferedImage;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
+import net.minecraft.util.EnumFacing;
 
 public class LayoutCubeUI extends Layout {
 
 	private Cube cube;
+	private EnumFacing selectedFace;
+	private NamedBufferedImage copiedTexture;
+	private Vector4f copiedTextureCoords;
 
 	private SmoothItemList<Cube> cubes;
 
@@ -61,9 +69,18 @@ public class LayoutCubeUI extends Layout {
 	private Slider rotationY;
 	private Slider rotationZ;
 
+	private ComboBox.List<EnumFacing> faceSelection;
+	private Button faceImage;
+	private Button faceDeleteImage;
+	private Button faceCopyImage;
+	private Button facePasteImage;
+
 	public LayoutCubeUI(int left, int top, int width, int height) {
 		super(left, top, width, height);
 		this.cube = null;
+		this.selectedFace = EnumFacing.DOWN;
+		this.copiedTexture = null;
+		this.copiedTextureCoords = new Vector4f();
 	}
 
 	@Override
@@ -261,7 +278,61 @@ public class LayoutCubeUI extends Layout {
 		}
 
 		{
-			textureOptions = new ScrollableLayout(0, cubes.top + buttonHeight + cubes.getHeight() + 16 + 12, this.width, 85, this.height - (cubes.top + buttonHeight + cubes.getHeight() + 16 + 12));
+			textureOptions = new ScrollableLayout(0, cubes.top + buttonHeight + cubes.getHeight() + 16 + 12, this.width, 100, this.height - (cubes.top + buttonHeight + cubes.getHeight() + 16 + 12));
+
+			Label faceLabel = new Label("Face", 5, 5);
+			faceLabel.setTextColor(Color.BLACK);
+			faceLabel.setShadow(false);
+			textureOptions.addComponent(faceLabel);
+
+			faceSelection = new ComboBox.List<EnumFacing>(5, 15, textureOptions.width - 10, textureOptions.width - 15, EnumFacing.values());
+			faceSelection.setChangeListener((oldValue, newValue) -> {
+				selectedFace = newValue;
+			});
+			faceSelection.setItemRenderer(new ItemRenderer<EnumFacing>() {
+				@Override
+				public void render(EnumFacing facing, Gui gui, Minecraft mc, int x, int y, int width, int height) {
+					mc.fontRenderer.drawString(facing.getName2().substring(0, 1).toUpperCase() + facing.getName2().substring(1), x + 2, y + height / 2 - mc.fontRenderer.FONT_HEIGHT / 2, 0xffffffff, false);
+				}
+			});
+			faceSelection.setListItemRenderer(new ListItemRenderer<EnumFacing>((int) (12 * 0.8)) {
+				@Override
+				public void render(EnumFacing facing, Gui gui, Minecraft mc, int x, int y, int width, int height, boolean selected) {
+					mc.fontRenderer.drawString(facing.getName2().substring(0, 1).toUpperCase() + facing.getName2().substring(1), x + 2, y + 1, 0xffffffff, false);
+				}
+			});
+			textureOptions.addComponent(faceSelection);
+
+			faceImage = new Button(5, 35, textureOptions.width - 10, 16, "Texture", Icons.PICTURE);
+			faceImage.setClickListener((mouseX, mouseY, mouseButton) -> {
+				DialogTextureManager textureManager = new DialogTextureManager();
+				textureManager.setCloseListener(() -> {
+					if (textureManager.getSelectedImage() != null) {
+						if (this.cube != null) {
+							this.cube.textureFace(selectedFace, textureManager.getSelectedImage());
+						}
+					}
+				});
+				ApplicationModelCreator.getApp().openDialog(textureManager);
+			});
+			textureOptions.addComponent(faceImage);
+
+			faceDeleteImage = new Button(5, 55, textureOptions.width - 10, 16, "Clear", Icons.FORBIDDEN);
+			faceDeleteImage.setClickListener((mouseX, mouseY, mouseButton) -> {
+				if (this.cube != null) {
+					this.cube.textureFace(this.selectedFace, null);
+				}
+			});
+			textureOptions.addComponent(faceDeleteImage);
+
+			faceCopyImage = new Button(5, 75, textureOptions.width - 10, 16, "Copy", Icons.COPY);
+			faceCopyImage.setClickListener((mouseX, mouseY, mouseButton) -> {
+				if (this.cube != null) {
+					this.copiedTexture = this.cube.getFace(selectedFace).getTexture();
+					this.copiedTextureCoords.set(this.cube.getFace(selectedFace).getTextureCoords());
+				}
+			});
+			textureOptions.addComponent(faceCopyImage);
 
 			this.addComponent(textureOptions);
 		}
@@ -287,6 +358,7 @@ public class LayoutCubeUI extends Layout {
 			this.cube.setPosition(this.positionX.getValue(), this.positionY.getValue(), this.positionZ.getValue());
 			this.cube.setSize(this.sizeX.getValue(), this.sizeY.getValue(), this.sizeZ.getValue());
 			this.cube.setShade(this.shade.isSelected());
+			this.cube.setTextureCoords(this.selectedFace, 0, 0, 16, 16);
 		}
 	}
 
@@ -312,6 +384,9 @@ public class LayoutCubeUI extends Layout {
 
 	public void updateCubes(List<Cube> cubes) {
 		this.cubes.setItems(cubes);
+		if (this.cubes.size() == 0) {
+			this.updateCube(null);
+		}
 	}
 
 	public void setAmbientOcclusion(boolean ambientOcclusion) {

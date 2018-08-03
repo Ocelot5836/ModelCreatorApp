@@ -1,6 +1,5 @@
 package com.ocelot.mod.application.component;
 
-import java.awt.image.BufferedImage;
 import java.io.File;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
@@ -16,7 +15,6 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
 import com.ocelot.mod.Mod;
-import com.ocelot.mod.application.ApplicationModelCreator;
 import com.ocelot.mod.application.dialog.NamedBufferedImage;
 
 import net.minecraft.client.resources.I18n;
@@ -26,27 +24,29 @@ import net.minecraftforge.fml.common.Loader;
 
 public class Model {
 
-	private Map<ResourceLocation, Integer> textures;
-	private Map<ResourceLocation, BufferedImage> images;
+	private List<NamedBufferedImage> textures;
+
 	private List<Cube> cubes;
+	private String jsonName;
 	private boolean ambientOcclusion;
 	private NamedBufferedImage particle;
 
-	public Model(List<Cube> cubes, boolean ambientOcclusion, NamedBufferedImage particle) {
-		this.textures = new HashMap<ResourceLocation, Integer>();
+	public Model(List<Cube> cubes, String jsonName, boolean ambientOcclusion, NamedBufferedImage particle) {
+		this.textures = new ArrayList<NamedBufferedImage>();
 		this.cubes = new ArrayList<Cube>(cubes);
+		this.jsonName = jsonName;
 		this.ambientOcclusion = ambientOcclusion;
 		this.particle = particle;
 
+		int nextId = 0;
 		for (Cube cube : cubes) {
 			Face[] faces = cube.getFaces();
 			for (int i = 0; i < faces.length; i++) {
 				Face face = faces[i];
 				if (face != Face.NULL_FACE) {
-					ResourceLocation texture = face.getTextureLocation();
+					NamedBufferedImage texture = face.getTexture();
 					if (texture != null) {
-						this.textures.put(texture, this.textures.size());
-						this.images.put(texture, face.getTexture());
+						this.textures.add(texture);
 					}
 				}
 			}
@@ -67,9 +67,20 @@ public class Model {
 			json.addProperty("ambientOcclusion", src.ambientOcclusion);
 
 			/** Textures */
-			for (ResourceLocation location : src.textures.keySet()) {
-				textures.addProperty(Integer.toString(src.textures.get(location)), String.valueOf(location).replaceAll("textures/", ""));
+			int nextId = 0;
+			Map<ResourceLocation, NamedBufferedImage> addedImages = new HashMap<ResourceLocation, NamedBufferedImage>();
+			for (int i = 0; i < src.textures.size(); i++) {
+				NamedBufferedImage image = src.textures.get(i);
+				if (!addedImages.containsKey(image.getLocation())) {
+					addedImages.put(image.getLocation(), image);
+				}
 			}
+			int i = 0;
+			for (ResourceLocation location : addedImages.keySet()) {
+				textures.addProperty(Integer.toString(i), String.valueOf(src.textures.get(i).getLocation()).replaceAll("textures/", ""));
+				i++;
+			}
+
 			if (src.particle != null && src.particle.getLocation() != null) {
 				textures.addProperty("particle", src.particle.getLocation().toString().replaceAll("textures/", ""));
 			}
@@ -101,31 +112,36 @@ public class Model {
 				cubeObj.addProperty("shade", cube.shouldShade());
 
 				/** faces */
-				for (int i = 0; i < EnumFacing.values().length; i++) {
+				for (i = 0; i < EnumFacing.values().length; i++) {
 					EnumFacing facing = EnumFacing.values()[i];
 					Face face = cube.getFace(facing);
 
-					if (face.getTextureLocation() != null) {
-						JsonObject faceObj = new JsonObject();
+					JsonObject faceObj = new JsonObject();
 
-						/** texture */
-						faceObj.addProperty("texture", src.textures.get(face.getTextureLocation()));
-
-						/** uv */
-						JsonArray uv = new JsonArray();
-						uv.add(face.getTextureCoords().x);
-						uv.add(face.getTextureCoords().y);
-						uv.add(face.getTextureCoords().z);
-						uv.add(face.getTextureCoords().w);
-						faceObj.add("uv", uv);
-
-						/** cull face */
-						if (face.isCullFace()) {
-							faceObj.addProperty("cullface", facing.getName2());
+					/** texture */
+					int textureID = -1;
+					for (int j = 0; j < src.textures.size(); j++) {
+						if (src.textures.get(j).getLocation().toString().equalsIgnoreCase(face.getTexture().getLocation().toString())) {
+							textureID = j;
+							break;
 						}
-
-						faces.add(facing.getName2(), faceObj);
 					}
+					faceObj.addProperty("texture", "#" + textureID);
+
+					/** uv */
+					JsonArray uv = new JsonArray();
+					uv.add(face.getTextureCoords().x);
+					uv.add(face.getTextureCoords().y);
+					uv.add(face.getTextureCoords().z);
+					uv.add(face.getTextureCoords().w);
+					faceObj.add("uv", uv);
+
+					/** cull face */
+					if (face.isCullFace()) {
+						faceObj.addProperty("cullface", facing.getName2());
+					}
+
+					faces.add(facing.getName2(), faceObj);
 				}
 				cubeObj.add("faces", faces);
 
@@ -133,31 +149,31 @@ public class Model {
 			}
 			json.add("elements", elements);
 
-			this.saveTexturesToDisc(src.textures, src.images, src.particle);
+			this.saveTexturesToDisc(src.jsonName, src.textures, src.particle);
 
 			return json;
 		}
 
-		private void saveTexturesToDisc(Map<ResourceLocation, Integer> textures, Map<ResourceLocation, BufferedImage> images, NamedBufferedImage particle) {
+		private void saveTexturesToDisc(String jsonName, List<NamedBufferedImage> textures, NamedBufferedImage particle) {
 			try {
-				File folder = new File(Loader.instance().getConfigDir(), Mod.MOD_ID + "/export/" + ApplicationModelCreator.getJsonSaveName() + "/textures");
+				File folder = new File(Loader.instance().getConfigDir(), Mod.MOD_ID + "/export/" + jsonName + "/textures");
 				if (folder.exists()) {
 					folder.delete();
 				}
 
 				folder.mkdirs();
 
-				for (ResourceLocation location : textures.keySet()) {
-					File file = new File(folder, location.getResourcePath().toString().substring(9));
-					if(!file.getParentFile().exists()) {
+				for (NamedBufferedImage image : textures) {
+					File file = new File(folder, image.getLocation().getResourcePath().toString().substring(9));
+					if (!file.getParentFile().exists()) {
 						file.getParentFile().mkdirs();
 					}
-					ImageIO.write(images.get(location), "png", file);
+					ImageIO.write(image.getImage(), "png", file);
 				}
 
 				if (particle != null) {
 					File file = new File(folder, particle.getLocation().getResourcePath().toString().substring(9));
-					if(!file.getParentFile().exists()) {
+					if (!file.getParentFile().exists()) {
 						file.getParentFile().mkdirs();
 					}
 					ImageIO.write(particle.getImage(), "png", file);

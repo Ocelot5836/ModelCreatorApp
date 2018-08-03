@@ -1,10 +1,14 @@
 package com.ocelot.mod.application.component;
 
-import java.awt.image.BufferedImage;
+import java.util.Map;
+
+import javax.annotation.Nullable;
 
 import org.lwjgl.util.vector.Vector4f;
 
+import com.google.common.collect.Maps;
 import com.ocelot.api.utils.TextureUtils;
+import com.ocelot.mod.application.dialog.NamedBufferedImage;
 import com.ocelot.mod.lib.Lib;
 import com.ocelot.mod.lib.NBTHelper;
 
@@ -15,25 +19,29 @@ import net.minecraftforge.common.util.INBTSerializable;
 
 public class Face implements Cloneable, INBTSerializable<NBTTagCompound> {
 
+	private static final Map<ResourceLocation, ResourceLocation> TEXTURE_CACHE = Maps.<ResourceLocation, ResourceLocation>newHashMap();
+
 	public static final Face NULL_FACE = null;
 
 	private ResourceLocation textureLocation;
-	private BufferedImage texture;
+	private NamedBufferedImage texture;
 	private Vector4f textureCoords;
 	private boolean cullFace;
 
 	protected Face() {
 		this.textureLocation = null;
 		this.texture = null;
-		this.textureCoords = new Vector4f(0, 0, 1, 1);
+		this.textureCoords = new Vector4f(0, 0, 16, 16);
 		this.cullFace = false;
 	}
 
-	public ResourceLocation getTextureLocation() {
-		return textureLocation;
+	public void bindTexture() {
+		if (this.texture != null) {
+			TextureUtils.bindTexture(this.textureLocation);
+		}
 	}
 
-	public BufferedImage getTexture() {
+	public NamedBufferedImage getTexture() {
 		return texture;
 	}
 
@@ -45,22 +53,28 @@ public class Face implements Cloneable, INBTSerializable<NBTTagCompound> {
 		return cullFace;
 	}
 
-	public Face setTexture(ResourceLocation texture, Vector4f textureCoords) {
-		return this.setTexture(Lib.loadImage(texture), textureCoords.x, textureCoords.y, textureCoords.z, textureCoords.w);
-	}
-
-	public Face setTexture(ResourceLocation texture, float u, float v, float width, float height) {
-		return this.setTexture(Lib.loadImage(texture), u, v, width, height);
-	}
-
-	public Face setTexture(BufferedImage texture, Vector4f textureCoords) {
+	public Face setTexture(@Nullable NamedBufferedImage texture, Vector4f textureCoords) {
 		return this.setTexture(texture, textureCoords.x, textureCoords.y, textureCoords.z, textureCoords.w);
 	}
 
-	public Face setTexture(BufferedImage texture, float u, float v, float width, float height) {
-		this.texture = texture;
-		this.textureLocation = TextureUtils.createBufferedImageTexture(texture);
-		this.textureCoords.set(u, v, width, height);
+	public Face setTexture(@Nullable NamedBufferedImage texture, float u, float v, float width, float height) {
+		if (texture == null) {
+			this.texture = null;
+			this.textureCoords.set(0, 0, 16, 16);
+		} else {
+			if (Lib.resourceExists(texture.getLocation())) {
+				this.textureLocation = texture.getLocation();
+			} else {
+				if (!TEXTURE_CACHE.containsKey(texture.getLocation())) {
+					this.textureLocation = TextureUtils.createBufferedImageTexture(texture.getImage());
+					TEXTURE_CACHE.put(texture.getLocation(), this.textureLocation);
+				} else {
+					this.textureLocation = TEXTURE_CACHE.get(texture.getLocation());
+				}
+			}
+			this.texture = texture;
+			this.textureCoords.set(u, v, width, height);
+		}
 		return this;
 	}
 
@@ -77,6 +91,7 @@ public class Face implements Cloneable, INBTSerializable<NBTTagCompound> {
 		if (face == NULL_FACE)
 			return NULL_FACE;
 		Face newFace = new Face();
+		newFace.textureLocation = face.textureLocation;
 		newFace.texture = face.texture;
 		newFace.textureCoords.set(face.textureCoords);
 		newFace.cullFace = face.cullFace;
@@ -91,30 +106,21 @@ public class Face implements Cloneable, INBTSerializable<NBTTagCompound> {
 	@Override
 	public NBTTagCompound serializeNBT() {
 		NBTTagCompound nbt = new NBTTagCompound();
-		if (this.textureLocation != null) {
-			nbt.setString("textureLocation", this.textureLocation.toString());
-		}
 		if (this.texture != null) {
-			nbt.setTag("texture", NBTHelper.setBufferedImage(this.texture));
+			nbt.setTag("texture", this.texture.serializeNBT());
 		}
-		if (this.textureCoords != null) {
-			nbt.setTag("textureCoords", NBTHelper.setVector(this.textureCoords));
-		}
+		nbt.setTag("textureCoords", NBTHelper.setVector(this.textureCoords));
 		nbt.setBoolean("cullFace", this.cullFace);
 		return nbt;
 	}
 
 	@Override
 	public void deserializeNBT(NBTTagCompound nbt) {
-		if (nbt.hasKey("textureLocation", Constants.NBT.TAG_STRING)) {
-			this.textureLocation = new ResourceLocation(nbt.getString("textureLocation"));
-		}
 		if (nbt.hasKey("texture", Constants.NBT.TAG_COMPOUND)) {
-			this.texture = NBTHelper.getBufferedImage(nbt.getCompoundTag("texture"));
+			this.texture = NamedBufferedImage.fromTag(nbt.getCompoundTag("texture"));
+			this.textureLocation = TextureUtils.createBufferedImageTexture(this.texture.getImage());
 		}
-		if (nbt.hasKey("textureCoords", Constants.NBT.TAG_COMPOUND)) {
-			this.textureCoords = NBTHelper.getVector4f(nbt.getCompoundTag("textureCoords"));
-		}
+		this.textureCoords = NBTHelper.getVector4f(nbt.getCompoundTag("textureCoords"));
 		this.cullFace = nbt.getBoolean("cullFace");
 	}
 
@@ -122,5 +128,9 @@ public class Face implements Cloneable, INBTSerializable<NBTTagCompound> {
 		Face face = new Face();
 		face.deserializeNBT(nbt);
 		return face;
+	}
+
+	public static void clearCache() {
+		TEXTURE_CACHE.clear();
 	}
 }

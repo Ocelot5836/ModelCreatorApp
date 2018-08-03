@@ -1,8 +1,6 @@
 package com.ocelot.mod.application.dialog;
 
 import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
@@ -76,13 +74,13 @@ public class DialogTextureManager extends Dialog {
 							}
 						};
 						openFile.setFilter((file) -> {
-							AppInfo pixelPainterId = ApplicationManager.getApplication(Reference.MOD_ID + ".pixel_painter");
-							return file.getOpeningApp() == null ? true : file.getOpeningApp().equals(pixelPainterId.getFormattedId());
+							AppInfo pixelPainter = ApplicationManager.getApplication(Reference.MOD_ID + ".pixel_painter");
+							return file.getOpeningApp() == null ? true : file.getOpeningApp().equals(pixelPainter.getFormattedId());
 						});
 						openFile.setResponseHandler((success, file) -> {
-							AppInfo pixelPainterId = ApplicationManager.getApplication(Reference.MOD_ID + ".pixel_painter");
+							AppInfo pixelPainter = ApplicationManager.getApplication(Reference.MOD_ID + ".pixel_painter");
 							if (!StringUtils.isNullOrEmpty(file.getOpeningApp())) {
-								if (file.getOpeningApp().equals(pixelPainterId.getFormattedId())) {
+								if (file.getOpeningApp().equals(pixelPainter.getFormattedId())) {
 									NBTTagCompound data = file.getData();
 									if (data.hasKey("Pixels", Constants.NBT.TAG_INT_ARRAY) && data.hasKey("Resolution", Constants.NBT.TAG_INT)) {
 										int[] pixels = data.getIntArray("Pixels");
@@ -175,6 +173,7 @@ public class DialogTextureManager extends Dialog {
 				this.init();
 			}
 		};
+		textures.setScrollSpeed(15);
 
 		layoutMain.addComponent(textures);
 

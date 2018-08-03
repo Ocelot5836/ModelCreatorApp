@@ -2,12 +2,16 @@ package com.ocelot.mod.application.component;
 
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.util.vector.Vector3f;
+import org.lwjgl.util.vector.Vector4f;
 
+import com.ocelot.mod.application.ApplicationModelCreator;
 import com.ocelot.mod.application.Camera;
+import com.ocelot.mod.application.dialog.NamedBufferedImage;
 import com.ocelot.mod.lib.NBTHelper;
 
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.renderer.GlStateManager.CullFace;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
@@ -25,8 +29,7 @@ public class Cube implements Cloneable, INBTSerializable<NBTTagCompound> {
 	private Face[] faces;
 	private String name;
 	private boolean shade;
-
-	private boolean fastRender;
+	private boolean hasTransparency;
 
 	protected Cube() {
 		this(0, 0, 0, 0, 0, 0, 0, 0, 0);
@@ -43,6 +46,7 @@ public class Cube implements Cloneable, INBTSerializable<NBTTagCompound> {
 		this.faces = new Face[] { new Face(), new Face(), new Face(), new Face(), new Face(), new Face() };
 		this.name = I18n.format("default.cube.name");
 		this.shade = true;
+		this.hasTransparency = false;
 	}
 
 	public void render(float x, float y, float z, Camera camera, float partialTicks) {
@@ -55,12 +59,6 @@ public class Cube implements Cloneable, INBTSerializable<NBTTagCompound> {
 
 		GlStateManager.translate(position.x * scale, -(position.y + size.y - 1) * scale, position.z * scale);
 
-		GlStateManager.translate(8, -8, 8);
-		GlStateManager.rotate(this.rotation.x, 1, 0, 0);
-		GlStateManager.rotate(this.rotation.y, 0, 1, 0);
-		GlStateManager.rotate(this.rotation.z, 0, 0, 1);
-		GlStateManager.translate(-8, -8, -8);
-
 		if (this.shade) {
 			GlStateManager.pushMatrix();
 			RenderHelper.enableStandardItemLighting();
@@ -69,18 +67,39 @@ public class Cube implements Cloneable, INBTSerializable<NBTTagCompound> {
 			RenderHelper.disableStandardItemLighting();
 		}
 
+		GlStateManager.translate(8, -8, 8);
+		GlStateManager.rotate(this.rotation.x, 1, 0, 0);
+		GlStateManager.rotate(this.rotation.y, 0, 1, 0);
+		GlStateManager.rotate(this.rotation.z, 0, 0, 1);
+		GlStateManager.translate(-8, -8, -8);
+
 		GlStateManager.translate(0, 16 * size.y, 0);
 
-		if (!fastRender) {
+		if (!ApplicationModelCreator.isFastRender()) {
 			if (faces[0] != Face.NULL_FACE) {
 				Face face = faces[0];
-				GlStateManager.color(1, 0, 1);
-				buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_NORMAL);
-				{
-					this.pos(0, 0, 0, EnumFacing.DOWN);
-					this.pos(0, 0, size.z * scale, EnumFacing.DOWN);
-					this.pos(size.x * scale, 0, size.z * scale, EnumFacing.DOWN);
-					this.pos(size.x * scale, 0, 0, EnumFacing.DOWN);
+				face.bindTexture();
+				Vector4f textureCoords = face.getTextureCoords();
+
+				if (face.getTexture() != null) {
+					GlStateManager.enableTexture2D();
+					GlStateManager.color(1, 1, 1, 1);
+					buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX_NORMAL);
+					{
+						this.pos(size.x * scale, 0, 0, EnumFacing.DOWN, face.getTextureCoords().x / 16f + textureCoords.z / 16f, textureCoords.y / 16f);
+						this.pos(size.x * scale, 0, size.z * scale, EnumFacing.DOWN, textureCoords.x / 16f + textureCoords.z / 16f, textureCoords.y / 16f + textureCoords.w / 16f);
+						this.pos(0, 0, size.z * scale, EnumFacing.DOWN, textureCoords.x / 16f, textureCoords.y / 16f + textureCoords.w / 16f);
+						this.pos(0, 0, 0, EnumFacing.DOWN, textureCoords.x / 16f, textureCoords.y / 16f);
+					}
+				} else {
+					GlStateManager.color(1, 0, 1);
+					buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_NORMAL);
+					{
+						this.pos(size.x * scale, 0, 0, EnumFacing.DOWN);
+						this.pos(size.x * scale, 0, size.z * scale, EnumFacing.DOWN);
+						this.pos(0, 0, size.z * scale, EnumFacing.DOWN);
+						this.pos(0, 0, 0, EnumFacing.DOWN);
+					}
 				}
 				tessellator.draw();
 				GlStateManager.disableTexture2D();
@@ -89,28 +108,58 @@ public class Cube implements Cloneable, INBTSerializable<NBTTagCompound> {
 
 		if (faces[1] != Face.NULL_FACE) {
 			Face face = faces[1];
-			GlStateManager.color(0, 1, 1);
-			buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_NORMAL);
-			{
-				this.pos(0, -size.y * scale, 0, EnumFacing.UP);
-				this.pos(0, -size.y * scale, size.z * scale, EnumFacing.UP);
-				this.pos(size.x * scale, -size.y * scale, size.z * scale, EnumFacing.UP);
-				this.pos(size.x * scale, -size.y * scale, 0, EnumFacing.UP);
+			face.bindTexture();
+			Vector4f textureCoords = face.getTextureCoords();
+
+			if (face.getTexture() != null) {
+				GlStateManager.enableTexture2D();
+				GlStateManager.color(1, 1, 1, 1);
+				buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX_NORMAL);
+				{
+					this.pos(0, -size.y * scale, 0, EnumFacing.UP, textureCoords.x / 16f, textureCoords.y / 16f);
+					this.pos(0, -size.y * scale, size.z * scale, EnumFacing.UP, textureCoords.x / 16f, textureCoords.y / 16f + textureCoords.w / 16f);
+					this.pos(size.x * scale, -size.y * scale, size.z * scale, EnumFacing.UP, textureCoords.x / 16f + textureCoords.z / 16f, textureCoords.y / 16f + textureCoords.w / 16f);
+					this.pos(size.x * scale, -size.y * scale, 0, EnumFacing.UP, face.getTextureCoords().x / 16f + textureCoords.z / 16f, textureCoords.y / 16f);
+				}
+			} else {
+				GlStateManager.color(0, 1, 1);
+				buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_NORMAL);
+				{
+					this.pos(0, -size.y * scale, 0, EnumFacing.UP);
+					this.pos(0, -size.y * scale, size.z * scale, EnumFacing.UP);
+					this.pos(size.x * scale, -size.y * scale, size.z * scale, EnumFacing.UP);
+					this.pos(size.x * scale, -size.y * scale, 0, EnumFacing.UP);
+				}
 			}
 			tessellator.draw();
 			GlStateManager.disableTexture2D();
 		}
 
-		if (!fastRender) {
+		if (!ApplicationModelCreator.isFastRender()) {
 			if (faces[2] != Face.NULL_FACE) {
 				Face face = faces[2];
-				GlStateManager.color(1, 0, 0);
-				buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_NORMAL);
-				{
-					this.pos(size.x * scale, 0, 0, EnumFacing.SOUTH);
-					this.pos(0, 0, 0, EnumFacing.SOUTH);
-					this.pos(0, -size.y * scale, 0, EnumFacing.SOUTH);
-					this.pos(size.x * scale, -size.y * scale, 0, EnumFacing.SOUTH);
+				face.bindTexture();
+				Vector4f textureCoords = face.getTextureCoords();
+
+				if (face.getTexture() != null) {
+					GlStateManager.enableTexture2D();
+					GlStateManager.color(1, 1, 1, 1);
+					buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX_NORMAL);
+					{
+						this.pos(size.x * scale, 0, 0, EnumFacing.SOUTH, textureCoords.x / 16f, textureCoords.y / 16f);
+						this.pos(0, 0, 0, EnumFacing.SOUTH, textureCoords.x / 16f, textureCoords.y / 16f + textureCoords.w / 16f);
+						this.pos(0, -size.y * scale, 0, EnumFacing.SOUTH, textureCoords.x / 16f + textureCoords.z / 16f, textureCoords.y / 16f + textureCoords.w / 16f);
+						this.pos(size.x * scale, -size.y * scale, 0, EnumFacing.SOUTH, face.getTextureCoords().x / 16f + textureCoords.z / 16f, textureCoords.y / 16f);
+					}
+				} else {
+					GlStateManager.color(1, 0, 0);
+					buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_NORMAL);
+					{
+						this.pos(size.x * scale, 0, 0, EnumFacing.SOUTH);
+						this.pos(0, 0, 0, EnumFacing.SOUTH);
+						this.pos(0, -size.y * scale, 0, EnumFacing.SOUTH);
+						this.pos(size.x * scale, -size.y * scale, 0, EnumFacing.SOUTH);
+					}
 				}
 				tessellator.draw();
 				GlStateManager.disableTexture2D();
@@ -119,13 +168,28 @@ public class Cube implements Cloneable, INBTSerializable<NBTTagCompound> {
 
 		if (faces[3] != Face.NULL_FACE) {
 			Face face = faces[3];
-			GlStateManager.color(0, 0, 1);
-			buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_NORMAL);
-			{
-				this.pos(0, 0, size.z * scale, EnumFacing.WEST);
-				this.pos(size.x * scale, 0, size.z * scale, EnumFacing.WEST);
-				this.pos(size.x * scale, -size.y * scale, size.z * scale, EnumFacing.WEST);
-				this.pos(0, -size.y * scale, size.z * scale, EnumFacing.WEST);
+			face.bindTexture();
+			Vector4f textureCoords = face.getTextureCoords();
+
+			if (face.getTexture() != null) {
+				GlStateManager.enableTexture2D();
+				GlStateManager.color(1, 1, 1, 1);
+				buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX_NORMAL);
+				{
+					this.pos(0, 0, size.z * scale, EnumFacing.WEST, textureCoords.x / 16f, textureCoords.y / 16f);
+					this.pos(size.x * scale, 0, size.z * scale, EnumFacing.WEST, textureCoords.x / 16f, textureCoords.y / 16f + textureCoords.w / 16f);
+					this.pos(size.x * scale, -size.y * scale, size.z * scale, EnumFacing.WEST, textureCoords.x / 16f + textureCoords.z / 16f, textureCoords.y / 16f + textureCoords.w / 16f);
+					this.pos(0, -size.y * scale, size.z * scale, EnumFacing.WEST, face.getTextureCoords().x / 16f + textureCoords.z / 16f, textureCoords.y / 16f);
+				}
+			} else {
+				GlStateManager.color(0, 0, 1);
+				buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_NORMAL);
+				{
+					this.pos(0, 0, size.z * scale, EnumFacing.WEST);
+					this.pos(size.x * scale, 0, size.z * scale, EnumFacing.WEST);
+					this.pos(size.x * scale, -size.y * scale, size.z * scale, EnumFacing.WEST);
+					this.pos(0, -size.y * scale, size.z * scale, EnumFacing.WEST);
+				}
 			}
 			tessellator.draw();
 			GlStateManager.disableTexture2D();
@@ -133,28 +197,58 @@ public class Cube implements Cloneable, INBTSerializable<NBTTagCompound> {
 
 		if (faces[4] != Face.NULL_FACE) {
 			Face face = faces[4];
-			GlStateManager.color(1, 1, 0);
-			buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_NORMAL);
-			{
-				this.pos(0, 0, 0, EnumFacing.WEST);
-				this.pos(0, 0, size.z * scale, EnumFacing.WEST);
-				this.pos(0, -size.y * scale, size.z * scale, EnumFacing.WEST);
-				this.pos(0, -size.y * scale, 0, EnumFacing.WEST);
+			face.bindTexture();
+			Vector4f textureCoords = face.getTextureCoords();
+
+			if (face.getTexture() != null) {
+				GlStateManager.enableTexture2D();
+				GlStateManager.color(1, 1, 1, 1);
+				buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX_NORMAL);
+				{
+					this.pos(0, 0, 0, EnumFacing.WEST, textureCoords.x / 16f, textureCoords.y / 16f);
+					this.pos(0, 0, size.z * scale, EnumFacing.WEST, textureCoords.x / 16f, textureCoords.y / 16f + textureCoords.w / 16f);
+					this.pos(0, -size.y * scale, size.z * scale, EnumFacing.WEST, textureCoords.x / 16f + textureCoords.z / 16f, textureCoords.y / 16f + textureCoords.w / 16f);
+					this.pos(0, -size.y * scale, 0, EnumFacing.WEST, face.getTextureCoords().x / 16f + textureCoords.z / 16f, textureCoords.y / 16f);
+				}
+			} else {
+				GlStateManager.color(1, 1, 0);
+				buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_NORMAL);
+				{
+					this.pos(0, 0, 0, EnumFacing.WEST);
+					this.pos(0, 0, size.z * scale, EnumFacing.WEST);
+					this.pos(0, -size.y * scale, size.z * scale, EnumFacing.WEST);
+					this.pos(0, -size.y * scale, 0, EnumFacing.WEST);
+				}
 			}
 			tessellator.draw();
 			GlStateManager.disableTexture2D();
 		}
 
-		if (!fastRender) {
+		if (!ApplicationModelCreator.isFastRender()) {
 			if (faces[5] != Face.NULL_FACE) {
 				Face face = faces[2];
-				GlStateManager.color(0, 1, 0);
-				buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_NORMAL);
-				{
-					this.pos(size.x * scale, 0, size.z * scale, EnumFacing.EAST);
-					this.pos(size.x * scale, 0, 0, EnumFacing.EAST);
-					this.pos(size.x * scale, -size.y * scale, 0, EnumFacing.EAST);
-					this.pos(size.x * scale, -size.y * scale, size.z * scale, EnumFacing.EAST);
+				face.bindTexture();
+				Vector4f textureCoords = face.getTextureCoords();
+
+				if (face.getTexture() != null) {
+					GlStateManager.enableTexture2D();
+					GlStateManager.color(1, 1, 1, 1);
+					buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX_NORMAL);
+					{
+						this.pos(size.x * scale, 0, size.z * scale, EnumFacing.EAST, textureCoords.x / 16f, textureCoords.y / 16f);
+						this.pos(size.x * scale, 0, 0, EnumFacing.EAST, textureCoords.x / 16f, textureCoords.y / 16f + textureCoords.w / 16f);
+						this.pos(size.x * scale, -size.y * scale, 0, EnumFacing.EAST, textureCoords.x / 16f + textureCoords.z / 16f, textureCoords.y / 16f + textureCoords.w / 16f);
+						this.pos(size.x * scale, -size.y * scale, size.z * scale, EnumFacing.EAST, face.getTextureCoords().x / 16f + textureCoords.z / 16f, textureCoords.y / 16f);
+					}
+				} else {
+					GlStateManager.color(0, 1, 0);
+					buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_NORMAL);
+					{
+						this.pos(size.x * scale, 0, size.z * scale, EnumFacing.EAST);
+						this.pos(size.x * scale, 0, 0, EnumFacing.EAST);
+						this.pos(size.x * scale, -size.y * scale, 0, EnumFacing.EAST);
+						this.pos(size.x * scale, -size.y * scale, size.z * scale, EnumFacing.EAST);
+					}
 				}
 				tessellator.draw();
 				GlStateManager.disableTexture2D();
@@ -200,6 +294,16 @@ public class Cube implements Cloneable, INBTSerializable<NBTTagCompound> {
 		buffer.endVertex();
 	}
 
+	public Cube textureFace(EnumFacing face, NamedBufferedImage image) {
+		this.getFace(face).setTexture(image, 0, 0, 1, 1);
+		return this;
+	}
+
+	public Cube setTextureCoords(EnumFacing face, float u, float v, float width, float height) {
+		this.getFace(face).setTexture(this.getFace(face).getTexture(), u, v, width, height);
+		return this;
+	}
+
 	public Cube cullFace(EnumFacing face, boolean cull) {
 		this.getFace(face).setCullFace(cull);
 		return this;
@@ -241,6 +345,16 @@ public class Cube implements Cloneable, INBTSerializable<NBTTagCompound> {
 
 	public boolean shouldShade() {
 		return shade;
+	}
+
+	public boolean hasTransparency() {
+		for (int i = 0; i < EnumFacing.values().length; i++) {
+			Face face = this.getFace(EnumFacing.values()[i]);
+			if (face.getTexture() != null && face.getTexture().hasTransparency()) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	public Cube setPosition(Vector3f position) {

@@ -32,6 +32,7 @@ import com.ocelot.api.utils.TextureUtils;
 import com.ocelot.mod.Mod;
 import com.ocelot.mod.application.component.ComponentModelArea;
 import com.ocelot.mod.application.component.Cube;
+import com.ocelot.mod.application.component.Face;
 import com.ocelot.mod.application.component.MenuBar;
 import com.ocelot.mod.application.component.MenuBarButton;
 import com.ocelot.mod.application.component.MenuBarButtonDivider;
@@ -72,6 +73,7 @@ public class ApplicationModelCreator extends Application {
 	private static ApplicationModelCreator app;
 	private static boolean running;
 	private static boolean enableTransparency;
+	private static boolean fastRender;
 
 	private List<NamedBufferedImage> loadedImages;
 	private Camera camera;
@@ -82,7 +84,6 @@ public class ApplicationModelCreator extends Application {
 	private LayoutCubeUI cubeUI;
 
 	private Cube selectedCube;
-	
 
 	@Override
 	public void init(@Nullable NBTTagCompound intent) {
@@ -127,7 +128,7 @@ public class ApplicationModelCreator extends Application {
 							saveProjectToFile(cubes, loadedImages, modelArea.hasAmbientOcclusion(), modelArea.getParticle());
 						});
 						confirmation.setNegativeListener((mouseX2, mouseY2, mouseButton2) -> {
-							removeAllCubes();
+							clearProject();
 						});
 						openDialog(confirmation);
 					}
@@ -189,7 +190,7 @@ public class ApplicationModelCreator extends Application {
 						public boolean onResponse(boolean success, String input) {
 							if (success) {
 								if (!StringUtils.isNullOrEmpty(input)) {
-									String json = ApplicationModelCreator.createModelJson(modelArea.getCubes(), modelArea.hasAmbientOcclusion(), modelArea.getParticle());
+									String json = ApplicationModelCreator.createModelJson(modelArea.getCubes(), input, modelArea.hasAmbientOcclusion(), modelArea.getParticle());
 									java.io.File jsonFile = ApplicationModelCreator.this.saveToDisc(json, input);
 									Toolkit.getDefaultToolkit().getSystemClipboard().setContents(new StringSelection(jsonFile.getParentFile().getAbsolutePath()), null);
 									TaskManager.sendTask(new TaskNotificationCopiedJson());
@@ -267,6 +268,9 @@ public class ApplicationModelCreator extends Application {
 						}
 					}
 				};
+				optionsToggleTransparency.setClickListener((mouseX, mouseY, mouseButton) -> {
+					enableTransparency = !enableTransparency;
+				});
 				menuBarOptions.add(optionsToggleTransparency);
 			}
 
@@ -294,7 +298,7 @@ public class ApplicationModelCreator extends Application {
 				menuBarMore.add(moreExamples);
 
 				menuBarMore.add(new MenuBarButtonDivider());
-				
+
 				MenuBarButton moreGithub = new MenuBarButton("GitHub") {
 					@Override
 					public void render(Laptop laptop, Minecraft mc, int x, int y, int mouseX, int mouseY, boolean windowActive, int buttonsWidth, int buttonsHeight, float partialTicks) {
@@ -361,7 +365,7 @@ public class ApplicationModelCreator extends Application {
 	public void handleKeyTyped(char character, int code) {
 		super.handleKeyTyped(character, code);
 		if (Mod.isDebug() && code == Keyboard.KEY_Y) {
-			String json = ApplicationModelCreator.createModelJson(this.modelArea.getCubes(), modelArea.hasAmbientOcclusion(), modelArea.getParticle());
+			String json = ApplicationModelCreator.createModelJson(this.modelArea.getCubes(), "debug", modelArea.hasAmbientOcclusion(), modelArea.getParticle());
 			System.out.println("\n\n" + json + "\n");
 		}
 	}
@@ -399,7 +403,7 @@ public class ApplicationModelCreator extends Application {
 	}
 
 	public void removeAllCubes() {
-		modelArea.getCubes().clear();
+		modelArea.clear();
 		cubeUI.updateCubes(modelArea.getCubes());
 	}
 
@@ -437,11 +441,13 @@ public class ApplicationModelCreator extends Application {
 
 	public static void clearProject() {
 		ApplicationModelCreator.getApp().removeAllCubes();
+		ApplicationModelCreator.getApp().setParticle(null);
 		ApplicationModelCreator.getApp().loadedImages.clear();
+		Face.clearCache();
 	}
 
 	public static boolean addImage(ResourceLocation location, BufferedImage image) {
-		if (image == null || image.getWidth() != image.getHeight() || Math.sqrt(image.getWidth()) != 4 || Math.sqrt(image.getHeight()) != 4)
+		if (image == null || image.getWidth() != image.getHeight())
 			return false;
 
 		List<NamedBufferedImage> images = ApplicationModelCreator.getApp().getLoadedImages();
@@ -462,8 +468,8 @@ public class ApplicationModelCreator extends Application {
 		return true;
 	}
 
-	public static String createModelJson(List<Cube> cubes, boolean ambientOcclusion, NamedBufferedImage particle) {
-		Model model = new Model(cubes, ambientOcclusion, particle);
+	public static String createModelJson(List<Cube> cubes, String jsonName, boolean ambientOcclusion, NamedBufferedImage particle) {
+		Model model = new Model(cubes, jsonName, ambientOcclusion, particle);
 		Gson gson = new GsonBuilder().registerTypeAdapter(Model.class, new Model.Serializer()).setPrettyPrinting().create();
 		return gson.toJson(model);
 	}
@@ -576,8 +582,12 @@ public class ApplicationModelCreator extends Application {
 	public static boolean isRunning() {
 		return running;
 	}
-	
+
 	public static boolean isTransparencyEnabled() {
 		return enableTransparency;
+	}
+
+	public static boolean isFastRender() {
+		return fastRender;
 	}
 }

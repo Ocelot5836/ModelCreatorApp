@@ -26,13 +26,6 @@ public class ModelCreatorFileConverter {
 		newNbt.setTag("cubes", cubes);
 		return newNbt;
 	}
-	
-	public static NBTTagCompound convert11To12(NBTTagCompound nbt) {
-		NBTTagCompound newNbt = nbt.copy();
-		newNbt.setString("version", MODEL_CREATOR_SAVE_VERSION_12);
-		newNbt.setBoolean("ambientOcclusion", true);
-		return newNbt;
-	}
 
 	private static NBTTagCompound convert10CubeTo11Cube(NBTTagCompound nbt) {
 		NBTTagCompound newNbt = nbt.copy();

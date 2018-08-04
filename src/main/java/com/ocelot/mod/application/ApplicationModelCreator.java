@@ -87,8 +87,10 @@ public class ApplicationModelCreator extends Application {
 
 	@Override
 	public void init(@Nullable NBTTagCompound intent) {
-		running = true;
 		app = this;
+		running = true;
+		enableTransparency = false;
+		fastRender = true;
 
 		loadedImages = new ArrayList<NamedBufferedImage>();
 		camera = new Camera(new Vector3f(-5 * 8, -12 * 8, -8 * 8));
@@ -272,6 +274,12 @@ public class ApplicationModelCreator extends Application {
 					enableTransparency = !enableTransparency;
 				});
 				menuBarOptions.add(optionsToggleTransparency);
+
+				MenuBarButton optionToggleFastRender = new MenuBarButton("Toggle Fast Render", Icons.WRENCH);
+				optionToggleFastRender.setClickListener((mouseX, mouseY, mouseButton) -> {
+					fastRender = !fastRender;
+				});
+				menuBarOptions.add(optionToggleFastRender);
 			}
 
 			MenuBarItem menuBarScreeenshot = new MenuBarItem("Screeenshot");
@@ -540,16 +548,6 @@ public class ApplicationModelCreator extends Application {
 					Dialog.Confirmation confirm = new Dialog.Confirmation(I18n.format("dialog.project.can_convert", version, ModelCreatorFileConverter.MODEL_CREATOR_SAVE_VERSION_11));
 					confirm.setPositiveListener((mouseX, mouseY, mouseButton) -> {
 						file.setData(ModelCreatorFileConverter.convert10To11(file.getData()));
-						loadProjectFromFile(file);
-					});
-					ApplicationModelCreator.getApp().openDialog(confirm);
-					return false;
-				}
-
-				if (version.equalsIgnoreCase(ModelCreatorFileConverter.MODEL_CREATOR_SAVE_VERSION_11)) {
-					Dialog.Confirmation confirm = new Dialog.Confirmation(I18n.format("dialog.project.can_convert", version, ModelCreatorFileConverter.MODEL_CREATOR_SAVE_VERSION_12));
-					confirm.setPositiveListener((mouseX, mouseY, mouseButton) -> {
-						file.setData(ModelCreatorFileConverter.convert11To12(file.getData()));
 						loadProjectFromFile(file);
 					});
 					ApplicationModelCreator.getApp().openDialog(confirm);

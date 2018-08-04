@@ -221,6 +221,19 @@ public class Lib {
 	 *            The second point
 	 * @return The distance between those points
 	 */
+	public static double distance(Vector3f vec1, double x2, double y2, double z2) {
+		return distance(vec1.x, vec1.y, vec1.z, x2, y2, z2);
+	}
+
+	/**
+	 * Checks the distance between two points in space.
+	 * 
+	 * @param vec1
+	 *            The first point
+	 * @param vec2
+	 *            The second point
+	 * @return The distance between those points
+	 */
 	public static double distance(double x1, double y1, double z1, double x2, double y2, double z2) {
 		double d0 = x2 - x1;
 		double d1 = y2 - y1;

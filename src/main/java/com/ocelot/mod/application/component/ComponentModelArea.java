@@ -1,9 +1,7 @@
 package com.ocelot.mod.application.component;
 
 import java.awt.Color;
-import java.awt.image.BufferedImage;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 
 import org.lwjgl.opengl.GL11;
@@ -23,7 +21,6 @@ import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.client.resources.I18n;
-import net.minecraft.util.EnumFacing;
 
 public class ComponentModelArea extends Component {
 
@@ -32,7 +29,7 @@ public class ComponentModelArea extends Component {
 
 	private Camera camera;
 	private List<Cube> cubes;
-	private List<Cube> sortedCubes;
+	private List<Face> faces;
 	private boolean ambientOcclusion;
 	private NamedBufferedImage particle;
 
@@ -42,27 +39,8 @@ public class ComponentModelArea extends Component {
 		this.height = height;
 		this.camera = camera;
 		this.cubes = new ArrayList<Cube>();
-		this.sortedCubes = new ArrayList<Cube>();
+		this.faces = new ArrayList<Face>();
 		this.particle = null;
-	}
-
-	@Override
-	protected void handleTick() {
-		if (ApplicationModelCreator.isTransparencyEnabled()) {
-			this.sortedCubes.sort(new Comparator<Cube>() {
-				@Override
-				public int compare(Cube cube1, Cube cube2) {
-					if (cube1.hasTransparency() && cube2.hasTransparency()) {
-						double fromDistance = (Lib.distance(camera.getPosition(), cube2.getPosition()) * 100) - (Lib.distance(camera.getPosition(), cube1.getPosition()) * 100);
-						double toDistance = (Lib.distance(camera.getPosition().x, camera.getPosition().y, camera.getPosition().z, cube2.getPosition().x + cube2.getSize().x, cube2.getPosition().y + cube2.getSize().y, cube2.getPosition().z + cube2.getSize().z) * 100) - (Lib.distance(camera.getPosition().x, camera.getPosition().y, camera.getPosition().z, cube1.getPosition().x + cube1.getSize().x, cube1.getPosition().y + cube1.getSize().y, cube1.getPosition().z + cube1.getSize().z) * 100);
-						System.out.println(fromDistance + ", " + toDistance);
-						return (fromDistance < 0 && fromDistance - toDistance < 0) ? -1 : 1;
-					} else {
-						return cube1.hasTransparency() ? 1 : -1;
-					}
-				}
-			});
-		}
 	}
 
 	@Override
@@ -127,13 +105,14 @@ public class ComponentModelArea extends Component {
 				GlStateManager.disableBlend();
 			}
 
-			for (int i = 0; i < this.sortedCubes.size(); i++) {
+			for (int i = 0; i < this.cubes.size(); i++) {
 				GlStateManager.pushMatrix();
 				GlStateManager.scale(0.5, 0.5, 0.5);
-				RenderHelper.enableGUIStandardItemLighting();
-				this.sortedCubes.get(i).render(0, 0, 0, this.camera, partialTicks);
+				this.cubes.get(i).queueFaceRenders(this.faces, this.camera, partialTicks);
 				GlStateManager.popMatrix();
 			}
+
+			this.renderFaces(this.faces);
 			mc.entityRenderer.setupOverlayRendering();
 
 			GlStateManager.enableTexture2D();
@@ -144,9 +123,44 @@ public class ComponentModelArea extends Component {
 		GLHelper.popScissor();
 	}
 
+	private void renderFaces(List<Face> faces) {
+		this.camera.rotate(Minecraft.getMinecraft().getRenderPartialTicks());
+		faces.sort((face1, face2) -> {
+			if (face1.hasTransparency() && face2.hasTransparency()) {
+				Cube cube1 = face1.getParentCube();
+				Cube cube2 = face2.getParentCube();
+
+				double fromDistance = Lib.distance(camera.getPosition(), cube2.getPosition()) - Lib.distance(camera.getPosition(), cube1.getPosition());
+
+				double ToSize1 = Lib.distance(camera.getPosition(), cube2.getPosition().x - cube2.getSize().x, cube2.getPosition().y - cube2.getSize().y, cube2.getPosition().z - cube2.getSize().z);
+				double ToSize2 = Lib.distance(camera.getPosition(), cube1.getPosition().x - cube1.getSize().x, cube1.getPosition().y - cube1.getSize().y, cube1.getPosition().z - cube1.getSize().z);
+
+				double toDistance = ToSize1 - ToSize2;
+
+				return cube2.getPosition().y < cube1.getPosition().y ? 1 : -1;
+			} else {
+				return face1.hasTransparency() ? 1 : -1;
+			}
+		});
+		GlStateManager.scale(0.5, 0.5, 0.5);
+		for (Face face : this.faces) {
+			GlStateManager.pushMatrix();
+			face.getParentCube().applyRenderTransforms();
+			face.render(Tessellator.getInstance().getBuffer(), face.getParentCube().getSize(), false, 16f);
+			GlStateManager.popMatrix();
+		}
+
+		for (Face face : this.faces) {
+			GlStateManager.pushMatrix();
+			face.getParentCube().applyRenderTransforms();
+			face.render(Tessellator.getInstance().getBuffer(), face.getParentCube().getSize(), true, 16f);
+			GlStateManager.popMatrix();
+		}
+		this.faces.clear();
+	}
+
 	public void clear() {
 		this.cubes.clear();
-		this.sortedCubes.clear();
 	}
 
 	public Cube addCube(float x, float y, float z, float sizeX, float sizeY, float sizeZ, float rotationX, float rotationY, float rotationZ) {
@@ -155,27 +169,20 @@ public class ComponentModelArea extends Component {
 
 	public Cube addCube(Cube cube) {
 		this.cubes.add(cube);
-		this.sortedCubes.add(cube);
 		return cube;
 	}
 
 	public void removeCube(int index) {
 		this.cubes.remove(index);
-		this.sortedCubes.clear();
-		this.sortedCubes.addAll(this.cubes);
 	}
 
 	public void cleanUp() {
 		this.cubes.clear();
-		this.sortedCubes.clear();
+		this.faces.clear();
 	}
 
 	public List<Cube> getCubes() {
 		return cubes;
-	}
-
-	public List<Cube> getSortedCubes() {
-		return sortedCubes;
 	}
 
 	public boolean hasAmbientOcclusion() {

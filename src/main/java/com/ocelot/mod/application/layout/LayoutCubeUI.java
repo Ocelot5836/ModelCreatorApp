@@ -29,11 +29,14 @@ import com.ocelot.mod.application.dialog.NamedBufferedImage;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
+import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.util.EnumFacing;
 
 public class LayoutCubeUI extends Layout {
 
 	private Cube cube;
+	private EnumFacing.Axis selectedAxis;
+	private float cubeRotation;
 	private EnumFacing selectedFace;
 	private NamedBufferedImage copiedTexture;
 	private Vector4f copiedTextureCoords;
@@ -65,9 +68,8 @@ public class LayoutCubeUI extends Layout {
 	private CheckBox ambientOcclusion;
 	private Button particle;
 
-	private Slider rotationX;
-	private Slider rotationY;
-	private Slider rotationZ;
+	private ComboBox.List<EnumFacing.Axis> axisSelection;
+	private Slider rotation;
 
 	private ComboBox.List<EnumFacing> faceSelection;
 	private Button faceImage;
@@ -78,6 +80,8 @@ public class LayoutCubeUI extends Layout {
 	public LayoutCubeUI(int left, int top, int width, int height) {
 		super(left, top, width, height);
 		this.cube = null;
+		this.selectedAxis = EnumFacing.Axis.X;
+		this.cubeRotation = 0;
 		this.selectedFace = EnumFacing.DOWN;
 		this.copiedTexture = null;
 		this.copiedTextureCoords = new Vector4f();
@@ -236,38 +240,27 @@ public class LayoutCubeUI extends Layout {
 		{
 			rotationOptions = new ScrollableLayout(0, cubes.top + buttonHeight + cubes.getHeight() + 16 + 12, this.width, 72, this.height - (cubes.top + buttonHeight + cubes.getHeight() + 16 + 12));
 
-			rotationX = new Slider(5, 15, rotationOptions.width - 10);
-			rotationX.setSlideListener((percentage) -> {
-				int realPercentage = (int) (percentage * 8);
-				int rotationAmount = 360 / 8;
-				int rotation = rotationAmount * realPercentage;
+			axisSelection = new ComboBox.List<EnumFacing.Axis>(5, 15, rotationOptions.width - 10, rotationOptions.width - 15, EnumFacing.Axis.values());
+			axisSelection.setSelectedItem(EnumFacing.Axis.X);
+			axisSelection.setChangeListener((oldValue, newValue) -> {
+				selectedAxis = newValue;
 				if (cube != null) {
-					cube.getRotation().x = rotation;
+					updateRotation();
 				}
 			});
-			rotationOptions.addComponent(rotationX);
+			rotationOptions.addComponent(axisSelection);
 
-			rotationY = new Slider(5, 35, rotationOptions.width - 10);
-			rotationY.setSlideListener((percentage) -> {
-				int realPercentage = (int) (percentage * 8);
-				int rotationAmount = 360 / 8;
-				int rotation = rotationAmount * realPercentage;
+			rotation = new Slider(5, 40, rotationOptions.width - 10);
+			rotation.setSlideListener((percentage) -> {
+				int realRotation = (int) (percentage * 4) - 2;
+				float rotationAmount = 45f / 2f;
+				float rotation = rotationAmount * (int) (realRotation);
+				this.cubeRotation = rotation;
 				if (cube != null) {
-					cube.getRotation().y = rotation;
+					updateRotation();
 				}
 			});
-			rotationOptions.addComponent(rotationY);
-
-			rotationZ = new Slider(5, 55, rotationOptions.width - 10);
-			rotationZ.setSlideListener((percentage) -> {
-				int realPercentage = (int) (percentage * 8);
-				int rotationAmount = 360 / 8;
-				int rotation = rotationAmount * realPercentage;
-				if (cube != null) {
-					cube.getRotation().z = rotation;
-				}
-			});
-			rotationOptions.addComponent(rotationZ);
+			rotationOptions.addComponent(rotation);
 
 			Label rotationLabel = new Label("Rotation", 5, 5);
 			rotationLabel.setTextColor(Color.BLACK);
@@ -278,7 +271,7 @@ public class LayoutCubeUI extends Layout {
 		}
 
 		{
-			textureOptions = new ScrollableLayout(0, cubes.top + buttonHeight + cubes.getHeight() + 16 + 12, this.width, 100, this.height - (cubes.top + buttonHeight + cubes.getHeight() + 16 + 12));
+			textureOptions = new ScrollableLayout(0, cubes.top + buttonHeight + cubes.getHeight() + 16 + 12, this.width, 120, this.height - (cubes.top + buttonHeight + cubes.getHeight() + 16 + 12));
 
 			Label faceLabel = new Label("Face", 5, 5);
 			faceLabel.setTextColor(Color.BLACK);
@@ -320,7 +313,13 @@ public class LayoutCubeUI extends Layout {
 			faceDeleteImage = new Button(5, 55, textureOptions.width - 10, 16, "Clear", Icons.FORBIDDEN);
 			faceDeleteImage.setClickListener((mouseX, mouseY, mouseButton) -> {
 				if (this.cube != null) {
-					this.cube.textureFace(this.selectedFace, null);
+					if (GuiScreen.isShiftKeyDown()) {
+						for (int i = 0; i < EnumFacing.values().length; i++) {
+							this.cube.textureFace(EnumFacing.values()[i], null);
+						}
+					} else {
+						this.cube.textureFace(this.selectedFace, null);
+					}
 				}
 			});
 			textureOptions.addComponent(faceDeleteImage);
@@ -333,6 +332,20 @@ public class LayoutCubeUI extends Layout {
 				}
 			});
 			textureOptions.addComponent(faceCopyImage);
+
+			facePasteImage = new Button(5, 95, textureOptions.width - 10, 16, "Paste", Icons.CLIPBOARD);
+			facePasteImage.setClickListener((mouseX, mouseY, mouseButton) -> {
+				if (this.cube != null && this.copiedTexture != null) {
+					if (GuiScreen.isShiftKeyDown()) {
+						for (int i = 0; i < EnumFacing.values().length; i++) {
+							this.cube.getFace(EnumFacing.values()[i]).setTexture(this.copiedTexture, this.copiedTextureCoords);
+						}
+					} else {
+						this.cube.getFace(selectedFace).setTexture(this.copiedTexture, this.copiedTextureCoords);
+					}
+				}
+			});
+			textureOptions.addComponent(facePasteImage);
 
 			this.addComponent(textureOptions);
 		}
@@ -362,6 +375,23 @@ public class LayoutCubeUI extends Layout {
 		}
 	}
 
+	private void updateRotation() {
+		cube.getRotation().set(0, 0, 0);
+		switch (selectedAxis) {
+		case X:
+			cube.getRotation().set(this.cubeRotation, 0, 0);
+			break;
+		case Y:
+			cube.getRotation().set(0, this.cubeRotation, 0);
+			break;
+		case Z:
+			cube.getRotation().set(0, 0, this.cubeRotation);
+			break;
+		default:
+			break;
+		}
+	}
+
 	public void updateCube(Cube cube) {
 		this.cube = cube;
 		this.cubeName.setText(String.valueOf(cube));
@@ -374,9 +404,10 @@ public class LayoutCubeUI extends Layout {
 			this.sizeY.set(this.cube.getSize().y);
 			this.sizeZ.set(this.cube.getSize().z);
 
-			this.rotationX.setPercentage(this.cube.getRotation().x / 360f);
-			this.rotationY.setPercentage(this.cube.getRotation().y / 360f);
-			this.rotationZ.setPercentage(this.cube.getRotation().z / 360f);
+			float rotation = this.selectedAxis == EnumFacing.Axis.X ? this.cube.getRotation().x : this.selectedAxis == EnumFacing.Axis.Y ? this.cube.getRotation().y : this.selectedAxis == EnumFacing.Axis.Z ? this.cube.getRotation().z : 0;
+			this.rotation.setPercentage(rotation / 2f / 45f + 0.5f);
+			this.cubeRotation = rotation;
+			updateRotation();
 
 			this.shade.setSelected(this.cube.shouldShade());
 		}

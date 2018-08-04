@@ -9,6 +9,8 @@ import java.util.Map;
 
 import javax.imageio.ImageIO;
 
+import org.lwjgl.util.vector.Vector3f;
+
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -107,6 +109,39 @@ public class Model {
 				to.add(cube.getPosition().y + cube.getSize().y);
 				to.add(cube.getPosition().z + cube.getSize().z);
 				cubeObj.add("to", to);
+
+				/** rotation */
+				Vector3f cubeRotation = cube.getRotation();
+				EnumFacing.Axis rotationAxis = cubeRotation.x != 0 ? EnumFacing.Axis.X : cubeRotation.y != 0 ? EnumFacing.Axis.Y : cubeRotation.z != 0 ? EnumFacing.Axis.Z : null;
+				if (rotationAxis != null) {
+					Vector3f cubeRotationPoint = cube.getRotationPoint();
+					JsonObject rotation = new JsonObject();
+
+					JsonArray origin = new JsonArray();
+					origin.add(cubeRotationPoint.x);
+					origin.add(cubeRotationPoint.y);
+					origin.add(cubeRotationPoint.z);
+					rotation.add("origin", origin);
+
+					rotation.addProperty("axis", rotationAxis.getName2());
+					
+					switch(rotationAxis) {
+					case X:
+						rotation.addProperty("angle", cubeRotation.x);
+						break;
+					case Y:
+						rotation.addProperty("angle", cubeRotation.y);
+						break;
+					case Z:
+						rotation.addProperty("angle", cubeRotation.z);
+						break;
+					default:
+						rotation.addProperty("angle", 0);
+						break;
+					}
+
+					cubeObj.add("rotation", rotation);
+				}
 
 				/** shade */
 				cubeObj.addProperty("shade", cube.shouldShade());

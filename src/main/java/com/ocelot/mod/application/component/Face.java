@@ -50,7 +50,10 @@ public class Face implements Cloneable, INBTSerializable<NBTTagCompound> {
 		this.parentCube = parentCube;
 	}
 
-	public void render(BufferBuilder buffer, Vector3f size, boolean renderTransparentFaces, float scale) {
+	public void render(boolean renderTransparentFaces, float scale) {
+		BufferBuilder buffer = Tessellator.getInstance().getBuffer();
+		Vector3f size = this.parentCube.getSize();
+
 		this.bindTexture();
 
 		if (this.faceDirection == EnumFacing.DOWN) {
@@ -117,20 +120,20 @@ public class Face implements Cloneable, INBTSerializable<NBTTagCompound> {
 				GlStateManager.color(1, 1, 1, 1);
 				buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX_NORMAL);
 				{
-					this.pos(size.x * scale, 0, 0, EnumFacing.SOUTH, textureCoords.x / 16f, textureCoords.y / 16f);
-					this.pos(0, 0, 0, EnumFacing.SOUTH, textureCoords.x / 16f, textureCoords.y / 16f + textureCoords.w / 16f);
-					this.pos(0, -size.y * scale, 0, EnumFacing.SOUTH, textureCoords.x / 16f + textureCoords.z / 16f, textureCoords.y / 16f + textureCoords.w / 16f);
-					this.pos(size.x * scale, -size.y * scale, 0, EnumFacing.SOUTH, textureCoords.x / 16f + textureCoords.z / 16f, textureCoords.y / 16f);
+					this.pos(size.x * scale, 0, 0, EnumFacing.NORTH, textureCoords.x / 16f, textureCoords.y / 16f);
+					this.pos(0, 0, 0, EnumFacing.NORTH, textureCoords.x / 16f, textureCoords.y / 16f + textureCoords.w / 16f);
+					this.pos(0, -size.y * scale, 0, EnumFacing.NORTH, textureCoords.x / 16f + textureCoords.z / 16f, textureCoords.y / 16f + textureCoords.w / 16f);
+					this.pos(size.x * scale, -size.y * scale, 0, EnumFacing.NORTH, textureCoords.x / 16f + textureCoords.z / 16f, textureCoords.y / 16f);
 				}
 				Tessellator.getInstance().draw();
 			} else {
 				GlStateManager.color(1, 0, 0);
 				buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_NORMAL);
 				{
-					this.pos(size.x * scale, 0, 0, EnumFacing.SOUTH);
-					this.pos(0, 0, 0, EnumFacing.SOUTH);
-					this.pos(0, -size.y * scale, 0, EnumFacing.SOUTH);
-					this.pos(size.x * scale, -size.y * scale, 0, EnumFacing.SOUTH);
+					this.pos(size.x * scale, 0, 0, EnumFacing.NORTH);
+					this.pos(0, 0, 0, EnumFacing.NORTH);
+					this.pos(0, -size.y * scale, 0, EnumFacing.NORTH);
+					this.pos(size.x * scale, -size.y * scale, 0, EnumFacing.NORTH);
 				}
 				Tessellator.getInstance().draw();
 			}
@@ -145,20 +148,20 @@ public class Face implements Cloneable, INBTSerializable<NBTTagCompound> {
 				GlStateManager.color(1, 1, 1, 1);
 				buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX_NORMAL);
 				{
-					this.pos(0, 0, size.z * scale, EnumFacing.WEST, textureCoords.x / 16f, textureCoords.y / 16f);
-					this.pos(size.x * scale, 0, size.z * scale, EnumFacing.WEST, textureCoords.x / 16f, textureCoords.y / 16f + textureCoords.w / 16f);
-					this.pos(size.x * scale, -size.y * scale, size.z * scale, EnumFacing.WEST, textureCoords.x / 16f + textureCoords.z / 16f, textureCoords.y / 16f + textureCoords.w / 16f);
-					this.pos(0, -size.y * scale, size.z * scale, EnumFacing.WEST, textureCoords.x / 16f + textureCoords.z / 16f, textureCoords.y / 16f);
+					this.pos(0, 0, size.z * scale, EnumFacing.SOUTH, textureCoords.x / 16f, textureCoords.y / 16f);
+					this.pos(size.x * scale, 0, size.z * scale, EnumFacing.SOUTH, textureCoords.x / 16f, textureCoords.y / 16f + textureCoords.w / 16f);
+					this.pos(size.x * scale, -size.y * scale, size.z * scale, EnumFacing.SOUTH, textureCoords.x / 16f + textureCoords.z / 16f, textureCoords.y / 16f + textureCoords.w / 16f);
+					this.pos(0, -size.y * scale, size.z * scale, EnumFacing.SOUTH, textureCoords.x / 16f + textureCoords.z / 16f, textureCoords.y / 16f);
 				}
 				Tessellator.getInstance().draw();
 			} else {
 				GlStateManager.color(0, 0, 1);
 				buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_NORMAL);
 				{
-					this.pos(0, 0, size.z * scale, EnumFacing.WEST);
-					this.pos(size.x * scale, 0, size.z * scale, EnumFacing.WEST);
-					this.pos(size.x * scale, -size.y * scale, size.z * scale, EnumFacing.WEST);
-					this.pos(0, -size.y * scale, size.z * scale, EnumFacing.WEST);
+					this.pos(0, 0, size.z * scale, EnumFacing.SOUTH);
+					this.pos(size.x * scale, 0, size.z * scale, EnumFacing.SOUTH);
+					this.pos(size.x * scale, -size.y * scale, size.z * scale, EnumFacing.SOUTH);
+					this.pos(0, -size.y * scale, size.z * scale, EnumFacing.SOUTH);
 				}
 				Tessellator.getInstance().draw();
 			}
@@ -262,7 +265,23 @@ public class Face implements Cloneable, INBTSerializable<NBTTagCompound> {
 
 	public void bindTexture() {
 		if (this.texture != null) {
+			if (this.textureLocation == null) {
+				this.loadTexture();
+			}
 			TextureUtils.bindTexture(this.textureLocation);
+		}
+	}
+
+	public void loadTexture() {
+		if (Lib.resourceExists(texture.getLocation())) {
+			this.textureLocation = texture.getLocation();
+		} else {
+			if (!TEXTURE_CACHE.containsKey(texture.getLocation())) {
+				this.textureLocation = TextureUtils.createBufferedImageTexture(texture.getImage());
+				TEXTURE_CACHE.put(texture.getLocation(), this.textureLocation);
+			} else {
+				this.textureLocation = TEXTURE_CACHE.get(texture.getLocation());
+			}
 		}
 	}
 
@@ -299,16 +318,6 @@ public class Face implements Cloneable, INBTSerializable<NBTTagCompound> {
 			this.texture = null;
 			this.textureCoords.set(0, 0, 16, 16);
 		} else {
-			if (Lib.resourceExists(texture.getLocation())) {
-				this.textureLocation = texture.getLocation();
-			} else {
-				if (!TEXTURE_CACHE.containsKey(texture.getLocation())) {
-					this.textureLocation = TextureUtils.createBufferedImageTexture(texture.getImage());
-					TEXTURE_CACHE.put(texture.getLocation(), this.textureLocation);
-				} else {
-					this.textureLocation = TEXTURE_CACHE.get(texture.getLocation());
-				}
-			}
 			this.texture = texture;
 			this.textureCoords.set(u, v, width, height);
 		}
@@ -328,6 +337,7 @@ public class Face implements Cloneable, INBTSerializable<NBTTagCompound> {
 		if (face == NULL_FACE)
 			return NULL_FACE;
 		Face newFace = new Face(face.parentCube, face.faceDirection);
+		face.loadTexture();
 		newFace.textureLocation = face.textureLocation;
 		newFace.texture = face.texture;
 		newFace.textureCoords.set(face.textureCoords);
@@ -356,7 +366,6 @@ public class Face implements Cloneable, INBTSerializable<NBTTagCompound> {
 	public void deserializeNBT(NBTTagCompound nbt) {
 		if (nbt.hasKey("texture", Constants.NBT.TAG_COMPOUND)) {
 			this.texture = NamedBufferedImage.fromTag(nbt.getCompoundTag("texture"));
-			this.textureLocation = TextureUtils.createBufferedImageTexture(this.texture.getImage());
 		}
 		this.textureCoords = NBTHelper.getVector4f(nbt.getCompoundTag("textureCoords"));
 		this.cullFace = nbt.getBoolean("cullFace");

@@ -146,14 +146,14 @@ public class ComponentModelArea extends Component {
 		for (Face face : this.faces) {
 			GlStateManager.pushMatrix();
 			face.getParentCube().applyRenderTransforms();
-			face.render(Tessellator.getInstance().getBuffer(), face.getParentCube().getSize(), false, 16f);
+			face.render(false, 16f);
 			GlStateManager.popMatrix();
 		}
 
 		for (Face face : this.faces) {
 			GlStateManager.pushMatrix();
 			face.getParentCube().applyRenderTransforms();
-			face.render(Tessellator.getInstance().getBuffer(), face.getParentCube().getSize(), true, 16f);
+			face.render(true, 16f);
 			GlStateManager.popMatrix();
 		}
 		this.faces.clear();

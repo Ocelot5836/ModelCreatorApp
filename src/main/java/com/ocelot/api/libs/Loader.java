@@ -1,4 +1,4 @@
-package com.ocelot.mod.lib;
+package com.ocelot.api.libs;
 
 import java.awt.image.BufferedImage;
 import java.nio.ByteBuffer;

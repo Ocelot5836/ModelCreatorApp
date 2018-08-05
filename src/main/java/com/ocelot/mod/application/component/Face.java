@@ -9,10 +9,10 @@ import org.lwjgl.util.vector.Vector3f;
 import org.lwjgl.util.vector.Vector4f;
 
 import com.google.common.collect.Maps;
+import com.ocelot.api.libs.NBTHelper;
 import com.ocelot.api.utils.TextureUtils;
 import com.ocelot.mod.application.dialog.NamedBufferedImage;
 import com.ocelot.mod.lib.Lib;
-import com.ocelot.mod.lib.NBTHelper;
 
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.GlStateManager;

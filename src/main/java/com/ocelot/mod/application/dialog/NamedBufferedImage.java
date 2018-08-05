@@ -2,7 +2,7 @@ package com.ocelot.mod.application.dialog;
 
 import java.awt.image.BufferedImage;
 
-import com.ocelot.mod.lib.NBTHelper;
+import com.ocelot.api.libs.NBTHelper;
 
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ResourceLocation;

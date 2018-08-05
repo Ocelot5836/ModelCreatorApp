@@ -4,10 +4,10 @@ import java.util.List;
 
 import org.lwjgl.util.vector.Vector3f;
 
+import com.ocelot.api.libs.NBTHelper;
 import com.ocelot.mod.application.Camera;
 import com.ocelot.mod.application.dialog.NamedBufferedImage;
 import com.ocelot.mod.lib.Lib;
-import com.ocelot.mod.lib.NBTHelper;
 
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.GlStateManager;

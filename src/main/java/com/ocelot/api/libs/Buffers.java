@@ -1,4 +1,4 @@
-package com.ocelot.mod.lib;
+package com.ocelot.api.libs;
 
 import java.nio.ByteBuffer;
 import java.nio.CharBuffer;

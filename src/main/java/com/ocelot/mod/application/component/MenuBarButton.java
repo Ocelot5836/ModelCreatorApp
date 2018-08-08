@@ -70,17 +70,18 @@ public class MenuBarButton implements IMenuBarButton {
 		this.disabledTextColor = 10526880;
 	}
 
-	protected void handleTick() {
+	@Override
+	public void handleTick() {
 		if (this.visible) {
-			tooltipTick = hovered ? tooltipTick++ : 0;
+			tooltipTick = hovered ? tooltipTick + 1 : 0;
 		}
 	}
 
 	@Override
 	public void render(Laptop laptop, Minecraft mc, int x, int y, int mouseX, int mouseY, boolean windowActive, int buttonsWidth, int buttonsHeight, float partialTicks) {
-		if (this.visible) {
-			this.hovered = GuiUtils.isMouseInside(x, y, buttonsWidth, this.height, mouseX, mouseY);
+		this.hovered = GuiUtils.isMouseInside(x, y, buttonsWidth, this.height, mouseX, mouseY);
 
+		if (this.visible) {
 			int contentWidth = (iconResource != null ? iconWidth : 0) + Lib.getDefaultTextWidth(text);
 			if (iconResource != null && !StringUtils.isNullOrEmpty(text))
 				contentWidth += 3;
@@ -215,15 +216,15 @@ public class MenuBarButton implements IMenuBarButton {
 	public int getTooltipDelay() {
 		return tooltipDelay;
 	}
-	
+
 	public int getTextColor() {
 		return textColor;
 	}
-	
+
 	public int getHighlightedTextColor() {
 		return highlightedTextColor;
 	}
-	
+
 	public int getDisabledTextColor() {
 		return disabledTextColor;
 	}

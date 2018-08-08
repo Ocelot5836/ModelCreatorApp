@@ -38,6 +38,13 @@ public class MenuBar extends Component implements Iterable<MenuBarItem> {
 	}
 
 	@Override
+	protected void handleTick() {
+		for (MenuBarItem item : this.items) {
+			item.handleTick();
+		}
+	}
+
+	@Override
 	protected void render(Laptop laptop, Minecraft mc, int x, int y, int mouseX, int mouseY, boolean windowActive, float partialTicks) {
 		if (this.visible) {
 			Gui.drawRect(x, y, x + this.width, y + this.height, this.borderColor);

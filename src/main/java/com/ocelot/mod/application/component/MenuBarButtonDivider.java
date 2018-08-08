@@ -21,6 +21,10 @@ public class MenuBarButtonDivider implements IMenuBarButton {
 		this.color = Color.GRAY.getRGB();
 		this.padding = padding;
 	}
+	
+	@Override
+	public void handleTick() {		
+	}
 
 	@Override
 	public void render(Laptop laptop, Minecraft mc, int x, int y, int mouseX, int mouseY, boolean windowActive, int buttonsWidth, int buttonsHeight, float partialTicks) {

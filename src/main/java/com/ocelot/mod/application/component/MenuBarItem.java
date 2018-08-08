@@ -62,8 +62,17 @@ public class MenuBarItem implements Iterable<IMenuBarButton> {
 		this.buttonsWidth = 0;
 	}
 
-	public void update() {
-		tooltipTick++;
+	/**
+	 * Called each time the menu bar ticks. (20 times per second)
+	 */
+	public void handleTick() {
+		if (this.visible) {
+			tooltipTick = hovered ? tooltipTick + 1 : 0;
+		}
+		
+		for(IMenuBarButton button : this.buttons) {
+			button.handleTick();
+		}
 	}
 
 	/**

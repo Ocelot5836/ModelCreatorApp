@@ -182,6 +182,7 @@ public class ApplicationModelCreator extends Application {
 				menuBarFile.add(new MenuBarButtonDivider());
 
 				MenuBarButton fileImportJson = new MenuBarButton("Import JSON", Icons.IMPORT);
+				fileImportJson.setEnabled(false);
 				// fileImportJson.setClickListener((mouseX, mouseY, mouseButton) -> {
 				// });
 				menuBarFile.add(fileImportJson);
@@ -211,6 +212,7 @@ public class ApplicationModelCreator extends Application {
 				menuBarFile.add(new MenuBarButtonDivider());
 
 				MenuBarButton fileSetTexturePath = new MenuBarButton("Set Texture Path", Icons.PICTURE);
+				fileSetTexturePath.setEnabled(false);
 				// fileExportJson.setClickListener((mouseX, mouseY, mouseButton) -> {
 				// });
 				menuBarFile.add(fileSetTexturePath);
@@ -305,6 +307,8 @@ public class ApplicationModelCreator extends Application {
 
 			{
 				MenuBarButton moreExamples = new MenuBarButton("Examples", Icons.FILE);
+				moreExamples.setTooltip(Minecraft.getMinecraft().fontRenderer.listFormattedStringToWidth("This features has not yet been added.", 100).toArray(new String[0]));
+				moreExamples.setEnabled(false);
 				menuBarMore.add(moreExamples);
 
 				menuBarMore.add(new MenuBarButtonDivider());

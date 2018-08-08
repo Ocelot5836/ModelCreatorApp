@@ -17,6 +17,11 @@ import net.minecraft.client.Minecraft;
 public interface IMenuBarButton {
 
 	/**
+	 * Called each time the menu bar is updated. (20 times per second)
+	 */
+	void handleTick();
+
+	/**
 	 * Renders the button.
 	 * 
 	 * @param laptop
@@ -70,7 +75,7 @@ public interface IMenuBarButton {
 	 * @return Whether or not the list should close when the mouse is pressed
 	 */
 	boolean handleMouseClick(int mouseX, int mouseY, int mouseButton);
-	
+
 	/**
 	 * Causes the button to no longer be selected.
 	 */

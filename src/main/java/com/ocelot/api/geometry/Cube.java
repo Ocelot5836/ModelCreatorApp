@@ -77,27 +77,27 @@ public class Cube implements Cloneable, INBTSerializable<NBTTagCompound> {
 
 		camera.rotate(partialTicks);
 
-		if (faces[EnumFacing.DOWN.ordinal()] != Face.NULL_FACE) {
+		if (faces[EnumFacing.DOWN.ordinal()] != Face.NULL_FACE && faces[EnumFacing.DOWN.ordinal()].isEnabled()) {
 			facesToRender.add(faces[EnumFacing.DOWN.ordinal()]);
 		}
 
-		if (faces[EnumFacing.NORTH.ordinal()] != Face.NULL_FACE) {
+		if (faces[EnumFacing.NORTH.ordinal()] != Face.NULL_FACE && faces[EnumFacing.NORTH.ordinal()].isEnabled()) {
 			facesToRender.add(faces[EnumFacing.NORTH.ordinal()]);
 		}
 
-		if (faces[EnumFacing.EAST.ordinal()] != Face.NULL_FACE) {
+		if (faces[EnumFacing.EAST.ordinal()] != Face.NULL_FACE && faces[EnumFacing.EAST.ordinal()].isEnabled()) {
 			facesToRender.add(faces[EnumFacing.EAST.ordinal()]);
 		}
 
-		if (faces[EnumFacing.SOUTH.ordinal()] != Face.NULL_FACE) {
+		if (faces[EnumFacing.SOUTH.ordinal()] != Face.NULL_FACE && faces[EnumFacing.SOUTH.ordinal()].isEnabled()) {
 			facesToRender.add(faces[EnumFacing.SOUTH.ordinal()]);
 		}
 
-		if (faces[EnumFacing.WEST.ordinal()] != Face.NULL_FACE) {
+		if (faces[EnumFacing.WEST.ordinal()] != Face.NULL_FACE && faces[EnumFacing.WEST.ordinal()].isEnabled()) {
 			facesToRender.add(faces[EnumFacing.WEST.ordinal()]);
 		}
 
-		if (faces[EnumFacing.UP.ordinal()] != Face.NULL_FACE) {
+		if (faces[EnumFacing.UP.ordinal()] != Face.NULL_FACE && faces[EnumFacing.UP.ordinal()].isEnabled()) {
 			facesToRender.add(faces[EnumFacing.UP.ordinal()]);
 		}
 	}
@@ -251,6 +251,11 @@ public class Cube implements Cloneable, INBTSerializable<NBTTagCompound> {
 
 	public Cube setFace(EnumFacing side, Face face) {
 		this.faces[side.getIndex()] = face;
+		return this;
+	}
+
+	public Cube setFaceEnabled(EnumFacing side, boolean enabled) {
+		this.faces[side.getIndex()].setEnabled(enabled);
 		return this;
 	}
 

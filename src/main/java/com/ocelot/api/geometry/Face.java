@@ -35,19 +35,27 @@ public class Face implements Cloneable, INBTSerializable<NBTTagCompound> {
 	private ResourceLocation textureLocation;
 	private NamedBufferedImage texture;
 	private Vector4f textureCoords;
+	private float rotation;
 	private boolean cullFace;
+	private boolean enabled;
+	private boolean autoUV;
+	private boolean fill;
 
 	private Face(Cube parentCube) {
 		this(parentCube, null);
 	}
 
 	protected Face(Cube parentCube, EnumFacing faceDirection) {
+		this.parentCube = parentCube;
+		this.faceDirection = faceDirection;
 		this.textureLocation = null;
 		this.texture = null;
 		this.textureCoords = new Vector4f(0, 0, 16, 16);
+		this.rotation = 0;
 		this.cullFace = false;
-		this.faceDirection = faceDirection;
-		this.parentCube = parentCube;
+		this.enabled = true;
+		this.autoUV = true;
+		this.fill = false;
 	}
 
 	public void render(boolean renderTransparentFaces, float scale) {
@@ -55,6 +63,11 @@ public class Face implements Cloneable, INBTSerializable<NBTTagCompound> {
 		Vector3f size = this.parentCube.getSize();
 
 		this.bindTexture();
+
+		Vector4f textureCoords = new Vector4f(this.textureCoords);
+		if (this.fill) {
+			this.textureCoords.set(0, 0, 16, 16);
+		}
 
 		if (this.faceDirection == EnumFacing.DOWN) {
 			if (this.getTexture() != null) {
@@ -92,6 +105,10 @@ public class Face implements Cloneable, INBTSerializable<NBTTagCompound> {
 				GlStateManager.color(1, 1, 1, 1);
 				buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX_NORMAL);
 				{
+					GlStateManager.translate(this.parentCube.getSize().x * 8, -this.parentCube.getSize().x * 8, this.parentCube.getSize().y * 8);
+					GlStateManager.rotate(this.rotation, 0, 1, 0);
+					GlStateManager.translate(-this.parentCube.getSize().x * 8, this.parentCube.getSize().x * 8, -this.parentCube.getSize().y * 8);
+
 					this.pos(0, -size.y * scale, 0, EnumFacing.UP, textureCoords.x / 16f, textureCoords.y / 16f);
 					this.pos(0, -size.y * scale, size.z * scale, EnumFacing.UP, textureCoords.x / 16f, textureCoords.y / 16f + textureCoords.w / 16f);
 					this.pos(size.x * scale, -size.y * scale, size.z * scale, EnumFacing.UP, textureCoords.x / 16f + textureCoords.z / 16f, textureCoords.y / 16f + textureCoords.w / 16f);
@@ -120,6 +137,10 @@ public class Face implements Cloneable, INBTSerializable<NBTTagCompound> {
 				GlStateManager.color(1, 1, 1, 1);
 				buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX_NORMAL);
 				{
+					GlStateManager.translate(this.parentCube.getSize().x * 8, -this.parentCube.getSize().x * 8, this.parentCube.getSize().y * 8);
+					GlStateManager.rotate(-90 + -this.rotation, 0, 0, 1);
+					GlStateManager.translate(-this.parentCube.getSize().x * 8, this.parentCube.getSize().x * 8, -this.parentCube.getSize().y * 8);
+
 					this.pos(size.x * scale, 0, 0, EnumFacing.NORTH, textureCoords.x / 16f, textureCoords.y / 16f);
 					this.pos(0, 0, 0, EnumFacing.NORTH, textureCoords.x / 16f, textureCoords.y / 16f + textureCoords.w / 16f);
 					this.pos(0, -size.y * scale, 0, EnumFacing.NORTH, textureCoords.x / 16f + textureCoords.z / 16f, textureCoords.y / 16f + textureCoords.w / 16f);
@@ -148,6 +169,10 @@ public class Face implements Cloneable, INBTSerializable<NBTTagCompound> {
 				GlStateManager.color(1, 1, 1, 1);
 				buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX_NORMAL);
 				{
+					GlStateManager.translate(this.parentCube.getSize().x * 8, -this.parentCube.getSize().x * 8, this.parentCube.getSize().y * 8);
+					GlStateManager.rotate(90 + this.rotation, 0, 0, 1);
+					GlStateManager.translate(-this.parentCube.getSize().x * 8, this.parentCube.getSize().x * 8, -this.parentCube.getSize().y * 8);
+
 					this.pos(0, 0, size.z * scale, EnumFacing.SOUTH, textureCoords.x / 16f, textureCoords.y / 16f);
 					this.pos(size.x * scale, 0, size.z * scale, EnumFacing.SOUTH, textureCoords.x / 16f, textureCoords.y / 16f + textureCoords.w / 16f);
 					this.pos(size.x * scale, -size.y * scale, size.z * scale, EnumFacing.SOUTH, textureCoords.x / 16f + textureCoords.z / 16f, textureCoords.y / 16f + textureCoords.w / 16f);
@@ -176,6 +201,10 @@ public class Face implements Cloneable, INBTSerializable<NBTTagCompound> {
 				GlStateManager.color(1, 1, 1, 1);
 				buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX_NORMAL);
 				{
+					GlStateManager.translate(0, -this.parentCube.getSize().x * 8, this.parentCube.getSize().y * 8);
+					GlStateManager.rotate(90 + this.rotation, 1, 0, 0);
+					GlStateManager.translate(0, this.parentCube.getSize().x * 8, -this.parentCube.getSize().y * 8);
+
 					this.pos(0, 0, 0, EnumFacing.WEST, textureCoords.x / 16f, textureCoords.y / 16f);
 					this.pos(0, 0, size.z * scale, EnumFacing.WEST, textureCoords.x / 16f, textureCoords.y / 16f + textureCoords.w / 16f);
 					this.pos(0, -size.y * scale, size.z * scale, EnumFacing.WEST, textureCoords.x / 16f + textureCoords.z / 16f, textureCoords.y / 16f + textureCoords.w / 16f);
@@ -297,8 +326,24 @@ public class Face implements Cloneable, INBTSerializable<NBTTagCompound> {
 		return textureCoords;
 	}
 
+	public float getRotation() {
+		return rotation;
+	}
+
 	public boolean isCullFace() {
 		return cullFace;
+	}
+
+	public boolean isEnabled() {
+		return enabled;
+	}
+	
+	public boolean isAutoUV() {
+		return autoUV;
+	}
+	
+	public boolean isFill() {
+		return fill;
 	}
 
 	public EnumFacing getFaceDirection() {
@@ -320,13 +365,33 @@ public class Face implements Cloneable, INBTSerializable<NBTTagCompound> {
 		} else {
 			this.texture = texture;
 			this.textureCoords.set(u, v, width, height);
+			this.autoUV = false;
 		}
 		this.textureLocation = null;
 		return this;
 	}
 
+	public void setRotation(float rotation) {
+		this.rotation = rotation;
+	}
+
 	public Face setCullFace(boolean cullFace) {
 		this.cullFace = cullFace;
+		return this;
+	}
+
+	public Face setEnabled(boolean enabled) {
+		this.enabled = enabled;
+		return this;
+	}
+	
+	public Face setAutoUV(boolean autoUV) {
+		this.autoUV = autoUV;
+		return this;
+	}
+	
+	public Face setFill(boolean fill) {
+		this.fill = fill;
 		return this;
 	}
 
@@ -342,7 +407,11 @@ public class Face implements Cloneable, INBTSerializable<NBTTagCompound> {
 		newFace.textureLocation = face.textureLocation;
 		newFace.texture = face.texture;
 		newFace.textureCoords.set(face.textureCoords);
+		newFace.rotation = face.rotation;
 		newFace.cullFace = face.cullFace;
+		newFace.enabled = face.enabled;
+		newFace.autoUV = face.autoUV;
+		newFace.fill = face.fill;
 		return newFace;
 	}
 
@@ -358,7 +427,11 @@ public class Face implements Cloneable, INBTSerializable<NBTTagCompound> {
 			nbt.setTag("texture", this.texture.serializeNBT());
 		}
 		nbt.setTag("textureCoords", NBTHelper.setVector(this.textureCoords));
+		nbt.setFloat("rotation", this.rotation);
 		nbt.setBoolean("cullFace", this.cullFace);
+		nbt.setBoolean("enabled", this.enabled);
+		nbt.setBoolean("autoUV", this.autoUV);
+		nbt.setBoolean("fill", this.fill);
 		nbt.setInteger("facingDirection", this.faceDirection.getIndex());
 		return nbt;
 	}
@@ -369,7 +442,11 @@ public class Face implements Cloneable, INBTSerializable<NBTTagCompound> {
 			this.texture = NamedBufferedImage.fromTag(nbt.getCompoundTag("texture"));
 		}
 		this.textureCoords = NBTHelper.getVector4f(nbt.getCompoundTag("textureCoords"));
+		this.rotation = nbt.getFloat("rotation");
 		this.cullFace = nbt.getBoolean("cullFace");
+		this.enabled = nbt.getBoolean("enabled");
+		this.autoUV = nbt.getBoolean("autoUV");
+		this.fill = nbt.getBoolean("fill");
 		this.faceDirection = EnumFacing.getFront(nbt.getInteger("facingDirection"));
 	}
 

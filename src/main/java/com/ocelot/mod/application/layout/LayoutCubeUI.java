@@ -76,6 +76,15 @@ public class LayoutCubeUI extends Layout {
 	private Button faceDeleteImage;
 	private Button faceCopyImage;
 	private Button facePasteImage;
+	private LayoutNumberIncrementer faceU;
+	private LayoutNumberIncrementer faceV;
+	private LayoutNumberIncrementer faceWidth;
+	private LayoutNumberIncrementer faceHeight;
+	private Slider faceRotation;
+	private CheckBox faceCull;
+	private CheckBox faceFill;
+	private CheckBox faceEnable;
+	private CheckBox faceAutoUV;
 
 	public LayoutCubeUI(int left, int top, int width, int height) {
 		super(left, top, width, height);
@@ -271,7 +280,7 @@ public class LayoutCubeUI extends Layout {
 		}
 
 		{
-			textureOptions = new ScrollableLayout(0, cubes.top + buttonHeight + cubes.getHeight() + 16 + 12, this.width, 120, this.height - (cubes.top + buttonHeight + cubes.getHeight() + 16 + 12));
+			textureOptions = new ScrollableLayout(0, cubes.top + buttonHeight + cubes.getHeight() + 16 + 12, this.width, 300, this.height - (cubes.top + buttonHeight + cubes.getHeight() + 16 + 12));
 
 			Label faceLabel = new Label("Face", 5, 5);
 			faceLabel.setTextColor(Color.BLACK);
@@ -296,7 +305,12 @@ public class LayoutCubeUI extends Layout {
 			});
 			textureOptions.addComponent(faceSelection);
 
-			faceImage = new Button(5, 35, textureOptions.width - 10, 16, "Texture", Icons.PICTURE);
+			Label textureLabel = new Label("Texture", 5, 35);
+			textureLabel.setTextColor(Color.BLACK);
+			textureLabel.setShadow(false);
+			textureOptions.addComponent(textureLabel);
+
+			faceImage = new Button(5, 45, textureOptions.width - 10, 16, "Texture", Icons.PICTURE);
 			faceImage.setClickListener((mouseX, mouseY, mouseButton) -> {
 				DialogTextureManager textureManager = new DialogTextureManager();
 				textureManager.setCloseListener(() -> {
@@ -310,7 +324,7 @@ public class LayoutCubeUI extends Layout {
 			});
 			textureOptions.addComponent(faceImage);
 
-			faceDeleteImage = new Button(5, 55, textureOptions.width - 10, 16, "Clear", Icons.FORBIDDEN);
+			faceDeleteImage = new Button(5, 65, textureOptions.width - 10, 16, "Clear", Icons.FORBIDDEN);
 			faceDeleteImage.setClickListener((mouseX, mouseY, mouseButton) -> {
 				if (this.cube != null) {
 					if (GuiScreen.isShiftKeyDown()) {
@@ -324,7 +338,7 @@ public class LayoutCubeUI extends Layout {
 			});
 			textureOptions.addComponent(faceDeleteImage);
 
-			faceCopyImage = new Button(5, 75, textureOptions.width - 10, 16, "Copy", Icons.COPY);
+			faceCopyImage = new Button(5, 85, textureOptions.width - 10, 16, "Copy", Icons.COPY);
 			faceCopyImage.setClickListener((mouseX, mouseY, mouseButton) -> {
 				if (this.cube != null) {
 					this.copiedTexture = this.cube.getFace(selectedFace).getTexture();
@@ -333,7 +347,7 @@ public class LayoutCubeUI extends Layout {
 			});
 			textureOptions.addComponent(faceCopyImage);
 
-			facePasteImage = new Button(5, 95, textureOptions.width - 10, 16, "Paste", Icons.CLIPBOARD);
+			facePasteImage = new Button(5, 105, textureOptions.width - 10, 16, "Paste", Icons.CLIPBOARD);
 			facePasteImage.setClickListener((mouseX, mouseY, mouseButton) -> {
 				if (this.cube != null && this.copiedTexture != null) {
 					if (GuiScreen.isShiftKeyDown()) {
@@ -346,6 +360,53 @@ public class LayoutCubeUI extends Layout {
 				}
 			});
 			textureOptions.addComponent(facePasteImage);
+
+			Label uvLabel = new Label("UV", 5, 125);
+			uvLabel.setTextColor(Color.BLACK);
+			uvLabel.setShadow(false);
+			textureOptions.addComponent(uvLabel);
+
+			faceU = new LayoutNumberIncrementer(1, 135, (textureOptions.width - 10) / 4, 40, 0);
+			textureOptions.addComponent(faceU);
+
+			faceV = new LayoutNumberIncrementer(1 * (textureOptions.width) / 4, 135, (textureOptions.width - 10) / 4, 40, 0);
+			textureOptions.addComponent(faceV);
+
+			faceWidth = new LayoutNumberIncrementer(2 * (textureOptions.width) / 4 - 2, 135, (textureOptions.width - 10) / 4, 40, 16);
+			textureOptions.addComponent(faceWidth);
+
+			faceHeight = new LayoutNumberIncrementer(2 + textureOptions.width - (textureOptions.width - 4) / 4 - 8, 135, (textureOptions.width - 10) / 4, 40, 16);
+			textureOptions.addComponent(faceHeight);
+
+			Label rotationLabel = new Label("Rotation", 5, 180);
+			rotationLabel.setTextColor(Color.BLACK);
+			rotationLabel.setShadow(false);
+			textureOptions.addComponent(rotationLabel);
+
+			faceRotation = new Slider(5, 190, textureOptions.width - 13);
+			faceRotation.setSlideListener((percentage) -> {
+				float rotation = 90 * (int) (percentage * 3.25);
+				if (this.cube != null) {
+					this.cube.getFace(this.selectedFace).setRotation(rotation);
+				}
+			});
+			textureOptions.addComponent(faceRotation);
+
+			faceCull = new CheckBox("Cull", 5, 210);
+			faceCull.setTextColor(Color.BLACK);
+			textureOptions.addComponent(faceCull);
+
+			faceFill = new CheckBox("Fill", 5, 225);
+			faceFill.setTextColor(Color.BLACK);
+			textureOptions.addComponent(faceFill);
+
+			faceEnable = new CheckBox("Enable", 5, 240);
+			faceEnable.setTextColor(Color.BLACK);
+			textureOptions.addComponent(faceEnable);
+
+			faceAutoUV = new CheckBox("Auto UV", 5, 255);
+			faceAutoUV.setTextColor(Color.BLACK);
+			textureOptions.addComponent(faceAutoUV);
 
 			this.addComponent(textureOptions);
 		}
@@ -371,7 +432,13 @@ public class LayoutCubeUI extends Layout {
 			this.cube.setPosition(this.positionX.getValue(), this.positionY.getValue(), this.positionZ.getValue());
 			this.cube.setSize(this.sizeX.getValue(), this.sizeY.getValue(), this.sizeZ.getValue());
 			this.cube.setShade(this.shade.isSelected());
-			this.cube.setTextureCoords(this.selectedFace, 0, 0, 16, 16);
+
+			this.cube.setTextureCoords(this.selectedFace, this.faceU.getValue(), this.faceV.getValue(), this.faceWidth.getValue(), this.faceHeight.getValue());
+
+			this.cube.cullFace(this.selectedFace, this.faceCull.isSelected());
+			this.cube.setFaceEnabled(this.selectedFace, this.faceEnable.isSelected());
+			this.cube.getFace(this.selectedFace).setFill(this.faceFill.isSelected());
+			this.cube.getFace(this.selectedFace).setAutoUV(this.faceAutoUV.isSelected());
 		}
 	}
 
@@ -408,6 +475,16 @@ public class LayoutCubeUI extends Layout {
 			this.rotation.setPercentage(rotation / 2f / 45f + 0.5f);
 			this.cubeRotation = rotation;
 			updateRotation();
+
+			this.faceU.set(this.cube.getFace(this.selectedFace).getTextureCoords().x);
+			this.faceV.set(this.cube.getFace(this.selectedFace).getTextureCoords().y);
+			this.faceWidth.set(this.cube.getFace(this.selectedFace).getTextureCoords().z);
+			this.faceHeight.set(this.cube.getFace(this.selectedFace).getTextureCoords().w);
+
+			this.faceEnable.setSelected(this.cube.getFace(this.selectedFace).isEnabled());
+			this.faceCull.setSelected(this.cube.getFace(this.selectedFace).isCullFace());
+			this.faceFill.setSelected(this.cube.getFace(this.selectedFace).isFill());
+			this.faceAutoUV.setSelected(this.cube.getFace(this.selectedFace).isAutoUV());
 
 			this.shade.setSelected(this.cube.shouldShade());
 		}

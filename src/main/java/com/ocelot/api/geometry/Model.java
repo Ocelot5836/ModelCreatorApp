@@ -125,8 +125,8 @@ public class Model {
 					rotation.add("origin", origin);
 
 					rotation.addProperty("axis", rotationAxis.getName2());
-					
-					switch(rotationAxis) {
+
+					switch (rotationAxis) {
 					case X:
 						rotation.addProperty("angle", cubeRotation.x);
 						break;
@@ -151,6 +151,8 @@ public class Model {
 				for (i = 0; i < EnumFacing.values().length; i++) {
 					EnumFacing facing = EnumFacing.values()[i];
 					Face face = cube.getFace(facing);
+					if (!face.isEnabled())
+						continue;
 
 					JsonObject faceObj = new JsonObject();
 
@@ -166,11 +168,21 @@ public class Model {
 
 					/** uv */
 					JsonArray uv = new JsonArray();
-					uv.add(face.getTextureCoords().x);
-					uv.add(face.getTextureCoords().y);
-					uv.add(face.getTextureCoords().z);
-					uv.add(face.getTextureCoords().w);
+					if (face.isFill()) {
+						uv.add(face.getTextureCoords().x);
+						uv.add(face.getTextureCoords().y);
+						uv.add(face.getTextureCoords().z);
+						uv.add(face.getTextureCoords().w);
+					} else {
+						uv.add(0);
+						uv.add(0);
+						uv.add(16);
+						uv.add(16);
+					}
 					faceObj.add("uv", uv);
+
+					/** texture rotation */
+					faceObj.addProperty("rotation", face.getRotation());
 
 					/** cull face */
 					if (face.isCullFace()) {

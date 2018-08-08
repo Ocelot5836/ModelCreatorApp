@@ -285,7 +285,6 @@ public class ApplicationModelCreator extends Application {
 				optionsToggleTransparency.setTooltip(TextFormatting.GRAY + I18n.format("app.mca.mc.tooltip.transparency.toggle"), 150);
 				optionsToggleTransparency.setClickListener((mouseX, mouseY, mouseButton) -> {
 					enableTransparency = !enableTransparency;
-					System.out.println(this.getInfo().getFormattedId());
 				});
 				menuBarOptions.add(optionsToggleTransparency);
 

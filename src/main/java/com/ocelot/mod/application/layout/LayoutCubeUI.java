@@ -19,13 +19,13 @@ import com.mrcrayfish.device.api.app.renderer.ItemRenderer;
 import com.mrcrayfish.device.api.app.renderer.ListItemRenderer;
 import com.mrcrayfish.device.api.utils.RenderUtil;
 import com.mrcrayfish.device.core.Laptop;
+import com.ocelot.api.geometry.Cube;
+import com.ocelot.api.utils.NamedBufferedImage;
 import com.ocelot.api.utils.TextureUtils;
 import com.ocelot.mod.Mod;
 import com.ocelot.mod.application.ApplicationModelCreator;
-import com.ocelot.mod.application.component.Cube;
 import com.ocelot.mod.application.component.SmoothItemList;
 import com.ocelot.mod.application.dialog.DialogTextureManager;
-import com.ocelot.mod.application.dialog.NamedBufferedImage;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;

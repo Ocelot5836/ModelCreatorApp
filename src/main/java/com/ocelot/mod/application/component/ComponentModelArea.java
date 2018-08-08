@@ -9,9 +9,11 @@ import org.lwjgl.opengl.GL11;
 import com.mrcrayfish.device.api.app.Component;
 import com.mrcrayfish.device.core.Laptop;
 import com.mrcrayfish.device.util.GLHelper;
+import com.ocelot.api.geometry.Camera;
+import com.ocelot.api.geometry.Cube;
+import com.ocelot.api.geometry.Face;
+import com.ocelot.api.utils.NamedBufferedImage;
 import com.ocelot.mod.application.ApplicationModelCreator;
-import com.ocelot.mod.application.Camera;
-import com.ocelot.mod.application.dialog.NamedBufferedImage;
 import com.ocelot.mod.lib.Lib;
 
 import net.minecraft.client.Minecraft;
@@ -145,6 +147,7 @@ public class ComponentModelArea extends Component {
 		GlStateManager.scale(0.5, 0.5, 0.5);
 		for (Face face : this.faces) {
 			GlStateManager.pushMatrix();
+			face.getParentCube().applyLighting();
 			face.getParentCube().applyRenderTransforms();
 			face.render(false, 16f);
 			GlStateManager.popMatrix();
@@ -152,6 +155,7 @@ public class ComponentModelArea extends Component {
 
 		for (Face face : this.faces) {
 			GlStateManager.pushMatrix();
+			face.getParentCube().applyLighting();
 			face.getParentCube().applyRenderTransforms();
 			face.render(true, 16f);
 			GlStateManager.popMatrix();

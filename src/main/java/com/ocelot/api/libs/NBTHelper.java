@@ -7,10 +7,26 @@ import org.lwjgl.util.vector.Vector3f;
 import org.lwjgl.util.vector.Vector4f;
 
 import net.minecraft.nbt.NBTTagCompound;
-import scala.actors.threadpool.Arrays;
 
+/**
+ * <em><b>Copyright (c) 2018 Ocelot5836.</b></em>
+ * 
+ * <br>
+ * </br>
+ * 
+ * Contains some helper methods when attempting to read/write to NBT.
+ * 
+ * @author Ocelot5836
+ */
 public class NBTHelper {
 
+	/**
+	 * Saves a {@link Vector2f} to NBT.
+	 * 
+	 * @param vector
+	 *            The vector to set to NBT
+	 * @return The tag that the vector was saved to
+	 */
 	public static NBTTagCompound setVector(Vector2f vector) {
 		NBTTagCompound nbt = new NBTTagCompound();
 		nbt.setFloat("x", vector.x);
@@ -18,6 +34,13 @@ public class NBTHelper {
 		return nbt;
 	}
 
+	/**
+	 * Saves a {@link Vector3f} to NBT.
+	 * 
+	 * @param vector
+	 *            The vector to set to NBT
+	 * @return The tag that the vector was saved to
+	 */
 	public static NBTTagCompound setVector(Vector3f vector) {
 		NBTTagCompound nbt = new NBTTagCompound();
 		nbt.setFloat("x", vector.x);
@@ -26,6 +49,13 @@ public class NBTHelper {
 		return nbt;
 	}
 
+	/**
+	 * Saves a {@link Vector4f} to NBT.
+	 * 
+	 * @param vector
+	 *            The vector to set to NBT
+	 * @return The tag that the vector was saved to
+	 */
 	public static NBTTagCompound setVector(Vector4f vector) {
 		NBTTagCompound nbt = new NBTTagCompound();
 		nbt.setFloat("x", vector.x);
@@ -35,6 +65,13 @@ public class NBTHelper {
 		return nbt;
 	}
 
+	/**
+	 * Saves a {@link BufferedImage} to NBT.
+	 * 
+	 * @param image
+	 *            The image to save to NBT.
+	 * @return The tag that the image was saved to
+	 */
 	public static NBTTagCompound setBufferedImage(BufferedImage image) {
 		NBTTagCompound nbt = new NBTTagCompound();
 		int width = image.getWidth();
@@ -59,8 +96,8 @@ public class NBTHelper {
 			}
 			lastPixel = pixel;
 		}
-		
-		if(length > 0) {
+
+		if (length > 0) {
 			compressedPixels.append(Integer.toHexString(startingPixelColor) + ":" + Integer.toHexString(startingPixel) + "_" + Integer.toHexString(startingPixel + length) + ",");
 		}
 
@@ -68,22 +105,50 @@ public class NBTHelper {
 		nbt.setInteger("width", width);
 		nbt.setInteger("height", height);
 		nbt.setString("pixels", compressedPixels.toString().substring(0, compressedPixels.length() - 1));
-		
+
 		return nbt;
 	}
 
+	/**
+	 * Reads a vector from NBT.
+	 * 
+	 * @param nbt
+	 *            The tag that contains the vector
+	 * @return The vector created from the tag
+	 */
 	public static Vector2f getVector2f(NBTTagCompound nbt) {
 		return new Vector2f(nbt.getFloat("x"), nbt.getFloat("y"));
 	}
 
+	/**
+	 * Reads a vector from NBT.
+	 * 
+	 * @param nbt
+	 *            The tag that contains the vector
+	 * @return The vector created from the tag
+	 */
 	public static Vector3f getVector3f(NBTTagCompound nbt) {
 		return new Vector3f(nbt.getFloat("x"), nbt.getFloat("y"), nbt.getFloat("z"));
 	}
 
+	/**
+	 * Reads a vector from NBT.
+	 * 
+	 * @param nbt
+	 *            The tag that contains the vector
+	 * @return The vector created from the tag
+	 */
 	public static Vector4f getVector4f(NBTTagCompound nbt) {
 		return new Vector4f(nbt.getFloat("x"), nbt.getFloat("y"), nbt.getFloat("z"), nbt.getFloat("w"));
 	}
 
+	/**
+	 * Reads a buffered image from NBT.
+	 * 
+	 * @param nbt
+	 *            The tag that contains the vector
+	 * @return The image created from the tag
+	 */
 	public static BufferedImage getBufferedImage(NBTTagCompound nbt) {
 		int width = nbt.getInteger("width");
 		int height = nbt.getInteger("height");

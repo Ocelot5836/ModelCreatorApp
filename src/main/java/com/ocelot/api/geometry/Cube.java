@@ -1,12 +1,11 @@
-package com.ocelot.mod.application.component;
+package com.ocelot.api.geometry;
 
 import java.util.List;
 
 import org.lwjgl.util.vector.Vector3f;
 
 import com.ocelot.api.libs.NBTHelper;
-import com.ocelot.mod.application.Camera;
-import com.ocelot.mod.application.dialog.NamedBufferedImage;
+import com.ocelot.api.utils.NamedBufferedImage;
 import com.ocelot.mod.lib.Lib;
 
 import net.minecraft.client.renderer.BufferBuilder;
@@ -34,11 +33,11 @@ public class Cube implements Cloneable, INBTSerializable<NBTTagCompound> {
 		this(0, 0, 0, 0, 0, 0, 0, 0, 0);
 	}
 
-	protected Cube(Vector3f position, Vector3f size, Vector3f rotation) {
+	public Cube(Vector3f position, Vector3f size, Vector3f rotation) {
 		this(position.x, position.y, position.z, size.x, size.y, size.z, rotation.x, rotation.y, rotation.z);
 	}
 
-	protected Cube(float x, float y, float z, float sizeX, float sizeY, float sizeZ, float rotationX, float rotationY, float rotationZ) {
+	public Cube(float x, float y, float z, float sizeX, float sizeY, float sizeZ, float rotationX, float rotationY, float rotationZ) {
 		this.position = new Vector3f(x, y, z);
 		this.size = new Vector3f(sizeX, sizeY, sizeZ);
 		this.rotation = new Vector3f(rotationX, rotationY, rotationZ);
@@ -54,14 +53,6 @@ public class Cube implements Cloneable, INBTSerializable<NBTTagCompound> {
 
 		GlStateManager.translate(position.x * scale, -(position.y + size.y - 1) * scale, position.z * scale);
 
-		if (this.shade) {
-			GlStateManager.pushMatrix();
-			RenderHelper.enableStandardItemLighting();
-			GlStateManager.popMatrix();
-		} else {
-			RenderHelper.disableStandardItemLighting();
-		}
-
 		GlStateManager.translate(0, -scale, 0);
 		GlStateManager.translate(this.rotationPoint.x * scale, this.rotationPoint.y * scale, this.rotationPoint.z * scale);
 		GlStateManager.rotate(this.rotation.x, 1, 0, 0);
@@ -70,6 +61,14 @@ public class Cube implements Cloneable, INBTSerializable<NBTTagCompound> {
 		GlStateManager.translate(-this.rotationPoint.x * scale, -this.rotationPoint.y * scale, -this.rotationPoint.z * scale);
 
 		GlStateManager.translate(0, scale * size.y, 0);
+	}
+	
+	public void applyLighting() {
+		if (this.shade) {
+			RenderHelper.enableStandardItemLighting();
+		} else {
+			RenderHelper.disableStandardItemLighting();
+		}
 	}
 
 	public void queueFaceRenders(List<Face> facesToRender, Camera camera, float partialTicks) {

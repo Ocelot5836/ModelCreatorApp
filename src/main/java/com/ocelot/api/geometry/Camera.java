@@ -1,4 +1,4 @@
-package com.ocelot.mod.application;
+package com.ocelot.api.geometry;
 
 import org.lwjgl.input.Mouse;
 import org.lwjgl.util.vector.Vector3f;

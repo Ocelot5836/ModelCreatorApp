@@ -1,4 +1,4 @@
-package com.ocelot.mod.application.component;
+package com.ocelot.api.geometry;
 
 import java.io.File;
 import java.lang.reflect.Type;
@@ -16,8 +16,8 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
+import com.ocelot.api.utils.NamedBufferedImage;
 import com.ocelot.mod.Mod;
-import com.ocelot.mod.application.dialog.NamedBufferedImage;
 
 import net.minecraft.client.resources.I18n;
 import net.minecraft.util.EnumFacing;

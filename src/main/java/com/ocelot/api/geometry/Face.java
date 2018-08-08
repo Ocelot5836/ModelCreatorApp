@@ -1,4 +1,4 @@
-package com.ocelot.mod.application.component;
+package com.ocelot.api.geometry;
 
 import java.util.Map;
 
@@ -10,8 +10,8 @@ import org.lwjgl.util.vector.Vector4f;
 
 import com.google.common.collect.Maps;
 import com.ocelot.api.libs.NBTHelper;
+import com.ocelot.api.utils.NamedBufferedImage;
 import com.ocelot.api.utils.TextureUtils;
-import com.ocelot.mod.application.dialog.NamedBufferedImage;
 import com.ocelot.mod.lib.Lib;
 
 import net.minecraft.client.renderer.BufferBuilder;
@@ -321,6 +321,7 @@ public class Face implements Cloneable, INBTSerializable<NBTTagCompound> {
 			this.texture = texture;
 			this.textureCoords.set(u, v, width, height);
 		}
+		this.textureLocation = null;
 		return this;
 	}
 

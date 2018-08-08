@@ -1,4 +1,4 @@
-package com.ocelot.mod.application.dialog;
+package com.ocelot.api.utils;
 
 import java.awt.image.BufferedImage;
 
@@ -8,6 +8,16 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.util.INBTSerializable;
 
+/**
+ * <em><b>Copyright (c) 2018 Ocelot5836.</b></em>
+ * 
+ * <br>
+ * </br>
+ * 
+ * This is an image that is bound to a location.
+ * 
+ * @author Ocelot5836
+ */
 public class NamedBufferedImage implements INBTSerializable<NBTTagCompound> {
 
 	private BufferedImage image;
@@ -20,17 +30,34 @@ public class NamedBufferedImage implements INBTSerializable<NBTTagCompound> {
 	public NamedBufferedImage(BufferedImage image, ResourceLocation location) {
 		this.image = image;
 		this.location = location;
-		this.hasTransparency = image.getTransparency() == BufferedImage.TRANSLUCENT;
+		this.hasTransparency = false;
+		for (int y = 0; y < image.getHeight(); y++) {
+			for (int x = 0; x < image.getWidth(); x++) {
+				if (((image.getRGB(x, y) << 24) & 0xff) != 255 && ((image.getRGB(x, y) << 24) & 0xff) != 0) {
+					this.hasTransparency = true;
+					break;
+				}
+			}
+		}
 	}
 
+	/**
+	 * @return The image that contains the RGB data
+	 */
 	public BufferedImage getImage() {
 		return image;
 	}
 
+	/**
+	 * @return The location bound to this texture
+	 */
 	public ResourceLocation getLocation() {
 		return location;
 	}
-	
+
+	/**
+	 * @return Whether or not this image has transparency
+	 */
 	public boolean hasTransparency() {
 		return hasTransparency;
 	}
@@ -49,10 +76,27 @@ public class NamedBufferedImage implements INBTSerializable<NBTTagCompound> {
 		this.location = new ResourceLocation(nbt.getString("location"));
 	}
 
+	/**
+	 * Creates a new named image from a tag.
+	 * 
+	 * @param nbt
+	 *            The tag that contains the data
+	 * @return The image created from that data
+	 */
 	public static NamedBufferedImage fromTag(NBTTagCompound nbt) {
 		NamedBufferedImage image = new NamedBufferedImage();
 		image.deserializeNBT(nbt);
-		image.hasTransparency = image.getImage().getTransparency() == BufferedImage.TRANSLUCENT;
+		
+		image.hasTransparency = false;
+		for (int y = 0; y < image.getImage().getHeight(); y++) {
+			for (int x = 0; x < image.getImage().getWidth(); x++) {
+				if (((image.getImage().getRGB(x, y) << 24) & 0xff) != 255 && ((image.getImage().getRGB(x, y) << 24) & 0xff) != 0) {
+					image.hasTransparency = true;
+					break;
+				}
+			}
+		}
+		
 		return image;
 	}
 }

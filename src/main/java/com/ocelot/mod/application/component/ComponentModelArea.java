@@ -13,6 +13,7 @@ import com.ocelot.api.geometry.Camera;
 import com.ocelot.api.geometry.Cube;
 import com.ocelot.api.geometry.Face;
 import com.ocelot.api.utils.NamedBufferedImage;
+import com.ocelot.mod.Usernames;
 import com.ocelot.mod.application.ApplicationModelCreator;
 import com.ocelot.mod.lib.Lib;
 
@@ -62,7 +63,7 @@ public class ComponentModelArea extends Component {
 			this.camera.rotate(partialTicks);
 			GlStateManager.translate(0, 0, cubeSize * 8);
 			GlStateManager.rotate(90, 1, 0, 0);
-			mc.fontRenderer.drawString(I18n.format("default.model_creator.author_note", "Ocelot5836"), 0, 0, Color.WHITE.getRGB(), true);
+			mc.fontRenderer.drawString(I18n.format("app.mca.mc.author_note", Usernames.OCELOT5836), 0, 0, Color.WHITE.getRGB(), true);
 			GlStateManager.popMatrix();
 
 			GlStateManager.pushMatrix();

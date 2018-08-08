@@ -79,16 +79,16 @@ public class Camera {
 		this.position.set(this.origin.x - offsetX, this.origin.y + verticalDistance, this.origin.z - offsetZ);
 	}
 
-	public void handleMouseDrag(int mouseX, int mouseY, int mouseButton) {
-		if (mouseButton == 1) {
-			pitch -= Mouse.getDY() * 0.8f;
-			angleAroundCenter += Mouse.getDX() * 0.8f;
-		}
-	}
-
-	public void handleMouseScroll(int mouseX, int mouseY, boolean direction) {
-		distanceFromCenter -= Mouse.getDWheel() * 0.1f;
-	}
+//	public void handleMouseDrag(int mouseX, int mouseY, int mouseButton) {
+//		if (mouseButton == 1) {
+//			pitch -= Mouse.getDY() * 0.8f;
+//			angleAroundCenter += Mouse.getDX() * 0.8f;
+//		}
+//	}
+//
+//	public void handleMouseScroll(int mouseX, int mouseY, boolean direction) {
+//		distanceFromCenter -= Mouse.getDWheel() * 0.1f;
+//	}
 
 	public Vector3f getOrigin() {
 		return origin;

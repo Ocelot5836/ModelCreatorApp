@@ -18,6 +18,7 @@ import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
 import com.ocelot.api.utils.NamedBufferedImage;
 import com.ocelot.mod.Mod;
+import com.ocelot.mod.Usernames;
 
 import net.minecraft.client.resources.I18n;
 import net.minecraft.util.EnumFacing;
@@ -63,7 +64,7 @@ public class Model {
 			JsonArray elements = new JsonArray();
 
 			/** Comment */
-			json.addProperty("_comment", I18n.format("default.json.comment", "Ocelot5836", "https://mrcrayfish.com/tools?id=mc"));
+			json.addProperty("_comment", I18n.format("app.mca.mc.json.comment", Usernames.OCELOT5836, "https://mrcrayfish.com/tools?id=mc"));
 
 			/** global properties */
 			json.addProperty("ambientOcclusion", src.ambientOcclusion);

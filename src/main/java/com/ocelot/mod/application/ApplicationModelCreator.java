@@ -104,7 +104,7 @@ public class ApplicationModelCreator extends Application {
 			public void render(Gui gui, Minecraft mc, int x, int y, int width, int height, int mouseX, int mouseY, boolean windowActive) {
 				gui.drawRect(x, y, x + width - (int) (width * (1 - 0.75)) - 1, y + height, 0xffeaeaed);
 				gui.drawRect(x + width - (int) (width * (1 - 0.75)) - 1, y, x + width, y + height, 0xffdddde4);
-				mc.fontRenderer.drawString("v" + Mod.VERSION + ", Save format v" + MODEL_CREATOR_SAVE_VERSION, x + 2, y + 12, 0xffdddde4, false);
+				mc.fontRenderer.drawString(I18n.format("app." + ApplicationModelCreator.getApp().getInfo().getFormattedId() + ".version", Mod.VERSION, MODEL_CREATOR_SAVE_VERSION), x + 2, y + 12, 0xffdddde4, false);
 			}
 		});
 
@@ -113,7 +113,7 @@ public class ApplicationModelCreator extends Application {
 		menuBar.setBorderColor(0xffdddde4);
 
 		{
-			MenuBarItem menuBarFile = new MenuBarItem("File");
+			MenuBarItem menuBarFile = new MenuBarItem(I18n.format("app." + ApplicationModelCreator.getApp().getInfo().getFormattedId() + ".file"));
 			menuBarFile.setTextPadding(6);
 			menuBarFile.setTextColor(0xff000000);
 			menuBarFile.setColor(0x00ffffff);
@@ -122,7 +122,8 @@ public class ApplicationModelCreator extends Application {
 			menuBarFile.setHighlightBorderColor(0xffc9c9c9);
 
 			{
-				MenuBarButton fileNew = new MenuBarButton("New", Icons.FILE);
+				MenuBarButton fileNew = new MenuBarButton(I18n.format("app." + ApplicationModelCreator.getApp().getInfo().getFormattedId() + ".new"), Icons.FILE);
+				fileNew.setTooltip(TextFormatting.GRAY + I18n.format("app.mca.mc.tooltip.new"));
 				fileNew.setClickListener((mouseX, mouseY, mouseButton) -> {
 					List<Cube> cubes = modelArea.getCubes();
 					if (cubes.isEmpty()) {
@@ -142,7 +143,8 @@ public class ApplicationModelCreator extends Application {
 
 				menuBarFile.add(new MenuBarButtonDivider());
 
-				MenuBarButton fileLoadProject = new MenuBarButton("Load Project", Icons.FOLDER);
+				MenuBarButton fileLoadProject = new MenuBarButton(I18n.format("app." + ApplicationModelCreator.getApp().getInfo().getFormattedId() + ".load"), Icons.FOLDER);
+				fileLoadProject.setTooltip(TextFormatting.GRAY + I18n.format("app.mca.mc.tooltip.load"));
 				fileLoadProject.setClickListener((mouseX, mouseY, mouseButton) -> {
 					Dialog.OpenFile openDialog = new Dialog.OpenFile(this);
 					openDialog.setFilter(this);
@@ -174,8 +176,8 @@ public class ApplicationModelCreator extends Application {
 					openDialog(openDialog);
 				});
 				menuBarFile.add(fileLoadProject);
-
-				MenuBarButton fileSaveProject = new MenuBarButton("Save Project", Icons.SAVE);
+				MenuBarButton fileSaveProject = new MenuBarButton(I18n.format("app.mca.mc.save"), Icons.SAVE);
+				fileSaveProject.setTooltip(TextFormatting.GRAY + I18n.format("app.mca.mc.tooltip.save"));
 				fileSaveProject.setClickListener((mouseX, mouseY, mouseButton) -> {
 					saveProjectToFile(modelArea.getCubes(), loadedImages, modelArea.hasAmbientOcclusion(), modelArea.getParticle());
 				});
@@ -183,16 +185,17 @@ public class ApplicationModelCreator extends Application {
 
 				menuBarFile.add(new MenuBarButtonDivider());
 
-				MenuBarButton fileImportJson = new MenuBarButton("Import JSON", Icons.IMPORT);
-				fileImportJson.setTooltip(TextFormatting.GRAY + I18n.format("tooltip.not_added"), 100);
+				MenuBarButton fileImportJson = new MenuBarButton(I18n.format("app.mca.mc.import"), Icons.IMPORT);
+				fileImportJson.setTooltip(TextFormatting.GRAY + I18n.format("app.mca.mc.tooltip.not_added"), 150);
 				fileImportJson.setEnabled(false);
 				// fileImportJson.setClickListener((mouseX, mouseY, mouseButton) -> {
 				// });
 				menuBarFile.add(fileImportJson);
 
-				MenuBarButton fileExportJson = new MenuBarButton("Export JSON", Icons.EXPORT);
+				MenuBarButton fileExportJson = new MenuBarButton(I18n.format("app.mca.mc.export"), Icons.EXPORT);
+				fileExportJson.setTooltip(TextFormatting.GRAY + I18n.format("app.mca.mc.tooltip.export"));
 				fileExportJson.setClickListener((mouseX, mouseY, mouseButton) -> {
-					Dialog.Input input = new Dialog.Input("Enter the name of the json");
+					Dialog.Input input = new Dialog.Input(I18n.format("app.mca.mc.input_json"));
 					input.setResponseHandler(new ResponseHandler<String>() {
 						@Override
 						public boolean onResponse(boolean success, String input) {
@@ -214,8 +217,8 @@ public class ApplicationModelCreator extends Application {
 
 				menuBarFile.add(new MenuBarButtonDivider());
 
-				MenuBarButton fileSetTexturePath = new MenuBarButton("Set Texture Path", Icons.PICTURE);
-				fileSetTexturePath.setTooltip(TextFormatting.GRAY + I18n.format("tooltip.not_added"), 100);
+				MenuBarButton fileSetTexturePath = new MenuBarButton(I18n.format("app.mca.mc.set_tex_path"), Icons.PICTURE);
+				fileSetTexturePath.setTooltip(TextFormatting.GRAY + I18n.format("app.mca.mc.tooltip.not_added"), 150);
 				fileSetTexturePath.setEnabled(false);
 				// fileExportJson.setClickListener((mouseX, mouseY, mouseButton) -> {
 				// });
@@ -223,7 +226,8 @@ public class ApplicationModelCreator extends Application {
 
 				menuBarFile.add(new MenuBarButtonDivider());
 
-				MenuBarButton fileExit = new MenuBarButton("Exit", Icons.POWER_OFF);
+				MenuBarButton fileExit = new MenuBarButton(I18n.format("app.mca.mc.exit"), Icons.POWER_OFF);
+				fileExit.setTooltip(TextFormatting.GRAY + I18n.format("app.mca.mc.tooltip.exit"));
 				fileExit.setClickListener((mouseX, mouseY, mouseButton) -> {
 					if (modelArea.getCubes().isEmpty()) {
 						Laptop.getSystem().closeApplication(this.getInfo());
@@ -246,7 +250,7 @@ public class ApplicationModelCreator extends Application {
 
 			menuBar.add(menuBarFile);
 
-			MenuBarItem menuBarOptions = new MenuBarItem("Options");
+			MenuBarItem menuBarOptions = new MenuBarItem(I18n.format("app.mca.mc.options"));
 			menuBarOptions.setTextPadding(6);
 			menuBarOptions.setTextColor(0xff000000);
 			menuBarOptions.setColor(0x00ffffff);
@@ -256,7 +260,7 @@ public class ApplicationModelCreator extends Application {
 			menuBar.add(menuBarOptions);
 
 			{
-				MenuBarButton optionsToggleTransparency = new MenuBarButton("Toggle Transparency", Icons.ARROW_RIGHT) {
+				MenuBarButton optionsToggleTransparency = new MenuBarButton(I18n.format("app.mca.mc.transparency.toggle"), Icons.ARROW_RIGHT) {
 					@Override
 					public void render(Laptop laptop, Minecraft mc, int x, int y, int mouseX, int mouseY, boolean windowActive, int buttonsWidth, int buttonsHeight, float partialTicks) {
 						if (this.isVisible()) {
@@ -277,20 +281,23 @@ public class ApplicationModelCreator extends Application {
 							mc.fontRenderer.drawString(this.getText(), x + textOffsetX, y + textY + 1, textColor, false);
 						}
 					}
-				};
+				};				
+				optionsToggleTransparency.setTooltip(TextFormatting.GRAY + I18n.format("app.mca.mc.tooltip.transparency.toggle"), 150);
 				optionsToggleTransparency.setClickListener((mouseX, mouseY, mouseButton) -> {
 					enableTransparency = !enableTransparency;
+					System.out.println(this.getInfo().getFormattedId());
 				});
 				menuBarOptions.add(optionsToggleTransparency);
 
-				MenuBarButton optionToggleFastRender = new MenuBarButton("Toggle Fast Render", Icons.WRENCH);
+				MenuBarButton optionToggleFastRender = new MenuBarButton(I18n.format("app.mca.mc.fast_render.toggle"), Icons.WRENCH);
+				optionToggleFastRender.setTooltip(TextFormatting.GRAY + I18n.format("app.mca.mc.tooltip.fast_render.toggle"), 150);
 				optionToggleFastRender.setClickListener((mouseX, mouseY, mouseButton) -> {
 					fastRender = !fastRender;
 				});
 				menuBarOptions.add(optionToggleFastRender);
 			}
 
-			MenuBarItem menuBarScreeenshot = new MenuBarItem("Screeenshot");
+			MenuBarItem menuBarScreeenshot = new MenuBarItem(I18n.format("app.mca.mc.screenshot"));
 			menuBarScreeenshot.setTextPadding(6);
 			menuBarScreeenshot.setTextColor(0xff000000);
 			menuBarScreeenshot.setColor(0x00ffffff);
@@ -300,7 +307,7 @@ public class ApplicationModelCreator extends Application {
 			menuBarScreeenshot.setVisible(false);
 			menuBar.add(menuBarScreeenshot);
 
-			MenuBarItem menuBarMore = new MenuBarItem("More");
+			MenuBarItem menuBarMore = new MenuBarItem(I18n.format("app.mca.mc.more"));
 			menuBarMore.setTextPadding(6);
 			menuBarMore.setTextColor(0xff000000);
 			menuBarMore.setColor(0x00ffffff);
@@ -310,14 +317,14 @@ public class ApplicationModelCreator extends Application {
 			menuBar.add(menuBarMore);
 
 			{
-				MenuBarButton moreExamples = new MenuBarButton("Examples", Icons.FILE);
-				moreExamples.setTooltip(TextFormatting.GRAY + I18n.format("tooltip.not_added"), 100);
+				MenuBarButton moreExamples = new MenuBarButton(I18n.format("app.mca.mc.examples"), Icons.FILE);
+				moreExamples.setTooltip(TextFormatting.GRAY + I18n.format("app.mca.mc.tooltip.not_added"), 150);
 				moreExamples.setEnabled(false);
 				menuBarMore.add(moreExamples);
 
 				menuBarMore.add(new MenuBarButtonDivider());
 
-				MenuBarButton moreGithub = new MenuBarButton("GitHub") {
+				MenuBarButton moreGithub = new MenuBarButton(I18n.format("app.mca.mc.github")) {
 					@Override
 					public void render(Laptop laptop, Minecraft mc, int x, int y, int mouseX, int mouseY, boolean windowActive, int buttonsWidth, int buttonsHeight, float partialTicks) {
 						if (this.isVisible()) {
@@ -339,13 +346,13 @@ public class ApplicationModelCreator extends Application {
 						}
 					}
 				};
-				moreGithub.setTooltip("View the source code", 100);
+				moreGithub.setTooltip(TextFormatting.GRAY + I18n.format("app.mca.mc.tooltip.github"), 150);
 				moreGithub.setClickListener((mouseX, mouseY, mouseButton)->{
 					try {
 						URI githubURL = new URI("https://github.com/Ocelot5836/ModelCreatorApp");
 						Desktop.getDesktop().browse(githubURL);
 					} catch (Exception e) {
-						openErrorDialog("Could not open https://github.com/Ocelot5836/ModelCreatorApp");
+						openErrorDialog(I18n.format("app.mca.mc.dialog.project.open.fail", "https://github.com/Ocelot5836/ModelCreatorApp"));
 						e.printStackTrace();
 					}
 				});
@@ -376,21 +383,14 @@ public class ApplicationModelCreator extends Application {
 	public void onTick() {
 		super.onTick();
 		this.camera.update();
+	}
+	
+	@Override
+	public void handleMouseClick(int mouseX, int mouseY, int mouseButton) {
+		super.handleMouseClick(mouseX, mouseY, mouseButton);
 		if(!running) {
 			Laptop.getSystem().closeApplication(this.getInfo());
 		}
-	}
-
-	@Override
-	public void handleMouseDrag(int mouseX, int mouseY, int mouseButton) {
-		super.handleMouseDrag(mouseX, mouseY, mouseButton);
-		this.camera.handleMouseDrag(mouseX, mouseY, mouseButton);
-	}
-
-	@Override
-	public void handleMouseScroll(int mouseX, int mouseY, boolean direction) {
-		super.handleMouseScroll(mouseX, mouseY, direction);
-		this.camera.handleMouseScroll(mouseX, mouseY, direction);
 	}
 
 	@Override

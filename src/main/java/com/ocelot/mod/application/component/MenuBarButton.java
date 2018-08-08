@@ -2,6 +2,7 @@ package com.ocelot.mod.application.component;
 
 import java.awt.Color;
 import java.util.Arrays;
+import java.util.List;
 
 import com.mrcrayfish.device.api.app.IIcon;
 import com.mrcrayfish.device.api.app.listener.ClickListener;
@@ -257,6 +258,14 @@ public class MenuBarButton implements IMenuBarButton {
 
 	public void setTooltip(String... tooltipLines) {
 		this.tooltip = tooltipLines;
+	}
+
+	public void setTooltip(List<String> tooltipLines) {
+		this.tooltip = tooltipLines.toArray(new String[0]);
+	}
+
+	public void setTooltip(String tooltip, int wrapWidth) {
+		this.tooltip = Minecraft.getMinecraft().fontRenderer.listFormattedStringToWidth(tooltip, wrapWidth).toArray(new String[0]);
 	}
 
 	public void setTooltipDelay(int tooltipDelay) {

@@ -1,9 +1,11 @@
 package com.ocelot.mod.application;
 
+import java.awt.Desktop;
 import java.awt.Toolkit;
 import java.awt.datatransfer.StringSelection;
 import java.awt.image.BufferedImage;
 import java.io.FileOutputStream;
+import java.net.URI;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -12,7 +14,6 @@ import java.util.List;
 import javax.annotation.Nullable;
 
 import org.apache.commons.io.IOUtils;
-import org.lwjgl.input.Keyboard;
 import org.lwjgl.util.vector.Vector3f;
 
 import com.google.gson.Gson;
@@ -54,6 +55,7 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.StringUtils;
+import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.fml.common.Loader;
 
@@ -182,6 +184,7 @@ public class ApplicationModelCreator extends Application {
 				menuBarFile.add(new MenuBarButtonDivider());
 
 				MenuBarButton fileImportJson = new MenuBarButton("Import JSON", Icons.IMPORT);
+				fileImportJson.setTooltip(TextFormatting.GRAY + I18n.format("tooltip.not_added"), 100);
 				fileImportJson.setEnabled(false);
 				// fileImportJson.setClickListener((mouseX, mouseY, mouseButton) -> {
 				// });
@@ -212,6 +215,7 @@ public class ApplicationModelCreator extends Application {
 				menuBarFile.add(new MenuBarButtonDivider());
 
 				MenuBarButton fileSetTexturePath = new MenuBarButton("Set Texture Path", Icons.PICTURE);
+				fileSetTexturePath.setTooltip(TextFormatting.GRAY + I18n.format("tooltip.not_added"), 100);
 				fileSetTexturePath.setEnabled(false);
 				// fileExportJson.setClickListener((mouseX, mouseY, mouseButton) -> {
 				// });
@@ -227,12 +231,12 @@ public class ApplicationModelCreator extends Application {
 						Dialog.Confirmation confirmation = new Dialog.Confirmation(I18n.format("dialog.confirmation.save"));
 						confirmation.setPositiveListener((mouseX1, mouseY1, mouseButton1) -> {
 							saveProjectToFile(modelArea.getCubes(), loadedImages, modelArea.hasAmbientOcclusion(), modelArea.getParticle(), (success1, file1) -> {
-								Laptop.getSystem().closeApplication(this.getInfo());
+								running = false;
 								return true;
 							});
 						});
 						confirmation.setNegativeListener((mouseX1, mouseY1, mouseButton1) -> {
-							Laptop.getSystem().closeApplication(this.getInfo());
+							running = false;
 						});
 						openDialog(confirmation);
 					}
@@ -307,7 +311,7 @@ public class ApplicationModelCreator extends Application {
 
 			{
 				MenuBarButton moreExamples = new MenuBarButton("Examples", Icons.FILE);
-				moreExamples.setTooltip(Minecraft.getMinecraft().fontRenderer.listFormattedStringToWidth("This features has not yet been added.", 100).toArray(new String[0]));
+				moreExamples.setTooltip(TextFormatting.GRAY + I18n.format("tooltip.not_added"), 100);
 				moreExamples.setEnabled(false);
 				menuBarMore.add(moreExamples);
 
@@ -325,16 +329,27 @@ public class ApplicationModelCreator extends Application {
 							TextureUtils.bindTexture(Mod.MOD_ID, "textures/app/icons.png");
 							GlStateManager.pushMatrix();
 							GlStateManager.translate(0.5, 0.5, 0);
-							RenderUtil.drawRectWithTexture(x, y + this.getHeight() / 2 - 5, 40, 0, 10, 10, 20, 20, 200, 200);
+							RenderUtil.drawRectWithTexture(x, y + this.getHeight() / 2 - 6, 40, 0, 10, 10, 20, 20, 200, 200);
 							GlStateManager.popMatrix();
 
 							int textY = (this.getHeight() - mc.fontRenderer.FONT_HEIGHT) / 2;
 							int textOffsetX = 13;
 							int textColor = !this.isEnabled() ? this.getDisabledTextColor() : (this.isHovered() ? this.getHighlightedTextColor() : this.getTextColor());
-							mc.fontRenderer.drawString(this.getText(), x + textOffsetX, y + textY + 1, textColor, false);
+							mc.fontRenderer.drawString(this.getText(), x + textOffsetX, y + textY, textColor, false);
 						}
 					}
 				};
+				moreGithub.setTooltip("View the source code", 100);
+				moreGithub.setClickListener((mouseX, mouseY, mouseButton)->{
+					try {
+						URI githubURL = new URI("https://github.com/Ocelot5836/ModelCreatorApp");
+						Desktop.getDesktop().browse(githubURL);
+					} catch (Exception e) {
+						openErrorDialog("Could not open https://github.com/Ocelot5836/ModelCreatorApp");
+						e.printStackTrace();
+					}
+				});
+				menuBarMore.add(moreGithub);
 			}
 		}
 
@@ -361,6 +376,9 @@ public class ApplicationModelCreator extends Application {
 	public void onTick() {
 		super.onTick();
 		this.camera.update();
+		if(!running) {
+			Laptop.getSystem().closeApplication(this.getInfo());
+		}
 	}
 
 	@Override
@@ -373,15 +391,6 @@ public class ApplicationModelCreator extends Application {
 	public void handleMouseScroll(int mouseX, int mouseY, boolean direction) {
 		super.handleMouseScroll(mouseX, mouseY, direction);
 		this.camera.handleMouseScroll(mouseX, mouseY, direction);
-	}
-
-	@Override
-	public void handleKeyTyped(char character, int code) {
-		super.handleKeyTyped(character, code);
-		if (Mod.isDebug() && code == Keyboard.KEY_Y) {
-			String json = ApplicationModelCreator.createModelJson(this.modelArea.getCubes(), "debug", modelArea.hasAmbientOcclusion(), modelArea.getParticle());
-			System.out.println("\n\n" + json + "\n");
-		}
 	}
 
 	@Override

@@ -333,6 +333,14 @@ public class MenuBarItem implements Iterable<IMenuBarButton> {
 		this.tooltip = tooltipLines;
 	}
 
+	public void setTooltip(List<String> tooltipLines) {
+		this.tooltip = tooltipLines.toArray(new String[0]);
+	}
+
+	public void setTooltip(String tooltip, int wrapWidth) {
+		this.tooltip = Minecraft.getMinecraft().fontRenderer.listFormattedStringToWidth(tooltip, wrapWidth).toArray(new String[0]);
+	}
+
 	public void setTooltipDelay(int tooltipDelay) {
 		this.tooltipDelay = tooltipDelay;
 	}

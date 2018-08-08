@@ -143,6 +143,7 @@ public class ApplicationModelCreator extends Application {
 				MenuBarButton fileLoadProject = new MenuBarButton("Load Project", Icons.FOLDER);
 				fileLoadProject.setClickListener((mouseX, mouseY, mouseButton) -> {
 					Dialog.OpenFile openDialog = new Dialog.OpenFile(this);
+					openDialog.setFilter(this);
 					openDialog.setResponseHandler((success, file) -> {
 						if (success) {
 							if (modelArea.getCubes().isEmpty()) {

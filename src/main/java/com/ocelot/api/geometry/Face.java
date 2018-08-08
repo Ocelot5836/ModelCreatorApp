@@ -105,9 +105,9 @@ public class Face implements Cloneable, INBTSerializable<NBTTagCompound> {
 				GlStateManager.color(1, 1, 1, 1);
 				buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX_NORMAL);
 				{
-					GlStateManager.translate(this.parentCube.getSize().x * 8, -this.parentCube.getSize().x * 8, this.parentCube.getSize().y * 8);
-					GlStateManager.rotate(this.rotation, 0, 1, 0);
-					GlStateManager.translate(-this.parentCube.getSize().x * 8, this.parentCube.getSize().x * 8, -this.parentCube.getSize().y * 8);
+//					GlStateManager.translate(this.parentCube.getSize().x * 8, -this.parentCube.getSize().x * 8, this.parentCube.getSize().y * 8);
+//					GlStateManager.rotate(this.rotation, 0, 1, 0);
+//					GlStateManager.translate(-this.parentCube.getSize().x * 8, this.parentCube.getSize().x * 8, -this.parentCube.getSize().y * 8);
 
 					this.pos(0, -size.y * scale, 0, EnumFacing.UP, textureCoords.x / 16f, textureCoords.y / 16f);
 					this.pos(0, -size.y * scale, size.z * scale, EnumFacing.UP, textureCoords.x / 16f, textureCoords.y / 16f + textureCoords.w / 16f);
@@ -137,9 +137,9 @@ public class Face implements Cloneable, INBTSerializable<NBTTagCompound> {
 				GlStateManager.color(1, 1, 1, 1);
 				buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX_NORMAL);
 				{
-					GlStateManager.translate(this.parentCube.getSize().x * 8, -this.parentCube.getSize().x * 8, this.parentCube.getSize().y * 8);
-					GlStateManager.rotate(-90 + -this.rotation, 0, 0, 1);
-					GlStateManager.translate(-this.parentCube.getSize().x * 8, this.parentCube.getSize().x * 8, -this.parentCube.getSize().y * 8);
+//					GlStateManager.translate(this.parentCube.getSize().x * 8, -this.parentCube.getSize().x * 8, this.parentCube.getSize().y * 8);
+//					GlStateManager.rotate(-90 + -this.rotation, 0, 0, 1);
+//					GlStateManager.translate(-this.parentCube.getSize().x * 8, this.parentCube.getSize().x * 8, -this.parentCube.getSize().y * 8);
 
 					this.pos(size.x * scale, 0, 0, EnumFacing.NORTH, textureCoords.x / 16f, textureCoords.y / 16f);
 					this.pos(0, 0, 0, EnumFacing.NORTH, textureCoords.x / 16f, textureCoords.y / 16f + textureCoords.w / 16f);
@@ -169,9 +169,9 @@ public class Face implements Cloneable, INBTSerializable<NBTTagCompound> {
 				GlStateManager.color(1, 1, 1, 1);
 				buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX_NORMAL);
 				{
-					GlStateManager.translate(this.parentCube.getSize().x * 8, -this.parentCube.getSize().x * 8, this.parentCube.getSize().y * 8);
-					GlStateManager.rotate(90 + this.rotation, 0, 0, 1);
-					GlStateManager.translate(-this.parentCube.getSize().x * 8, this.parentCube.getSize().x * 8, -this.parentCube.getSize().y * 8);
+//					GlStateManager.translate(this.parentCube.getSize().x * 8, -this.parentCube.getSize().x * 8, this.parentCube.getSize().y * 8);
+//					GlStateManager.rotate(90 + this.rotation, 0, 0, 1);
+//					GlStateManager.translate(-this.parentCube.getSize().x * 8, this.parentCube.getSize().x * 8, -this.parentCube.getSize().y * 8);
 
 					this.pos(0, 0, size.z * scale, EnumFacing.SOUTH, textureCoords.x / 16f, textureCoords.y / 16f);
 					this.pos(size.x * scale, 0, size.z * scale, EnumFacing.SOUTH, textureCoords.x / 16f, textureCoords.y / 16f + textureCoords.w / 16f);
@@ -201,9 +201,9 @@ public class Face implements Cloneable, INBTSerializable<NBTTagCompound> {
 				GlStateManager.color(1, 1, 1, 1);
 				buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX_NORMAL);
 				{
-					GlStateManager.translate(0, -this.parentCube.getSize().x * 8, this.parentCube.getSize().y * 8);
-					GlStateManager.rotate(90 + this.rotation, 1, 0, 0);
-					GlStateManager.translate(0, this.parentCube.getSize().x * 8, -this.parentCube.getSize().y * 8);
+					// GlStateManager.translate(0, -this.parentCube.getSize().x * 8, this.parentCube.getSize().y * 8);
+					// GlStateManager.rotate(90 + this.rotation, 1, 0, 0);
+					// GlStateManager.translate(0, this.parentCube.getSize().x * 8, -this.parentCube.getSize().y * 8);
 
 					this.pos(0, 0, 0, EnumFacing.WEST, textureCoords.x / 16f, textureCoords.y / 16f);
 					this.pos(0, 0, size.z * scale, EnumFacing.WEST, textureCoords.x / 16f, textureCoords.y / 16f + textureCoords.w / 16f);

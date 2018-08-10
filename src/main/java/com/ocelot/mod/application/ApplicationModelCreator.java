@@ -281,7 +281,7 @@ public class ApplicationModelCreator extends Application {
 							mc.fontRenderer.drawString(this.getText(), x + textOffsetX, y + textY + 1, textColor, false);
 						}
 					}
-				};				
+				};
 				optionsToggleTransparency.setTooltip(TextFormatting.GRAY + I18n.format("app.mca.mc.tooltip.transparency.toggle"), 150);
 				optionsToggleTransparency.setClickListener((mouseX, mouseY, mouseButton) -> {
 					enableTransparency = !enableTransparency;
@@ -346,7 +346,7 @@ public class ApplicationModelCreator extends Application {
 					}
 				};
 				moreGithub.setTooltip(TextFormatting.GRAY + I18n.format("app.mca.mc.tooltip.github"), 150);
-				moreGithub.setClickListener((mouseX, mouseY, mouseButton)->{
+				moreGithub.setClickListener((mouseX, mouseY, mouseButton) -> {
 					try {
 						URI githubURL = new URI("https://github.com/Ocelot5836/ModelCreatorApp");
 						Desktop.getDesktop().browse(githubURL);
@@ -371,6 +371,8 @@ public class ApplicationModelCreator extends Application {
 
 		setAmbientOcclusion(true);
 		setParticle(null);
+
+		openMessageDialog(I18n.format("app.mca.mc.welcome.title"), I18n.format("app.mca.mc.welcome.info"));
 	}
 
 	@Override
@@ -383,11 +385,11 @@ public class ApplicationModelCreator extends Application {
 		super.onTick();
 		this.camera.update();
 	}
-	
+
 	@Override
 	public void handleMouseClick(int mouseX, int mouseY, int mouseButton) {
 		super.handleMouseClick(mouseX, mouseY, mouseButton);
-		if(!running) {
+		if (!running) {
 			Laptop.getSystem().closeApplication(this.getInfo());
 		}
 	}

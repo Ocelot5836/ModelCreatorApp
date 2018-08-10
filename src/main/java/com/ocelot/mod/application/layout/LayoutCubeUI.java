@@ -191,7 +191,8 @@ public class LayoutCubeUI extends Layout {
 
 		{
 			objectOptions = new ScrollableLayout(0, cubes.top + buttonHeight + cubes.getHeight() + 16 + 12, this.width, 164, this.height - (cubes.top + buttonHeight + cubes.getHeight() + 16 + 12));
-
+			objectOptions.setScrollSpeed(10);
+			
 			positionX = new LayoutNumberIncrementer(2 + (objectOptions.width / 3 - 3) * 0, 15, objectOptions.width / 3 - 4, 40, 0);
 			objectOptions.addComponent(positionX);
 
@@ -248,6 +249,7 @@ public class LayoutCubeUI extends Layout {
 
 		{
 			rotationOptions = new ScrollableLayout(0, cubes.top + buttonHeight + cubes.getHeight() + 16 + 12, this.width, 72, this.height - (cubes.top + buttonHeight + cubes.getHeight() + 16 + 12));
+			rotationOptions.setScrollSpeed(10);
 
 			axisSelection = new ComboBox.List<EnumFacing.Axis>(5, 15, rotationOptions.width - 10, rotationOptions.width - 15, EnumFacing.Axis.values());
 			axisSelection.setSelectedItem(EnumFacing.Axis.X);
@@ -280,7 +282,8 @@ public class LayoutCubeUI extends Layout {
 		}
 
 		{
-			textureOptions = new ScrollableLayout(0, cubes.top + buttonHeight + cubes.getHeight() + 16 + 12, this.width, 300, this.height - (cubes.top + buttonHeight + cubes.getHeight() + 16 + 12));
+			textureOptions = new ScrollableLayout(0, cubes.top + buttonHeight + cubes.getHeight() + 16 + 12, this.width, 265, this.height - (cubes.top + buttonHeight + cubes.getHeight() + 16 + 12));
+			textureOptions.setScrollSpeed(10);
 
 			Label faceLabel = new Label("Face", 5, 5);
 			faceLabel.setTextColor(Color.BLACK);
@@ -406,7 +409,7 @@ public class LayoutCubeUI extends Layout {
 
 			faceAutoUV = new CheckBox("Auto UV", 5, 255);
 			faceAutoUV.setTextColor(Color.BLACK);
-			textureOptions.addComponent(faceAutoUV);
+//			textureOptions.addComponent(faceAutoUV);
 
 			this.addComponent(textureOptions);
 		}

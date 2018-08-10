@@ -45,11 +45,6 @@ public class Mod {
 	@EventHandler
 	public void pre(FMLPreInitializationEvent event) {
 		logger = event.getModLog();
-
-		// ModConfig.pre();
-		// if (FMLCommonHandler.instance().getSide() == Side.CLIENT) {
-		// ModConfig.clientPre();
-		// }
 	}
 
 	@EventHandler

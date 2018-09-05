@@ -1,20 +1,13 @@
 package com.ocelot.mod.application.layout;
 
-import java.util.regex.Pattern;
-
-import org.apache.commons.lang3.math.NumberUtils;
-
 import com.mrcrayfish.device.api.app.Icons;
 import com.mrcrayfish.device.api.app.Layout;
 import com.mrcrayfish.device.api.app.component.Button;
 import com.mrcrayfish.device.api.app.component.TextField;
 import com.mrcrayfish.device.api.app.listener.ChangeListener;
-
-import net.minecraft.client.gui.GuiScreen;
+import com.ocelot.api.utils.NumberHelper;
 
 public class LayoutNumberIncrementer extends Layout {
-
-	private static final Pattern PATTERN = Pattern.compile("^({1,10})$");
 
 	private float previousValue;
 	private float value;
@@ -28,7 +21,6 @@ public class LayoutNumberIncrementer extends Layout {
 		super(left, top, width, height);
 		this.changeListener = null;
 		this.setPrivate(baseValue);
-		this.updateText();
 	}
 
 	@Override
@@ -38,11 +30,7 @@ public class LayoutNumberIncrementer extends Layout {
 		up = new Button(0, 0, this.width, buttonHeight, Icons.ARROW_UP);
 		up.setClickListener((mouseX, mouseY, mouseButton) -> {
 			if (mouseButton == 0) {
-				if (GuiScreen.isShiftKeyDown()) {
-					this.add(0.05f);
-				} else {
-					this.add(0.5f);
-				}
+				this.add(0.5f);
 				this.updateText();
 			}
 		});
@@ -51,11 +39,7 @@ public class LayoutNumberIncrementer extends Layout {
 		down = new Button(0, this.height - buttonHeight, this.width, buttonHeight, Icons.ARROW_DOWN);
 		down.setClickListener((mouseX, mouseY, mouseButton) -> {
 			if (mouseButton == 0) {
-				if (GuiScreen.isShiftKeyDown()) {
-					this.sub(0.05f);
-				} else {
-					this.sub(0.5f);
-				}
+				this.sub(0.5f);
 				this.updateText();
 			}
 		});
@@ -63,13 +47,12 @@ public class LayoutNumberIncrementer extends Layout {
 
 		display = new TextField(0, buttonHeight, this.width);
 		display.setKeyListener((c) -> {
-			if (NumberUtils.isCreatable(display.getText())) {
-				this.setPrivate(Float.parseFloat(display.getText()));
-			}
+			this.setPrivate((float) NumberHelper.parseEquation(display.getText()));
 			return false;
 		});
 
 		this.setPrivate(this.value);
+		this.updateText();
 		this.addComponent(display);
 	}
 
@@ -81,9 +64,6 @@ public class LayoutNumberIncrementer extends Layout {
 	@Override
 	public void handleTick() {
 		super.handleTick();
-		if (NumberUtils.isCreatable(display.getText())) {
-			this.setPrivate(Float.parseFloat(display.getText()));
-		}
 	}
 
 	public void updateText() {

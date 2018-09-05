@@ -491,7 +491,6 @@ public class LayoutCubeUI extends Layout {
 
 			//TODO implement these features
 			this.faceRotation.setEnabled(false);
-			this.faceFill.setEnabled(false);
 			
 			this.faceEnable.setSelected(this.cube.getFace(this.selectedFace).isEnabled());
 			this.faceCull.setSelected(this.cube.getFace(this.selectedFace).isCullFace());

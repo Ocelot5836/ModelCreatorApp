@@ -65,32 +65,32 @@ public class Face implements Cloneable, INBTSerializable<NBTTagCompound> {
 		Vector3f size = this.parentCube.getSize();
 
 		this.bindTexture();
-		
-		switch(this.faceDirection) {
-		case DOWN:
-			this.autoTextureCoords.set(0, 0, size.x, size.z);
-			break;
-		case EAST:
-			this.autoTextureCoords.set(0, 0, size.y, size.z);
-			break;
-		case NORTH:
-			this.autoTextureCoords.set(0, 0, size.y, size.x);
-			break;
-		case SOUTH:
-			this.autoTextureCoords.set(0, 0, size.z, size.x);
-			break;
-		case UP:
-			this.autoTextureCoords.set(0, 0, size.x, size.z);
-			break;
-		case WEST:
-			this.autoTextureCoords.set(0, 0, size.y, size.z);
-			break;
-		default:
-			break;
-		}
 
 		Vector4f textureCoords = new Vector4f(this.textureCoords);
 		if (this.autoUV) {
+			switch (this.faceDirection) {
+			case DOWN:
+				this.autoTextureCoords.set(0, 0, size.x, size.z);
+				break;
+			case EAST:
+				this.autoTextureCoords.set(0, 0, size.y, size.z);
+				break;
+			case NORTH:
+				this.autoTextureCoords.set(0, 0, size.y, size.x);
+				break;
+			case SOUTH:
+				this.autoTextureCoords.set(0, 0, size.x, size.y);
+				break;
+			case UP:
+				this.autoTextureCoords.set(0, 0, size.x, size.z);
+				break;
+			case WEST:
+				this.autoTextureCoords.set(0, 0, size.z, size.y);
+				break;
+			default:
+				break;
+			}
+
 			textureCoords.set(this.autoTextureCoords);
 		}
 
@@ -170,10 +170,10 @@ public class Face implements Cloneable, INBTSerializable<NBTTagCompound> {
 					// GlStateManager.rotate(-90 + -this.rotation, 0, 0, 1);
 					// GlStateManager.translate(-this.parentCube.getSize().x * 8, this.parentCube.getSize().x * 8, -this.parentCube.getSize().y * 8);
 
-					this.pos(size.x * scale, 0, 0, EnumFacing.NORTH, textureCoords.x / 16f, textureCoords.y / 16f);
-					this.pos(0, 0, 0, EnumFacing.NORTH, textureCoords.x / 16f, textureCoords.y / 16f + textureCoords.w / 16f);
-					this.pos(0, -size.y * scale, 0, EnumFacing.NORTH, textureCoords.x / 16f + textureCoords.z / 16f, textureCoords.y / 16f + textureCoords.w / 16f);
-					this.pos(size.x * scale, -size.y * scale, 0, EnumFacing.NORTH, textureCoords.x / 16f + textureCoords.z / 16f, textureCoords.y / 16f);
+					this.pos(size.x * scale, 0, 0, EnumFacing.NORTH, textureCoords.x / 16f, textureCoords.y / 16f + textureCoords.w / 16f);
+					this.pos(0, 0, 0, EnumFacing.NORTH, textureCoords.x / 16f + textureCoords.z / 16f, textureCoords.y / 16f);
+					this.pos(0, -size.y * scale, 0, EnumFacing.NORTH, textureCoords.x / 16f + textureCoords.z / 16f, textureCoords.y / 16f);
+					this.pos(size.x * scale, -size.y * scale, 0, EnumFacing.NORTH, textureCoords.x / 16f, textureCoords.y / 16f);
 				}
 				Tessellator.getInstance().draw();
 			} else {
@@ -202,10 +202,10 @@ public class Face implements Cloneable, INBTSerializable<NBTTagCompound> {
 					// GlStateManager.rotate(90 + this.rotation, 0, 0, 1);
 					// GlStateManager.translate(-this.parentCube.getSize().x * 8, this.parentCube.getSize().x * 8, -this.parentCube.getSize().y * 8);
 
-					this.pos(0, 0, size.z * scale, EnumFacing.SOUTH, textureCoords.x / 16f, textureCoords.y / 16f);
-					this.pos(size.x * scale, 0, size.z * scale, EnumFacing.SOUTH, textureCoords.x / 16f, textureCoords.y / 16f + textureCoords.w / 16f);
-					this.pos(size.x * scale, -size.y * scale, size.z * scale, EnumFacing.SOUTH, textureCoords.x / 16f + textureCoords.z / 16f, textureCoords.y / 16f + textureCoords.w / 16f);
-					this.pos(0, -size.y * scale, size.z * scale, EnumFacing.SOUTH, textureCoords.x / 16f + textureCoords.z / 16f, textureCoords.y / 16f);
+					this.pos(size.x * scale, -size.y * scale, size.z * scale, EnumFacing.SOUTH, textureCoords.x / 16f + textureCoords.z / 16f, textureCoords.y / 16f);
+					this.pos(0, -size.y * scale, size.z * scale, EnumFacing.SOUTH, textureCoords.x / 16f, textureCoords.y / 16f);
+					this.pos(0, 0, size.z * scale, EnumFacing.SOUTH, textureCoords.x / 16f, textureCoords.y / 16f + textureCoords.w / 16f);
+					this.pos(size.x * scale, 0, size.z * scale, EnumFacing.SOUTH, textureCoords.x / 16f + textureCoords.z / 16f, textureCoords.y / 16f + textureCoords.w / 16f);
 				}
 				Tessellator.getInstance().draw();
 			} else {
@@ -234,10 +234,10 @@ public class Face implements Cloneable, INBTSerializable<NBTTagCompound> {
 					// GlStateManager.rotate(90 + this.rotation, 1, 0, 0);
 					// GlStateManager.translate(0, this.parentCube.getSize().x * 8, -this.parentCube.getSize().y * 8);
 
-					this.pos(0, 0, 0, EnumFacing.WEST, textureCoords.x / 16f, textureCoords.y / 16f);
-					this.pos(0, 0, size.z * scale, EnumFacing.WEST, textureCoords.x / 16f, textureCoords.y / 16f + textureCoords.w / 16f);
-					this.pos(0, -size.y * scale, size.z * scale, EnumFacing.WEST, textureCoords.x / 16f + textureCoords.z / 16f, textureCoords.y / 16f + textureCoords.w / 16f);
-					this.pos(0, -size.y * scale, 0, EnumFacing.WEST, textureCoords.x / 16f + textureCoords.z / 16f, textureCoords.y / 16f);
+					this.pos(0, -size.y * scale, size.z * scale, EnumFacing.WEST, textureCoords.x / 16f + textureCoords.z / 16f, textureCoords.y / 16f);
+					this.pos(0, -size.y * scale, 0, EnumFacing.WEST, textureCoords.x / 16f, textureCoords.y / 16f);
+					this.pos(0, 0, 0, EnumFacing.WEST, textureCoords.x / 16f, textureCoords.y / 16f + textureCoords.w / 16f);
+					this.pos(0, 0, size.z * scale, EnumFacing.WEST, textureCoords.x / 16f + textureCoords.z / 16f, textureCoords.y / 16f + textureCoords.w / 16f);
 				}
 				Tessellator.getInstance().draw();
 			} else {
@@ -262,10 +262,10 @@ public class Face implements Cloneable, INBTSerializable<NBTTagCompound> {
 				GlStateManager.color(1, 1, 1, 1);
 				buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX_NORMAL);
 				{
-					this.pos(size.x * scale, 0, size.z * scale, EnumFacing.EAST, textureCoords.x / 16f, textureCoords.y / 16f);
-					this.pos(size.x * scale, 0, 0, EnumFacing.EAST, textureCoords.x / 16f, textureCoords.y / 16f + textureCoords.w / 16f);
-					this.pos(size.x * scale, -size.y * scale, 0, EnumFacing.EAST, textureCoords.x / 16f + textureCoords.z / 16f, textureCoords.y / 16f + textureCoords.w / 16f);
-					this.pos(size.x * scale, -size.y * scale, size.z * scale, EnumFacing.EAST, textureCoords.x / 16f + textureCoords.z / 16f, textureCoords.y / 16f);
+					this.pos(size.x * scale, 0, size.z * scale, EnumFacing.EAST, textureCoords.x / 16f, textureCoords.y / 16f + textureCoords.w / 16f);
+					this.pos(size.x * scale, 0, 0, EnumFacing.EAST, textureCoords.x / 16f + textureCoords.z / 16f, textureCoords.y / 16f);
+					this.pos(size.x * scale, -size.y * scale, 0, EnumFacing.EAST, textureCoords.x / 16f + textureCoords.z / 16f, textureCoords.y / 16f);
+					this.pos(size.x * scale, -size.y * scale, size.z * scale, EnumFacing.EAST, textureCoords.x / 16f, textureCoords.y / 16f);
 				}
 				Tessellator.getInstance().draw();
 			} else {

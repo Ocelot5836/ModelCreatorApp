@@ -168,7 +168,7 @@ public class Model {
 
 					/** uv */
 					JsonArray uv = new JsonArray();
-					if (face.isFill()) {
+					if (!face.isFill()) {
 						uv.add(face.getTextureCoords().x);
 						uv.add(face.getTextureCoords().y);
 						uv.add(face.getTextureCoords().z);

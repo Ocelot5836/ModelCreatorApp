@@ -6,6 +6,7 @@ app.mca.mc.welcome.title=Welcome
 app.mca.mc.welcome.info=Thank you for installing this application! Please note this app is still in development and is mainly only released to learn about unknown bugs. Either way, I hope you enjoy making models in this app!
 
 # Dialogs
+app.mca.mc.dialog.error=Error
 app.mca.mc.dialog.confirmation.save=Do you want to save your progress?
 app.mca.mc.dialog.project.fail_file_open=Could not open file '%s'
 app.mca.mc.dialog.project.wrong_version=This project was designed for version '%s' of the model creator and could not be opened.
@@ -35,7 +36,7 @@ app.mca.mc.tooltip.fast_render.toggle=Enables a faster rendering method in progr
 
 # More Tooltips
 app.mca.mc.tooltip.github=View source code
-app.mca.mc.tooltip.submit_bug.tooltip=Submit a bug report on Github to get it fixed
+app.mca.mc.tooltip.submit_bug=Submit a bug report on Github to get it fixed
 
 # File
 app.mca.mc.version=v%s, Save format v%s
@@ -61,4 +62,4 @@ app.mca.mc.screenshot=Screenshot
 app.mca.mc.more=More
 app.mca.mc.examples=Examples
 app.mca.mc.github=GitHub
-app.mca.mc.tooltip.submit_bug=Submit A bug
+app.mca.mc.submit_bug=Submit A bug

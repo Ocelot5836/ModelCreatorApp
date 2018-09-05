@@ -22,7 +22,7 @@ import com.mrcrayfish.device.core.Laptop;
 import com.ocelot.api.geometry.Cube;
 import com.ocelot.api.utils.NamedBufferedImage;
 import com.ocelot.api.utils.TextureUtils;
-import com.ocelot.mod.Mod;
+import com.ocelot.mod.ModelCreator;
 import com.ocelot.mod.application.ApplicationModelCreator;
 import com.ocelot.mod.application.component.SmoothItemList;
 import com.ocelot.mod.application.dialog.DialogTextureManager;
@@ -126,7 +126,7 @@ public class LayoutCubeUI extends Layout {
 
 				int contentWidth = 10;
 				int contentX = (int) Math.ceil((width - contentWidth) / 2.0);
-				TextureUtils.bindTexture(Mod.MOD_ID, "textures/app/icons.png");
+				TextureUtils.bindTexture(ModelCreator.MOD_ID, "textures/app/icons.png");
 				RenderUtil.drawRectWithTexture(x + contentX, y + 3, 0, 0, 10, 10, 20, 20, 200, 200);
 			}
 		};
@@ -248,7 +248,7 @@ public class LayoutCubeUI extends Layout {
 		}
 
 		{
-			rotationOptions = new ScrollableLayout(0, cubes.top + buttonHeight + cubes.getHeight() + 16 + 12, this.width, 72, this.height - (cubes.top + buttonHeight + cubes.getHeight() + 16 + 12));
+			rotationOptions = new ScrollableLayout(0, cubes.top + buttonHeight + cubes.getHeight() + 16 + 12, this.width, 56, this.height - (cubes.top + buttonHeight + cubes.getHeight() + 16 + 12));
 			rotationOptions.setScrollSpeed(10);
 
 			axisSelection = new ComboBox.List<EnumFacing.Axis>(5, 15, rotationOptions.width - 10, rotationOptions.width - 15, EnumFacing.Axis.values());
@@ -282,7 +282,7 @@ public class LayoutCubeUI extends Layout {
 		}
 
 		{
-			textureOptions = new ScrollableLayout(0, cubes.top + buttonHeight + cubes.getHeight() + 16 + 12, this.width, 265, this.height - (cubes.top + buttonHeight + cubes.getHeight() + 16 + 12));
+			textureOptions = new ScrollableLayout(0, cubes.top + buttonHeight + cubes.getHeight() + 16 + 12, this.width, 270, this.height - (cubes.top + buttonHeight + cubes.getHeight() + 16 + 12));
 			textureOptions.setScrollSpeed(10);
 
 			Label faceLabel = new Label("Face", 5, 5);
@@ -409,7 +409,7 @@ public class LayoutCubeUI extends Layout {
 
 			faceAutoUV = new CheckBox("Auto UV", 5, 255);
 			faceAutoUV.setTextColor(Color.BLACK);
-//			textureOptions.addComponent(faceAutoUV);
+			textureOptions.addComponent(faceAutoUV);
 
 			this.addComponent(textureOptions);
 		}
@@ -443,6 +443,11 @@ public class LayoutCubeUI extends Layout {
 			this.cube.getFace(this.selectedFace).setFill(this.faceFill.isSelected());
 			this.cube.getFace(this.selectedFace).setAutoUV(this.faceAutoUV.isSelected());
 		}
+	}
+	
+	@Override
+	public void renderOverlay(Laptop laptop, Minecraft mc, int mouseX, int mouseY, boolean windowActive) {
+		super.renderOverlay(laptop, mc, mouseX, mouseY, windowActive);
 	}
 
 	private void updateRotation() {
@@ -484,6 +489,12 @@ public class LayoutCubeUI extends Layout {
 			this.faceWidth.set(this.cube.getFace(this.selectedFace).getTextureCoords().z);
 			this.faceHeight.set(this.cube.getFace(this.selectedFace).getTextureCoords().w);
 
+			//TODO implement these features
+			this.faceRotation.setEnabled(false);
+			this.faceFill.setEnabled(false);
+			this.faceAutoUV.setEnabled(false);
+			this.faceAutoUV.setEnabled(false);
+			
 			this.faceEnable.setSelected(this.cube.getFace(this.selectedFace).isEnabled());
 			this.faceCull.setSelected(this.cube.getFace(this.selectedFace).isCullFace());
 			this.faceFill.setSelected(this.cube.getFace(this.selectedFace).isFill());

@@ -6,7 +6,7 @@ import java.util.Map;
 
 import javax.annotation.Nullable;
 
-import com.ocelot.mod.Mod;
+import com.ocelot.mod.ModelCreator;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.DynamicTexture;

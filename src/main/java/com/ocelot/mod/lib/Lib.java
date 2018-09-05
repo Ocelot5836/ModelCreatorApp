@@ -11,7 +11,7 @@ import javax.imageio.ImageIO;
 import org.apache.commons.io.IOUtils;
 import org.lwjgl.util.vector.Vector3f;
 
-import com.ocelot.mod.Mod;
+import com.ocelot.mod.ModelCreator;
 import com.ocelot.mod.Usernames;
 
 import net.minecraft.client.Minecraft;
@@ -70,7 +70,7 @@ public class Lib {
 		try {
 			return IOUtils.toString(Minecraft.getMinecraft().getResourceManager().getResource(location).getInputStream(), Charset.defaultCharset());
 		} catch (IOException e) {
-			Mod.logger().warn("Could not load text " + location + ". Could cause issues later on.");
+			ModelCreator.logger().warn("Could not load text " + location + ". Could cause issues later on.");
 		}
 		return "";
 	}

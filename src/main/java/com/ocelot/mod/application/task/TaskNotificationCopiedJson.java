@@ -3,7 +3,7 @@ package com.ocelot.mod.application.task;
 import com.mrcrayfish.device.api.app.Icons;
 import com.mrcrayfish.device.api.app.Notification;
 import com.mrcrayfish.device.api.task.Task;
-import com.ocelot.mod.Mod;
+import com.ocelot.mod.ModelCreator;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -14,7 +14,7 @@ import net.minecraft.world.World;
 public class TaskNotificationCopiedJson extends Task {
 
 	public TaskNotificationCopiedJson() {
-		super(Mod.MOD_ID + ".notification_copy_json");
+		super(ModelCreator.MOD_ID + ".notification_copy_json");
 	}
 
 	@Override

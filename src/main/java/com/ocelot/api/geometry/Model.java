@@ -17,7 +17,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
 import com.ocelot.api.utils.NamedBufferedImage;
-import com.ocelot.mod.Mod;
+import com.ocelot.mod.ModelCreator;
 import com.ocelot.mod.Usernames;
 
 import net.minecraft.client.resources.I18n;
@@ -204,7 +204,7 @@ public class Model {
 
 		private void saveTexturesToDisc(String jsonName, List<NamedBufferedImage> textures, NamedBufferedImage particle) {
 			try {
-				File folder = new File(Loader.instance().getConfigDir(), Mod.MOD_ID + "/export/" + jsonName + "/textures");
+				File folder = new File(Loader.instance().getConfigDir(), ModelCreator.MOD_ID + "/export/" + jsonName + "/textures");
 				if (folder.exists()) {
 					folder.delete();
 				}

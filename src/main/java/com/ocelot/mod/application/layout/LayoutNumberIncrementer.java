@@ -27,7 +27,8 @@ public class LayoutNumberIncrementer extends Layout {
 	public LayoutNumberIncrementer(int left, int top, int width, int height, float baseValue) {
 		super(left, top, width, height);
 		this.changeListener = null;
-		this.set(baseValue);
+		this.setPrivate(baseValue);
+		this.updateText();
 	}
 
 	@Override
@@ -38,10 +39,11 @@ public class LayoutNumberIncrementer extends Layout {
 		up.setClickListener((mouseX, mouseY, mouseButton) -> {
 			if (mouseButton == 0) {
 				if (GuiScreen.isShiftKeyDown()) {
-					this.add(0.1f);
+					this.add(0.05f);
 				} else {
-					this.add(1f);
+					this.add(0.5f);
 				}
+				this.updateText();
 			}
 		});
 		this.addComponent(up);
@@ -50,10 +52,11 @@ public class LayoutNumberIncrementer extends Layout {
 		down.setClickListener((mouseX, mouseY, mouseButton) -> {
 			if (mouseButton == 0) {
 				if (GuiScreen.isShiftKeyDown()) {
-					this.sub(0.1f);
+					this.sub(0.05f);
 				} else {
-					this.sub(1f);
+					this.sub(0.5f);
 				}
+				this.updateText();
 			}
 		});
 		this.addComponent(down);
@@ -61,11 +64,12 @@ public class LayoutNumberIncrementer extends Layout {
 		display = new TextField(0, buttonHeight, this.width);
 		display.setKeyListener((c) -> {
 			if (NumberUtils.isCreatable(display.getText())) {
-				this.set(Float.parseFloat(display.getText()));
+				this.setPrivate(Float.parseFloat(display.getText()));
 			}
 			return false;
 		});
-		this.set(this.value);
+
+		this.setPrivate(this.value);
 		this.addComponent(display);
 	}
 
@@ -78,30 +82,42 @@ public class LayoutNumberIncrementer extends Layout {
 	public void handleTick() {
 		super.handleTick();
 		if (NumberUtils.isCreatable(display.getText())) {
-			this.set(Float.parseFloat(display.getText()));
+			this.setPrivate(Float.parseFloat(display.getText()));
+		}
+	}
+
+	public void updateText() {
+		if (this.isInitialized()) {
+			String s = Float.toString(this.value);
+			if (s.endsWith(".0")) {
+				this.display.setText(s);
+				s = Integer.toString((int) this.value);
+			}
+			this.display.setText(s);
 		}
 	}
 
 	public void add(float value) {
-		this.set(this.value + value / 2);
+		this.setPrivate(this.value + value);
 	}
 
 	public void sub(float value) {
-		this.set(this.value - value / 2);
+		this.setPrivate(this.value - value);
+	}
+
+	private void setPrivate(float value) {
+		this.previousValue = this.value;
+		this.value = value;
+
+		if (this.changeListener != null) {
+			this.changeListener.onChange(this.previousValue, this.value);
+		}
 	}
 
 	public void set(float value) {
 		this.previousValue = this.value;
 		this.value = value;
-
-		if (this.isInitialized()) {
-			String st = Float.toString(this.value);
-			if (st.endsWith(".0")) {
-				this.display.setText(st);
-				st = Integer.toString((int) this.value);
-			}
-			this.display.setText(st);
-		}
+		this.updateText();
 
 		if (this.changeListener != null) {
 			this.changeListener.onChange(this.previousValue, this.value);

@@ -9,6 +9,7 @@ import com.ocelot.mod.application.task.TaskNotificationCopiedJson;
 
 import net.minecraft.launchwrapper.Launch;
 import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventHandler;
 import net.minecraftforge.fml.common.Mod.Instance;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
@@ -25,19 +26,19 @@ import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
  * 
  * @author Ocelot5836
  */
-@net.minecraftforge.fml.common.Mod(modid = Mod.MOD_ID, version = Mod.VERSION, acceptedMinecraftVersions = "[1.12,1.12.2]", useMetadata = true)
-public class Mod {
+@Mod(modid = ModelCreator.MOD_ID, version = ModelCreator.VERSION, acceptedMinecraftVersions = "[1.12,1.12.2]", useMetadata = true)
+public class ModelCreator {
 
 	/** The mod id */
 	public static final String MOD_ID = "mca";
 	/** The current version of the mod */
-	public static final String VERSION = "0.3.1";
+	public static final String VERSION = "0.3.2";
 	/** The id for the model creator app */
 	public static final ResourceLocation MODEL_CREATOR_ID = new ResourceLocation(MOD_ID, "mc");
 
 	/** The mod's instance. Probably not too useful but might as well have it */
 	@Instance(MOD_ID)
-	public static Mod instance;
+	public static ModelCreator instance;
 
 	/** The mod's logger */
 	private static Logger logger;

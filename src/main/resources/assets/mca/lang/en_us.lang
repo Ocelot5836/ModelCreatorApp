@@ -35,6 +35,7 @@ app.mca.mc.tooltip.fast_render.toggle=Enables a faster rendering method in progr
 
 # More Tooltips
 app.mca.mc.tooltip.github=View source code
+app.mca.mc.tooltip.submit_bug.tooltip=Submit a bug report on Github to get it fixed
 
 # File
 app.mca.mc.version=v%s, Save format v%s
@@ -60,3 +61,4 @@ app.mca.mc.screenshot=Screenshot
 app.mca.mc.more=More
 app.mca.mc.examples=Examples
 app.mca.mc.github=GitHub
+app.mca.mc.tooltip.submit_bug=Submit A bug

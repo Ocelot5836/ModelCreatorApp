@@ -35,7 +35,7 @@ import com.ocelot.api.geometry.Model;
 import com.ocelot.api.utils.GuiUtils;
 import com.ocelot.api.utils.NamedBufferedImage;
 import com.ocelot.api.utils.TextureUtils;
-import com.ocelot.mod.Mod;
+import com.ocelot.mod.ModelCreator;
 import com.ocelot.mod.application.component.ComponentModelArea;
 import com.ocelot.mod.application.component.MenuBar;
 import com.ocelot.mod.application.component.MenuBarButton;
@@ -104,7 +104,7 @@ public class ApplicationModelCreator extends Application {
 			public void render(Gui gui, Minecraft mc, int x, int y, int width, int height, int mouseX, int mouseY, boolean windowActive) {
 				gui.drawRect(x, y, x + width - (int) (width * (1 - 0.75)) - 1, y + height, 0xffeaeaed);
 				gui.drawRect(x + width - (int) (width * (1 - 0.75)) - 1, y, x + width, y + height, 0xffdddde4);
-				mc.fontRenderer.drawString(I18n.format("app." + ApplicationModelCreator.getApp().getInfo().getFormattedId() + ".version", Mod.VERSION, MODEL_CREATOR_SAVE_VERSION), x + 2, y + 12, 0xffdddde4, false);
+				mc.fontRenderer.drawString(I18n.format("app." + ApplicationModelCreator.getApp().getInfo().getFormattedId() + ".version", ModelCreator.VERSION, MODEL_CREATOR_SAVE_VERSION), x + 2, y + 12, 0xffdddde4, false);
 			}
 		});
 
@@ -129,7 +129,7 @@ public class ApplicationModelCreator extends Application {
 					if (cubes.isEmpty()) {
 						removeAllCubes();
 					} else {
-						Dialog.Confirmation confirmation = new Dialog.Confirmation(I18n.format("dialog.confirmation.save"));
+						Dialog.Confirmation confirmation = new Dialog.Confirmation(I18n.format("app.mca.mc.dialog.confirmation.save"));
 						confirmation.setPositiveListener((mouseX1, mouseY1, mouseButton1) -> {
 							saveProjectToFile(cubes, loadedImages, modelArea.hasAmbientOcclusion(), modelArea.getParticle());
 						});
@@ -269,7 +269,7 @@ public class ApplicationModelCreator extends Application {
 							int contentWidth = 13 + Lib.getDefaultTextWidth(this.getText());
 							int contentX = (int) Math.ceil((this.getWidth() - contentWidth) / 2.0);
 
-							TextureUtils.bindTexture(Mod.MOD_ID, "textures/app/icons.png");
+							TextureUtils.bindTexture(ModelCreator.MOD_ID, "textures/app/icons.png");
 							GlStateManager.pushMatrix();
 							GlStateManager.translate(0.5, 0.5, 0);
 							RenderUtil.drawRectWithTexture(x, y + this.getHeight() / 2 - 5, 20, 0, 10, 10, 20, 20, 200, 200);
@@ -332,7 +332,7 @@ public class ApplicationModelCreator extends Application {
 							int contentWidth = 13 + Lib.getDefaultTextWidth(this.getText());
 							int contentX = (int) Math.ceil((this.getWidth() - contentWidth) / 2.0);
 
-							TextureUtils.bindTexture(Mod.MOD_ID, "textures/app/icons.png");
+							TextureUtils.bindTexture(ModelCreator.MOD_ID, "textures/app/icons.png");
 							GlStateManager.pushMatrix();
 							GlStateManager.translate(0.5, 0.5, 0);
 							RenderUtil.drawRectWithTexture(x, y + this.getHeight() / 2 - 6, 40, 0, 10, 10, 20, 20, 200, 200);
@@ -356,6 +356,19 @@ public class ApplicationModelCreator extends Application {
 					}
 				});
 				menuBarMore.add(moreGithub);
+
+				MenuBarButton moreSubmitABug = new MenuBarButton(I18n.format("app.mca.mc.submit_bug"), Icons.ERROR);
+				moreSubmitABug.setTooltip(TextFormatting.GRAY + I18n.format("app.mca.mc.tooltip.submit_bug"), 150);
+				moreSubmitABug.setClickListener((mouseX, mouseY, mouseButton) -> {
+					try {
+						URI githubURL = new URI("https://github.com/Ocelot5836/ModelCreatorApp/issues/new");
+						Desktop.getDesktop().browse(githubURL);
+					} catch (Exception e) {
+						openErrorDialog(I18n.format("app.mca.mc.dialog.project.open.fail", "https://github.com/Ocelot5836/ModelCreatorApp/issues/new"));
+						e.printStackTrace();
+					}
+				});
+				menuBarMore.add(moreSubmitABug);
 			}
 		}
 
@@ -447,7 +460,7 @@ public class ApplicationModelCreator extends Application {
 	}
 
 	private java.io.File saveToDisc(String json, String jsonName) {
-		java.io.File folder = new java.io.File(Loader.instance().getConfigDir(), Mod.MOD_ID + "/export/" + jsonName);
+		java.io.File folder = new java.io.File(Loader.instance().getConfigDir(), ModelCreator.MOD_ID + "/export/" + jsonName);
 		java.io.File jsonFile = new java.io.File(folder, jsonName + ".json");
 		try {
 			if (jsonFile.createNewFile()) {

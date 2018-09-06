@@ -42,7 +42,7 @@ import com.ocelot.mod.application.component.MenuBarButton;
 import com.ocelot.mod.application.component.MenuBarButtonDivider;
 import com.ocelot.mod.application.component.MenuBarItem;
 import com.ocelot.mod.application.layout.LayoutCubeUI;
-import com.ocelot.mod.application.task.TaskNotificationCopiedJson;
+import com.ocelot.mod.application.task.TaskNotificationCopy;
 import com.ocelot.mod.lib.Lib;
 import com.ocelot.mod.lib.ModelCreatorFileConverter;
 
@@ -122,7 +122,7 @@ public class ApplicationModelCreator extends Application {
 			menuBarFile.setHighlightBorderColor(0xffc9c9c9);
 
 			{
-				MenuBarButton fileNew = new MenuBarButton(I18n.format("app." + ApplicationModelCreator.getApp().getInfo().getFormattedId() + ".new"), Icons.FILE);
+				MenuBarButton fileNew = new MenuBarButton(I18n.format("app." + ApplicationModelCreator.getApp().getInfo().getFormattedId() + ".new"), Icons.NEW_FILE);
 				fileNew.setTooltip(TextFormatting.GRAY + I18n.format("app." + ApplicationModelCreator.getApp().getInfo().getFormattedId() + ".tooltip.new"));
 				fileNew.setClickListener((mouseX, mouseY, mouseButton) -> {
 					List<Cube> cubes = modelArea.getCubes();
@@ -183,6 +183,37 @@ public class ApplicationModelCreator extends Application {
 				});
 				menuBarFile.add(fileSaveProject);
 
+				MenuBarButton fileCopyProject = new MenuBarButton(I18n.format("app." + ApplicationModelCreator.getApp().getInfo().getFormattedId() + ".copy"), Icons.FILE);
+				fileCopyProject.setTooltip(TextFormatting.GRAY + I18n.format("app." + ApplicationModelCreator.getApp().getInfo().getFormattedId() + ".tooltip.copy"));
+				fileCopyProject.setClickListener((mouseX, mouseY, mouseButton) -> {
+
+					NBTTagCompound data = new NBTTagCompound();
+					{
+						data.setString("version", MODEL_CREATOR_SAVE_VERSION);
+
+						NBTTagList cubesList = new NBTTagList();
+						for (Cube cube : modelArea.getCubes()) {
+							cubesList.appendTag(cube.serializeNBT());
+						}
+						data.setTag("cubes", cubesList);
+
+						data.setBoolean("ambientOcclusion", modelArea.hasAmbientOcclusion());
+						if (modelArea.getParticle() != null) {
+							data.setTag("particle", modelArea.getParticle().serializeNBT());
+						}
+
+						NBTTagList texturesList = new NBTTagList();
+						for (NamedBufferedImage image : loadedImages) {
+							texturesList.appendTag(image.serializeNBT());
+						}
+						data.setTag("textures", texturesList);
+					}
+
+					Toolkit.getDefaultToolkit().getSystemClipboard().setContents(new StringSelection(String.valueOf(data)), null);
+					TaskManager.sendTask(new TaskNotificationCopy(TextFormatting.BOLD + "Copied", "File NBT to Clipboard", Icons.COPY));
+				});
+				menuBarFile.add(fileCopyProject);
+
 				menuBarFile.add(new MenuBarButtonDivider());
 
 				MenuBarButton fileImportJson = new MenuBarButton(I18n.format("app." + ApplicationModelCreator.getApp().getInfo().getFormattedId() + ".import"), Icons.IMPORT);
@@ -204,7 +235,7 @@ public class ApplicationModelCreator extends Application {
 									String json = ApplicationModelCreator.createModelJson(modelArea.getCubes(), input, modelArea.hasAmbientOcclusion(), modelArea.getParticle());
 									java.io.File jsonFile = ApplicationModelCreator.this.saveToDisc(json, input);
 									Toolkit.getDefaultToolkit().getSystemClipboard().setContents(new StringSelection(jsonFile.getParentFile().getAbsolutePath()), null);
-									TaskManager.sendTask(new TaskNotificationCopiedJson());
+									TaskManager.sendTask(new TaskNotificationCopy(TextFormatting.BOLD + "Export Location", "Copied To Clipboard", Icons.EXPORT));
 									return true;
 								}
 							}
@@ -220,7 +251,7 @@ public class ApplicationModelCreator extends Application {
 				MenuBarButton fileSetTexturePath = new MenuBarButton(I18n.format("app." + ApplicationModelCreator.getApp().getInfo().getFormattedId() + ".set_tex_path"), Icons.PICTURE);
 				fileSetTexturePath.setTooltip(TextFormatting.GRAY + I18n.format("app." + ApplicationModelCreator.getApp().getInfo().getFormattedId() + ".tooltip.not_added"), 150);
 				fileSetTexturePath.setEnabled(false);
-				// fileExportJson.setClickListener((mouseX, mouseY, mouseButton) -> {
+				// fileSetTexturePath.setClickListener((mouseX, mouseY, mouseButton) -> {
 				// });
 				menuBarFile.add(fileSetTexturePath);
 
@@ -546,7 +577,6 @@ public class ApplicationModelCreator extends Application {
 		if (data.hasKey("version", Constants.NBT.TAG_STRING)) {
 			String version = data.getString("version");
 			if (MODEL_CREATOR_SAVE_VERSION.equalsIgnoreCase(version)) {
-
 				ApplicationModelCreator.getApp().removeAllCubes();
 				ApplicationModelCreator.getApp().loadedImages.clear();
 				if (data.hasKey("cubes", Constants.NBT.TAG_LIST)) {
@@ -573,15 +603,15 @@ public class ApplicationModelCreator extends Application {
 
 				return true;
 			} else {
-//				if (version.equalsIgnoreCase(ModelCreatorFileConverter.MODEL_CREATOR_SAVE_VERSION_10)) {
-//					Dialog.Confirmation confirm = new Dialog.Confirmation(I18n.format("app.mca.mc.dialog.project.can_convert", version, ModelCreatorFileConverter.MODEL_CREATOR_SAVE_VERSION_11));
-//					confirm.setPositiveListener((mouseX, mouseY, mouseButton) -> {
-//						file.setData(ModelCreatorFileConverter.convert10To11(file.getData()));
-//						loadProjectFromFile(file);
-//					});
-//					ApplicationModelCreator.getApp().openDialog(confirm);
-//					return false;
-//				}
+				// if (version.equalsIgnoreCase(ModelCreatorFileConverter.MODEL_CREATOR_SAVE_VERSION_10)) {
+				// Dialog.Confirmation confirm = new Dialog.Confirmation(I18n.format("app.mca.mc.dialog.project.can_convert", version, ModelCreatorFileConverter.MODEL_CREATOR_SAVE_VERSION_11));
+				// confirm.setPositiveListener((mouseX, mouseY, mouseButton) -> {
+				// file.setData(ModelCreatorFileConverter.convert10To11(file.getData()));
+				// loadProjectFromFile(file);
+				// });
+				// ApplicationModelCreator.getApp().openDialog(confirm);
+				// return false;
+				// }
 
 				openErrorDialog(I18n.format("app.mca.mc.dialog.project.wrong_version", version));
 				return false;

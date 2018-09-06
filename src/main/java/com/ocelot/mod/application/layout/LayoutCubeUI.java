@@ -192,7 +192,7 @@ public class LayoutCubeUI extends Layout {
 		{
 			objectOptions = new ScrollableLayout(0, cubes.top + buttonHeight + cubes.getHeight() + 16 + 12, this.width, 164, this.height - (cubes.top + buttonHeight + cubes.getHeight() + 16 + 12));
 			objectOptions.setScrollSpeed(10);
-			
+
 			positionX = new LayoutNumberIncrementer(2 + (objectOptions.width / 3 - 3) * 0, 15, objectOptions.width / 3 - 4, 40, 0);
 			objectOptions.addComponent(positionX);
 
@@ -444,23 +444,23 @@ public class LayoutCubeUI extends Layout {
 			this.cube.getFace(this.selectedFace).setAutoUV(this.faceAutoUV.isSelected());
 		}
 	}
-	
+
 	@Override
 	public void renderOverlay(Laptop laptop, Minecraft mc, int mouseX, int mouseY, boolean windowActive) {
 		super.renderOverlay(laptop, mc, mouseX, mouseY, windowActive);
 	}
 
 	private void updateRotation() {
-		cube.getRotation().set(0, 0, 0);
+		this.cube.getRotation().set(0, 0, 0);
 		switch (selectedAxis) {
 		case X:
-			cube.getRotation().set(this.cubeRotation, 0, 0);
+			this.cube.getRotation().set(this.cubeRotation, 0, 0);
 			break;
 		case Y:
-			cube.getRotation().set(0, this.cubeRotation, 0);
+			this.cube.getRotation().set(0, this.cubeRotation, 0);
 			break;
 		case Z:
-			cube.getRotation().set(0, 0, this.cubeRotation);
+			this.cube.getRotation().set(0, 0, this.cubeRotation);
 			break;
 		default:
 			break;
@@ -468,37 +468,37 @@ public class LayoutCubeUI extends Layout {
 	}
 
 	public void updateCube(Cube cube) {
-		this.cube = cube;
-		this.cubeName.setText(String.valueOf(cube));
-		if (this.cube != null) {
-			this.positionX.set(this.cube.getPosition().x);
-			this.positionY.set(this.cube.getPosition().y);
-			this.positionZ.set(this.cube.getPosition().z);
+		if (cube != null) {
+			this.positionX.set(cube.getPosition().x);
+			this.positionY.set(cube.getPosition().y);
+			this.positionZ.set(cube.getPosition().z);
 
-			this.sizeX.set(this.cube.getSize().x);
-			this.sizeY.set(this.cube.getSize().y);
-			this.sizeZ.set(this.cube.getSize().z);
+			this.sizeX.set(cube.getSize().x);
+			this.sizeY.set(cube.getSize().y);
+			this.sizeZ.set(cube.getSize().z);
 
-			float rotation = this.selectedAxis == EnumFacing.Axis.X ? this.cube.getRotation().x : this.selectedAxis == EnumFacing.Axis.Y ? this.cube.getRotation().y : this.selectedAxis == EnumFacing.Axis.Z ? this.cube.getRotation().z : 0;
+			float rotation = this.selectedAxis == EnumFacing.Axis.X ? cube.getRotation().x : this.selectedAxis == EnumFacing.Axis.Y ? cube.getRotation().y : this.selectedAxis == EnumFacing.Axis.Z ? cube.getRotation().z : 0;
 			this.rotation.setPercentage(rotation / 2f / 45f + 0.5f);
-			this.cubeRotation = rotation;
+			cubeRotation = rotation;
 			updateRotation();
 
-			this.faceU.set(this.cube.getFace(this.selectedFace).getTextureCoords().x);
-			this.faceV.set(this.cube.getFace(this.selectedFace).getTextureCoords().y);
-			this.faceWidth.set(this.cube.getFace(this.selectedFace).getTextureCoords().z);
-			this.faceHeight.set(this.cube.getFace(this.selectedFace).getTextureCoords().w);
+			this.faceU.set(cube.getFace(this.selectedFace).getTextureCoords().x);
+			this.faceV.set(cube.getFace(this.selectedFace).getTextureCoords().y);
+			this.faceWidth.set(cube.getFace(this.selectedFace).getTextureCoords().z);
+			this.faceHeight.set(cube.getFace(this.selectedFace).getTextureCoords().w);
 
-			//TODO implement these features
+			// TODO implement these features
 			this.faceRotation.setEnabled(false);
-			
-			this.faceEnable.setSelected(this.cube.getFace(this.selectedFace).isEnabled());
-			this.faceCull.setSelected(this.cube.getFace(this.selectedFace).isCullFace());
-			this.faceFill.setSelected(this.cube.getFace(this.selectedFace).isFill());
-			this.faceAutoUV.setSelected(this.cube.getFace(this.selectedFace).isAutoUV());
 
-			this.shade.setSelected(this.cube.shouldShade());
+			this.faceEnable.setSelected(cube.getFace(this.selectedFace).isEnabled());
+			this.faceCull.setSelected(cube.getFace(this.selectedFace).isCullFace());
+			this.faceFill.setSelected(cube.getFace(this.selectedFace).isFill());
+			this.faceAutoUV.setSelected(cube.getFace(this.selectedFace).isAutoUV());
+
+			this.shade.setSelected(cube.shouldShade());
 		}
+		this.cube = cube;
+		this.cubeName.setText(String.valueOf(cube));
 	}
 
 	public void updateCubes(List<Cube> cubes) {

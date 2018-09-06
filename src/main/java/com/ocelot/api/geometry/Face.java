@@ -394,7 +394,6 @@ public class Face implements Cloneable, INBTSerializable<NBTTagCompound> {
 		} else {
 			this.texture = texture;
 			this.textureCoords.set(u, v, width, height);
-			this.autoUV = false;
 		}
 		this.textureLocation = null;
 		return this;

@@ -20,8 +20,8 @@ public class Usernames {
 	public static final String MR_CRAYFISH_UUID = "62d17f0b524841f4befc2daa457fb266";
 
 	/** Ocelot5836's Username from UUID */
-	public static final String OCELOT5836 = GuiUtils.getPlayerName(OCELOT5836_UUID);
+	public static final String OCELOT5836 = "Ocelot5836";
 	/** MrCrayfish's Username from UUID */
-	public static final String MR_CRAYFISH = GuiUtils.getPlayerName(MR_CRAYFISH_UUID);
+	public static final String MR_CRAYFISH = "MrCrayfish";
 
 }

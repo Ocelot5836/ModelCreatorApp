@@ -80,12 +80,12 @@ public class Model {
 			}
 			int i = 0;
 			for (ResourceLocation location : addedImages.keySet()) {
-				textures.addProperty(Integer.toString(i), String.valueOf(src.textures.get(i).getLocation()).replaceAll("textures/", ""));
+				textures.addProperty(Integer.toString(i), String.valueOf(src.textures.get(i).getLocation()).replaceAll("textures/", "").replaceAll(".png", ""));
 				i++;
 			}
 
 			if (src.particle != null && src.particle.getLocation() != null) {
-				textures.addProperty("particle", src.particle.getLocation().toString().replaceAll("textures/", ""));
+				textures.addProperty("particle", src.particle.getLocation().toString().replaceAll("textures/", "").replaceAll(".png", ""));
 			}
 			json.add("textures", textures);
 

@@ -1,7 +1,5 @@
 package com.ocelot.mod.application.dialog;
 
-import java.awt.image.BufferedImage;
-
 import com.mrcrayfish.device.api.app.component.Image;
 import com.mrcrayfish.device.core.Laptop;
 import com.ocelot.api.utils.GuiUtils;
@@ -26,7 +24,7 @@ public class CustomImage extends Image {
 		super.render(laptop, mc, x, y, mouseX, mouseY, windowActive, partialTicks);
 		hovered = GuiUtils.isMouseInside(x, y, this.componentWidth, this.componentHeight, mouseX, mouseY);
 		if (this == dialog.getSelectedImageComponent()) {
-			Gui.drawRect(x, y, x+this.componentWidth, y+this.componentHeight, 0x77ffffff);
+			Gui.drawRect(x, y, x + this.componentWidth, y + this.componentHeight, 0x77ffffff);
 		}
 	}
 }

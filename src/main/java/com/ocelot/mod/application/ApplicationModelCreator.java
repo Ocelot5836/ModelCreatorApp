@@ -41,6 +41,7 @@ import com.ocelot.mod.application.component.MenuBar;
 import com.ocelot.mod.application.component.MenuBarButton;
 import com.ocelot.mod.application.component.MenuBarButtonDivider;
 import com.ocelot.mod.application.component.MenuBarItem;
+import com.ocelot.mod.application.dialog.DialogGitweb;
 import com.ocelot.mod.application.layout.LayoutCubeUI;
 import com.ocelot.mod.application.task.TaskNotificationCopy;
 import com.ocelot.mod.lib.Lib;
@@ -349,7 +350,10 @@ public class ApplicationModelCreator extends Application {
 			{
 				MenuBarButton moreExamples = new MenuBarButton(I18n.format("app." + ApplicationModelCreator.getApp().getInfo().getFormattedId() + ".examples"), Icons.FILE);
 				moreExamples.setTooltip(TextFormatting.GRAY + I18n.format("app." + ApplicationModelCreator.getApp().getInfo().getFormattedId() + ".tooltip.not_added"), 150);
-				moreExamples.setEnabled(false);
+				moreExamples.setClickListener((mouseX, mouseY, mouseButton) -> {
+					DialogGitweb dialog = new DialogGitweb(this, "modelcreator.app/pages/models");
+					this.openDialog(dialog);
+				});
 				menuBarMore.add(moreExamples);
 
 				menuBarMore.add(new MenuBarButtonDivider());

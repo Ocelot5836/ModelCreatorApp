@@ -2,6 +2,6 @@
 	"name": "Model Creator",
 	"author": "Ocelot5836",
 	"description": "A recreation of MrCrayfish's Model Creator inside of Minecraft! Has all the features and abilities from the original, but also adds some new features and functionality.",
-	"version": "0.3.2",
+	"version": "0.3.4",
 	"icon": "mca:textures/app/icon/mc.png"
 }

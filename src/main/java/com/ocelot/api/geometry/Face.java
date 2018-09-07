@@ -1,5 +1,6 @@
 package com.ocelot.api.geometry;
 
+import java.util.List;
 import java.util.Map;
 
 import javax.annotation.Nullable;
@@ -448,11 +449,10 @@ public class Face implements Cloneable, INBTSerializable<NBTTagCompound> {
 		return this.copy();
 	}
 
-	@Override
-	public NBTTagCompound serializeNBT() {
+	public NBTTagCompound serializeNBT(int textureId) {
 		NBTTagCompound nbt = new NBTTagCompound();
-		if (this.texture != null) {
-			nbt.setTag("texture", this.texture.serializeNBT());
+		if (textureId != -1) {
+			nbt.setInteger("textureId", textureId);
 		}
 		nbt.setTag("textureCoords", NBTHelper.setVector(this.textureCoords));
 		nbt.setFloat("rotation", this.rotation);
@@ -464,10 +464,12 @@ public class Face implements Cloneable, INBTSerializable<NBTTagCompound> {
 		return nbt;
 	}
 
-	@Override
-	public void deserializeNBT(NBTTagCompound nbt) {
-		if (nbt.hasKey("texture", Constants.NBT.TAG_COMPOUND)) {
-			this.texture = NamedBufferedImage.fromTag(nbt.getCompoundTag("texture"));
+	public void deserializeNBT(NBTTagCompound nbt, List<NamedBufferedImage> textures) {
+		if (nbt.hasKey("textureId", Constants.NBT.TAG_INT) && textures != null) {
+			int textureId = nbt.getInteger("textureId");
+			if (textureId < textures.size()) {
+				this.texture = new NamedBufferedImage(textures.get(textureId).getImage(), textures.get(textureId).getLocation());
+			}
 		}
 		this.textureCoords = NBTHelper.getVector4f(nbt.getCompoundTag("textureCoords"));
 		this.rotation = nbt.getFloat("rotation");
@@ -478,10 +480,24 @@ public class Face implements Cloneable, INBTSerializable<NBTTagCompound> {
 		this.faceDirection = EnumFacing.getFront(nbt.getInteger("facingDirection"));
 	}
 
-	public static Face fromTag(Cube parentCube, NBTTagCompound nbt) {
+	public static Face fromTag(Cube parentCube, NBTTagCompound nbt, List<NamedBufferedImage> textures) {
 		Face face = new Face(parentCube);
-		face.deserializeNBT(nbt);
+		face.deserializeNBT(nbt, textures);
 		return face;
+	}
+
+	@Override
+	public NBTTagCompound serializeNBT() {
+		return this.serializeNBT(-1);
+	}
+
+	@Override
+	public void deserializeNBT(NBTTagCompound nbt) {
+		this.deserializeNBT(nbt, null);
+	}
+
+	public static Face fromTag(Cube parentCube, NBTTagCompound nbt) {
+		return fromTag(parentCube, nbt, null);
 	}
 
 	public static void clearCache() {

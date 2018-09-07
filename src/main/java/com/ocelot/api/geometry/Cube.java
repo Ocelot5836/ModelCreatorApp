@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.lwjgl.util.vector.Vector3f;
 
+import com.google.common.collect.Lists;
 import com.ocelot.api.libs.NBTHelper;
 import com.ocelot.api.utils.NamedBufferedImage;
 import com.ocelot.mod.lib.Lib;
@@ -14,6 +15,7 @@ import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.NBTTagList;
 import net.minecraft.util.EnumFacing;
 import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.common.util.INBTSerializable;
@@ -62,7 +64,7 @@ public class Cube implements Cloneable, INBTSerializable<NBTTagCompound> {
 
 		GlStateManager.translate(0, scale * size.y, 0);
 	}
-	
+
 	public void applyLighting() {
 		if (this.shade) {
 			RenderHelper.enableStandardItemLighting();
@@ -300,13 +302,40 @@ public class Cube implements Cloneable, INBTSerializable<NBTTagCompound> {
 		nbt.setTag("size", NBTHelper.setVector(this.size));
 		nbt.setTag("rotation", NBTHelper.setVector(this.rotation));
 		nbt.setTag("rotationPoint", NBTHelper.setVector(this.rotationPoint));
+
+		NBTTagCompound faces = new NBTTagCompound();
+		List<NamedBufferedImage> textures = Lists.<NamedBufferedImage>newArrayList();
 		for (int i = 0; i < EnumFacing.values().length; i++) {
 			EnumFacing facing = EnumFacing.values()[i];
 			Face face = this.getFace(facing);
+			int textureId = -1;
 			if (face != Face.NULL_FACE) {
-				nbt.setTag(facing.getName2(), face.serializeNBT());
+				if (face.getTexture() != null) {
+					NamedBufferedImage texture = face.getTexture();
+					boolean flag = true;
+					for (int j = 0; j < textures.size(); j++) {
+						NamedBufferedImage image = textures.get(j);
+						if (image.getLocation().equals(texture.getLocation())) {
+							textureId = j;
+							flag = false;
+							break;
+						}
+					}
+					if (flag) {
+						textures.add(texture);
+					}
+				}
+				faces.setTag(facing.getName2(), face.serializeNBT(textureId));
 			}
 		}
+		nbt.setTag("faces", faces);
+
+		NBTTagList texturesList = new NBTTagList();
+		for (NamedBufferedImage image : textures) {
+			texturesList.appendTag(image.serializeNBT());
+		}
+		nbt.setTag("textures", texturesList);
+
 		nbt.setString("name", this.name);
 		nbt.setBoolean("shade", this.shade);
 		return nbt;
@@ -318,14 +347,24 @@ public class Cube implements Cloneable, INBTSerializable<NBTTagCompound> {
 		this.size = NBTHelper.getVector3f(nbt.getCompoundTag("size"));
 		this.rotation = NBTHelper.getVector3f(nbt.getCompoundTag("rotation"));
 		this.rotationPoint = NBTHelper.getVector3f(nbt.getCompoundTag("rotationPoint"));
+		
+		NBTTagCompound faces = nbt.getCompoundTag("faces");
+		List<NamedBufferedImage> textures = Lists.<NamedBufferedImage>newArrayList();
+		
+		NBTTagList texturesTag = nbt.getTagList("textures", Constants.NBT.TAG_COMPOUND);
+		for(int i = 0; i < texturesTag.tagCount(); i++) {
+			textures.add(NamedBufferedImage.fromTag(texturesTag.getCompoundTagAt(i)));
+		}
+				
 		for (int i = 0; i < EnumFacing.values().length; i++) {
 			EnumFacing facing = EnumFacing.values()[i];
-			if (nbt.hasKey(facing.getName2(), Constants.NBT.TAG_COMPOUND)) {
-				this.setFace(facing, Face.fromTag(this, nbt.getCompoundTag(facing.getName2())));
+			if (faces.hasKey(facing.getName2(), Constants.NBT.TAG_COMPOUND)) {
+				this.setFace(facing, Face.fromTag(this, faces.getCompoundTag(facing.getName2()), textures));
 			} else {
 				this.setFace(facing, Face.NULL_FACE);
 			}
 		}
+		
 		this.name = nbt.getString("name");
 		this.shade = nbt.getBoolean("shade");
 	}

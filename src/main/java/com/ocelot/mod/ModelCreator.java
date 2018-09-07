@@ -26,13 +26,13 @@ import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
  * 
  * @author Ocelot5836
  */
-@Mod(modid = ModelCreator.MOD_ID, version = ModelCreator.VERSION, acceptedMinecraftVersions = "[1.12,1.12.2]", useMetadata = true)
+@Mod(modid = ModelCreator.MOD_ID, version = ModelCreator.VERSION, acceptedMinecraftVersions = "[1.12,1.12.2]")
 public class ModelCreator {
 
 	/** The mod id */
 	public static final String MOD_ID = "mca";
 	/** The current version of the mod */
-	public static final String VERSION = "0.3.2";
+	public static final String VERSION = "0.3.4";
 	/** The id for the model creator app */
 	public static final ResourceLocation MODEL_CREATOR_ID = new ResourceLocation(MOD_ID, "mc");
 

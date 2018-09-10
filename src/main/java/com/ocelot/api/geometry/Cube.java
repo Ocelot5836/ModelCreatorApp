@@ -322,6 +322,7 @@ public class Cube implements Cloneable, INBTSerializable<NBTTagCompound> {
 						}
 					}
 					if (flag) {
+						textureId = textures.size();
 						textures.add(texture);
 					}
 				}

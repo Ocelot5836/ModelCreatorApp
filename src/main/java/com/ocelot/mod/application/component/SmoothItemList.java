@@ -293,6 +293,21 @@ public class SmoothItemList<E> extends Component implements Iterable<E> {
 	}
 
 	/**
+	 * Gets the item at the specified index
+	 * 
+	 * @param index
+	 *            The index to get the item from
+	 * @return The item or null if the index was out of bounds
+	 */
+	@Nullable
+	public E getItem(int index) {
+		if (index >= 0 && index < items.size()) {
+			return items.get(index);
+		}
+		return null;
+	}
+
+	/**
 	 * Gets the selected item
 	 * 
 	 * @return the selected item

@@ -1,6 +1,6 @@
 # Misc names
 app.mca.mc.cube.name=Cube
-app.mca.mc.json.comment=Model generated using %s's Model Creator. Original model creator: (%s)
+app.mca.mc.json.comment=Model generated using %s's Model Creator. Original model creator: %s
 app.mca.mc.author_note=Model Creator by %s
 app.mca.mc.welcome.title=Welcome
 app.mca.mc.welcome.info=Thank you for installing this application! Please note this app is still in development and is mainly only released to learn about unknown bugs. Either way, I hope you enjoy making models in this app!
@@ -41,6 +41,7 @@ app.mca.mc.tooltip.submit_bug=Submit a bug report on Github to get it fixed
 
 # File
 app.mca.mc.version=v%s, Save format v%s
+app.mca.mc.fastRender=Fast render
 app.mca.mc.file=File
 app.mca.mc.new=New
 app.mca.mc.load=Load Project

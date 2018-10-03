@@ -4,6 +4,7 @@ import org.apache.logging.log4j.Logger;
 
 import com.mrcrayfish.device.api.ApplicationManager;
 import com.mrcrayfish.device.api.task.TaskManager;
+import com.ocelot.api.utils.NumberHelper;
 import com.ocelot.mod.application.ApplicationModelCreator;
 import com.ocelot.mod.application.task.TaskNotificationCopy;
 
@@ -45,6 +46,7 @@ public class ModelCreator {
 
 	@EventHandler
 	public void pre(FMLPreInitializationEvent event) {
+		NumberHelper.init();
 		logger = event.getModLog();
 	}
 

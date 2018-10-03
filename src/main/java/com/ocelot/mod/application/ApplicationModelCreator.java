@@ -36,12 +36,12 @@ import com.ocelot.api.utils.GuiUtils;
 import com.ocelot.api.utils.NamedBufferedImage;
 import com.ocelot.api.utils.TextureUtils;
 import com.ocelot.mod.ModelCreator;
+import com.ocelot.mod.Usernames;
 import com.ocelot.mod.application.component.ComponentModelArea;
 import com.ocelot.mod.application.component.MenuBar;
 import com.ocelot.mod.application.component.MenuBarButton;
 import com.ocelot.mod.application.component.MenuBarButtonDivider;
 import com.ocelot.mod.application.component.MenuBarItem;
-import com.ocelot.mod.application.dialog.DialogGitweb;
 import com.ocelot.mod.application.layout.LayoutCubeUI;
 import com.ocelot.mod.application.task.TaskNotificationCopy;
 import com.ocelot.mod.lib.Lib;
@@ -58,7 +58,6 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.StringUtils;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.common.util.Constants;
-import net.minecraftforge.fml.common.Loader;
 
 /**
  * <em><b>Copyright (c) 2018 Ocelot5836.</b></em>
@@ -106,6 +105,9 @@ public class ApplicationModelCreator extends Application {
 				gui.drawRect(x, y, x + width - (int) (width * (1 - 0.75)) - 1, y + height, 0xffeaeaed);
 				gui.drawRect(x + width - (int) (width * (1 - 0.75)) - 1, y, x + width, y + height, 0xffdddde4);
 				mc.fontRenderer.drawString(I18n.format("app." + ApplicationModelCreator.getApp().getInfo().getFormattedId() + ".version", ModelCreator.VERSION, MODEL_CREATOR_SAVE_VERSION), x + 2, y + 12, 0xffdddde4, false);
+				if (fastRender) {
+					mc.fontRenderer.drawString(TextFormatting.RED + I18n.format("app." + ApplicationModelCreator.getApp().getInfo().getFormattedId() + ".fastRender"), x + 2, y + 22, 0xffffffff, false);
+				}
 			}
 		});
 
@@ -235,7 +237,13 @@ public class ApplicationModelCreator extends Application {
 								if (!StringUtils.isNullOrEmpty(input)) {
 									String json = ApplicationModelCreator.createModelJson(modelArea.getCubes(), input, modelArea.hasAmbientOcclusion(), modelArea.getParticle());
 									java.io.File jsonFile = ApplicationModelCreator.this.saveToDisc(json, input);
-									Toolkit.getDefaultToolkit().getSystemClipboard().setContents(new StringSelection(jsonFile.getParentFile().getAbsolutePath()), null);
+
+									try {
+										Toolkit.getDefaultToolkit().getSystemClipboard().setContents(new StringSelection(jsonFile.getParentFile().getCanonicalPath()), null);
+									} catch (Exception e) {
+										e.printStackTrace();
+									}
+
 									TaskManager.sendTask(new TaskNotificationCopy(TextFormatting.BOLD + "Export Location", "Copied To Clipboard", Icons.EXPORT));
 									return true;
 								}
@@ -351,7 +359,8 @@ public class ApplicationModelCreator extends Application {
 				MenuBarButton moreExamples = new MenuBarButton(I18n.format("app." + ApplicationModelCreator.getApp().getInfo().getFormattedId() + ".examples"), Icons.FILE);
 				moreExamples.setTooltip(TextFormatting.GRAY + I18n.format("app." + ApplicationModelCreator.getApp().getInfo().getFormattedId() + ".tooltip.not_added"), 150);
 				moreExamples.setClickListener((mouseX, mouseY, mouseButton) -> {
-					DialogGitweb dialog = new DialogGitweb(this, "modelcreator.app/pages/models");
+					// DialogGitweb dialog = new DialogGitweb(this, "modelcreator.app/pages/models");
+					Dialog.Message dialog = new Dialog.Message("Visit\n" + TextFormatting.DARK_BLUE + "modelcreator.app/pages/models" + TextFormatting.RESET + "\nfor examples. (This will be removed in a future) update");
 					this.openDialog(dialog);
 				});
 				menuBarMore.add(moreExamples);
@@ -444,10 +453,12 @@ public class ApplicationModelCreator extends Application {
 
 	@Override
 	public void load(NBTTagCompound nbt) {
+		fastRender = nbt.getBoolean("fastRender");
 	}
 
 	@Override
 	public void save(NBTTagCompound nbt) {
+		nbt.setBoolean("fastRender", fastRender);
 	}
 
 	@Override
@@ -495,9 +506,13 @@ public class ApplicationModelCreator extends Application {
 	}
 
 	private java.io.File saveToDisc(String json, String jsonName) {
-		java.io.File folder = new java.io.File(Loader.instance().getConfigDir(), ModelCreator.MOD_ID + "/export/" + jsonName);
+		java.io.File folder = new java.io.File(Minecraft.getMinecraft().mcDataDir, ModelCreator.MOD_ID + "-export/" + jsonName);
 		java.io.File jsonFile = new java.io.File(folder, jsonName + ".json");
 		try {
+			if (!folder.exists()) {
+				folder.mkdirs();
+			}
+
 			if (jsonFile.createNewFile()) {
 			} else {
 			}
@@ -543,7 +558,8 @@ public class ApplicationModelCreator extends Application {
 	public static String createModelJson(List<Cube> cubes, String jsonName, boolean ambientOcclusion, NamedBufferedImage particle) {
 		Model model = new Model(cubes, jsonName, ambientOcclusion, particle);
 		Gson gson = new GsonBuilder().registerTypeAdapter(Model.class, new Model.Serializer()).setPrettyPrinting().create();
-		return gson.toJson(model);
+
+		return "{\n  \"_comment\": \"" + I18n.format("app.mca.mc.json.comment", Usernames.OCELOT5836, "https://mrcrayfish.com/tools?id=mc") + "\"," + gson.toJson(model).substring(1);
 	}
 
 	public static void saveProjectToFile(List<Cube> cubes, List<NamedBufferedImage> textures, boolean ambientOcclusion, NamedBufferedImage particle) {
@@ -556,7 +572,7 @@ public class ApplicationModelCreator extends Application {
 
 		NBTTagList cubesList = new NBTTagList();
 		for (Cube cube : cubes) {
-			cubesList.appendTag(cube.serializeNBT());
+			cubesList.appendTag(cube.serializeNBT(textures));
 		}
 		data.setTag("cubes", cubesList);
 
@@ -570,6 +586,8 @@ public class ApplicationModelCreator extends Application {
 			texturesList.appendTag(image.serializeNBT());
 		}
 		data.setTag("textures", texturesList);
+
+		System.out.println(data);
 
 		Dialog.SaveFile saveDialog = new Dialog.SaveFile(ApplicationModelCreator.getApp(), data);
 		saveDialog.setResponseHandler(responseHandler);

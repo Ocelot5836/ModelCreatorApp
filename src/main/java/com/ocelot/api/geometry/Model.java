@@ -14,12 +14,14 @@ import org.lwjgl.util.vector.Vector3f;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonPrimitive;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
 import com.ocelot.api.utils.NamedBufferedImage;
 import com.ocelot.mod.ModelCreator;
 import com.ocelot.mod.Usernames;
 
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ResourceLocation;
@@ -62,9 +64,6 @@ public class Model {
 			JsonObject json = new JsonObject();
 			JsonObject textures = new JsonObject();
 			JsonArray elements = new JsonArray();
-
-			/** Comment */
-			json.addProperty("_comment", I18n.format("app.mca.mc.json.comment", Usernames.OCELOT5836, "https://mrcrayfish.com/tools?id=mc"));
 
 			/** global properties */
 			json.addProperty("ambientOcclusion", src.ambientOcclusion);
@@ -204,7 +203,7 @@ public class Model {
 
 		private void saveTexturesToDisc(String jsonName, List<NamedBufferedImage> textures, NamedBufferedImage particle) {
 			try {
-				File folder = new File(Loader.instance().getConfigDir(), ModelCreator.MOD_ID + "/export/" + jsonName + "/textures");
+				File folder = new File(Minecraft.getMinecraft().mcDataDir, ModelCreator.MOD_ID + "-export/" + jsonName + "/textures");
 				if (folder.exists()) {
 					folder.delete();
 				}

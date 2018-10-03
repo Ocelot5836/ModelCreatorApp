@@ -22,7 +22,11 @@ import com.google.common.collect.Maps;
  */
 public class NumberHelper {
 
-	private static final ScriptEngine engine = new ScriptEngineManager().getEngineByName("JavaScript");
+	private static ScriptEngine engine;
+
+	public static void init() {
+		engine = new ScriptEngineManager().getEngineByName("JavaScript");
+	}
 
 	/**
 	 * Parses an equation from a string.

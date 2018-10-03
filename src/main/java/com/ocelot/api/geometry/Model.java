@@ -151,7 +151,7 @@ public class Model {
 				for (i = 0; i < EnumFacing.values().length; i++) {
 					EnumFacing facing = EnumFacing.values()[i];
 					Face face = cube.getFace(facing);
-					if (!face.isEnabled())
+					if (face == null || face.getTexture() == null || face.getTextureCoords() == null || !face.isEnabled())
 						continue;
 
 					JsonObject faceObj = new JsonObject();

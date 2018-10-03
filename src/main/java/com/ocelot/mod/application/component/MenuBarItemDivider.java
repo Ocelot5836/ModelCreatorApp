@@ -8,16 +8,16 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.renderer.GlStateManager;
 
-public class MenuBarButtonDivider implements IMenuBarButton {
+public class MenuBarItemDivider implements IMenuBarItemComponent {
 
 	private int padding;
 	private int color;
 
-	public MenuBarButtonDivider() {
+	public MenuBarItemDivider() {
 		this(1);
 	}
 
-	public MenuBarButtonDivider(int padding) {
+	public MenuBarItemDivider(int padding) {
 		this.color = Color.GRAY.getRGB();
 		this.padding = padding;
 	}

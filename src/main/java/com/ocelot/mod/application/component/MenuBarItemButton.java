@@ -17,7 +17,7 @@ import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.StringUtils;
 
-public class MenuBarButton implements IMenuBarButton {
+public class MenuBarItemButton implements IMenuBarItemComponent {
 
 	private boolean visible;
 	private boolean enabled;
@@ -44,17 +44,17 @@ public class MenuBarButton implements IMenuBarButton {
 
 	private ClickListener clickListener = null;
 
-	public MenuBarButton(String text, ResourceLocation iconResource, int iconU, int iconV, int iconWidth, int iconHeight) {
+	public MenuBarItemButton(String text, ResourceLocation iconResource, int iconU, int iconV, int iconWidth, int iconHeight) {
 		this(text);
 		this.setIcon(iconResource, iconU, iconV, iconWidth, iconHeight);
 	}
 
-	public MenuBarButton(String text, IIcon icon) {
+	public MenuBarItemButton(String text, IIcon icon) {
 		this(text);
 		this.setIcon(icon);
 	}
 
-	public MenuBarButton(String text) {
+	public MenuBarItemButton(String text) {
 		this.text = text;
 		this.tooltip = new String[0];
 		this.tooltipDelay = 20;

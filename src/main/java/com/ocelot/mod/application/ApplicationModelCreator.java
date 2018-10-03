@@ -39,8 +39,8 @@ import com.ocelot.mod.ModelCreator;
 import com.ocelot.mod.Usernames;
 import com.ocelot.mod.application.component.ComponentModelArea;
 import com.ocelot.mod.application.component.MenuBar;
-import com.ocelot.mod.application.component.MenuBarButton;
-import com.ocelot.mod.application.component.MenuBarButtonDivider;
+import com.ocelot.mod.application.component.MenuBarItemButton;
+import com.ocelot.mod.application.component.MenuBarItemDivider;
 import com.ocelot.mod.application.component.MenuBarItem;
 import com.ocelot.mod.application.layout.LayoutCubeUI;
 import com.ocelot.mod.application.task.TaskNotificationCopy;
@@ -93,7 +93,7 @@ public class ApplicationModelCreator extends Application {
 		app = this;
 		running = true;
 		enableTransparency = false;
-		fastRender = true;
+		fastRender = false;
 
 		loadedImages = new ArrayList<NamedBufferedImage>();
 		camera = new Camera(new Vector3f(-5 * 8, -12 * 8, -8 * 8));
@@ -125,7 +125,7 @@ public class ApplicationModelCreator extends Application {
 			menuBarFile.setHighlightBorderColor(0xffc9c9c9);
 
 			{
-				MenuBarButton fileNew = new MenuBarButton(I18n.format("app." + ApplicationModelCreator.getApp().getInfo().getFormattedId() + ".new"), Icons.NEW_FILE);
+				MenuBarItemButton fileNew = new MenuBarItemButton(I18n.format("app." + ApplicationModelCreator.getApp().getInfo().getFormattedId() + ".new"), Icons.NEW_FILE);
 				fileNew.setTooltip(TextFormatting.GRAY + I18n.format("app." + ApplicationModelCreator.getApp().getInfo().getFormattedId() + ".tooltip.new"));
 				fileNew.setClickListener((mouseX, mouseY, mouseButton) -> {
 					List<Cube> cubes = modelArea.getCubes();
@@ -144,9 +144,9 @@ public class ApplicationModelCreator extends Application {
 				});
 				menuBarFile.add(fileNew);
 
-				menuBarFile.add(new MenuBarButtonDivider());
+				menuBarFile.add(new MenuBarItemDivider());
 
-				MenuBarButton fileLoadProject = new MenuBarButton(I18n.format("app." + ApplicationModelCreator.getApp().getInfo().getFormattedId() + ".load"), Icons.FOLDER);
+				MenuBarItemButton fileLoadProject = new MenuBarItemButton(I18n.format("app." + ApplicationModelCreator.getApp().getInfo().getFormattedId() + ".load"), Icons.FOLDER);
 				fileLoadProject.setTooltip(TextFormatting.GRAY + I18n.format("app." + ApplicationModelCreator.getApp().getInfo().getFormattedId() + ".tooltip.load"));
 				fileLoadProject.setClickListener((mouseX, mouseY, mouseButton) -> {
 					Dialog.OpenFile openDialog = new Dialog.OpenFile(this);
@@ -179,14 +179,14 @@ public class ApplicationModelCreator extends Application {
 					openDialog(openDialog);
 				});
 				menuBarFile.add(fileLoadProject);
-				MenuBarButton fileSaveProject = new MenuBarButton(I18n.format("app." + ApplicationModelCreator.getApp().getInfo().getFormattedId() + ".save"), Icons.SAVE);
+				MenuBarItemButton fileSaveProject = new MenuBarItemButton(I18n.format("app." + ApplicationModelCreator.getApp().getInfo().getFormattedId() + ".save"), Icons.SAVE);
 				fileSaveProject.setTooltip(TextFormatting.GRAY + I18n.format("app." + ApplicationModelCreator.getApp().getInfo().getFormattedId() + ".tooltip.save"));
 				fileSaveProject.setClickListener((mouseX, mouseY, mouseButton) -> {
 					saveProjectToFile(modelArea.getCubes(), loadedImages, modelArea.hasAmbientOcclusion(), modelArea.getParticle());
 				});
 				menuBarFile.add(fileSaveProject);
 
-				MenuBarButton fileCopyProject = new MenuBarButton(I18n.format("app." + ApplicationModelCreator.getApp().getInfo().getFormattedId() + ".copy"), Icons.FILE);
+				MenuBarItemButton fileCopyProject = new MenuBarItemButton(I18n.format("app." + ApplicationModelCreator.getApp().getInfo().getFormattedId() + ".copy"), Icons.FILE);
 				fileCopyProject.setTooltip(TextFormatting.GRAY + I18n.format("app." + ApplicationModelCreator.getApp().getInfo().getFormattedId() + ".tooltip.copy"));
 				fileCopyProject.setClickListener((mouseX, mouseY, mouseButton) -> {
 
@@ -217,16 +217,16 @@ public class ApplicationModelCreator extends Application {
 				});
 				menuBarFile.add(fileCopyProject);
 
-				menuBarFile.add(new MenuBarButtonDivider());
+				menuBarFile.add(new MenuBarItemDivider());
 
-				MenuBarButton fileImportJson = new MenuBarButton(I18n.format("app." + ApplicationModelCreator.getApp().getInfo().getFormattedId() + ".import"), Icons.IMPORT);
+				MenuBarItemButton fileImportJson = new MenuBarItemButton(I18n.format("app." + ApplicationModelCreator.getApp().getInfo().getFormattedId() + ".import"), Icons.IMPORT);
 				fileImportJson.setTooltip(TextFormatting.GRAY + I18n.format("app." + ApplicationModelCreator.getApp().getInfo().getFormattedId() + ".tooltip.not_added"), 150);
 				fileImportJson.setEnabled(false);
 				// fileImportJson.setClickListener((mouseX, mouseY, mouseButton) -> {
 				// });
 				menuBarFile.add(fileImportJson);
 
-				MenuBarButton fileExportJson = new MenuBarButton(I18n.format("app." + ApplicationModelCreator.getApp().getInfo().getFormattedId() + ".export"), Icons.EXPORT);
+				MenuBarItemButton fileExportJson = new MenuBarItemButton(I18n.format("app." + ApplicationModelCreator.getApp().getInfo().getFormattedId() + ".export"), Icons.EXPORT);
 				fileExportJson.setTooltip(TextFormatting.GRAY + I18n.format("app." + ApplicationModelCreator.getApp().getInfo().getFormattedId() + ".tooltip.export"));
 				fileExportJson.setClickListener((mouseX, mouseY, mouseButton) -> {
 					Dialog.Input input = new Dialog.Input(I18n.format("app." + ApplicationModelCreator.getApp().getInfo().getFormattedId() + ".input_json"));
@@ -255,18 +255,18 @@ public class ApplicationModelCreator extends Application {
 				});
 				menuBarFile.add(fileExportJson);
 
-				menuBarFile.add(new MenuBarButtonDivider());
+				menuBarFile.add(new MenuBarItemDivider());
 
-				MenuBarButton fileSetTexturePath = new MenuBarButton(I18n.format("app." + ApplicationModelCreator.getApp().getInfo().getFormattedId() + ".set_tex_path"), Icons.PICTURE);
+				MenuBarItemButton fileSetTexturePath = new MenuBarItemButton(I18n.format("app." + ApplicationModelCreator.getApp().getInfo().getFormattedId() + ".set_tex_path"), Icons.PICTURE);
 				fileSetTexturePath.setTooltip(TextFormatting.GRAY + I18n.format("app." + ApplicationModelCreator.getApp().getInfo().getFormattedId() + ".tooltip.not_added"), 150);
 				fileSetTexturePath.setEnabled(false);
 				// fileSetTexturePath.setClickListener((mouseX, mouseY, mouseButton) -> {
 				// });
 				menuBarFile.add(fileSetTexturePath);
 
-				menuBarFile.add(new MenuBarButtonDivider());
+				menuBarFile.add(new MenuBarItemDivider());
 
-				MenuBarButton fileExit = new MenuBarButton(I18n.format("app." + ApplicationModelCreator.getApp().getInfo().getFormattedId() + ".exit"), Icons.POWER_OFF);
+				MenuBarItemButton fileExit = new MenuBarItemButton(I18n.format("app." + ApplicationModelCreator.getApp().getInfo().getFormattedId() + ".exit"), Icons.POWER_OFF);
 				fileExit.setTooltip(TextFormatting.GRAY + I18n.format("app." + ApplicationModelCreator.getApp().getInfo().getFormattedId() + ".tooltip.exit"));
 				fileExit.setClickListener((mouseX, mouseY, mouseButton) -> {
 					if (modelArea.getCubes().isEmpty()) {
@@ -300,7 +300,7 @@ public class ApplicationModelCreator extends Application {
 			menuBar.add(menuBarOptions);
 
 			{
-				MenuBarButton optionsToggleTransparency = new MenuBarButton(I18n.format("app." + ApplicationModelCreator.getApp().getInfo().getFormattedId() + ".transparency.toggle"), Icons.ARROW_RIGHT) {
+				MenuBarItemButton optionsToggleTransparency = new MenuBarItemButton(I18n.format("app." + ApplicationModelCreator.getApp().getInfo().getFormattedId() + ".transparency.toggle"), Icons.ARROW_RIGHT) {
 					@Override
 					public void render(Laptop laptop, Minecraft mc, int x, int y, int mouseX, int mouseY, boolean windowActive, int buttonsWidth, int buttonsHeight, float partialTicks) {
 						if (this.isVisible()) {
@@ -328,10 +328,11 @@ public class ApplicationModelCreator extends Application {
 				});
 				menuBarOptions.add(optionsToggleTransparency);
 
-				MenuBarButton optionToggleFastRender = new MenuBarButton(I18n.format("app." + ApplicationModelCreator.getApp().getInfo().getFormattedId() + ".fast_render.toggle"), Icons.WRENCH);
+				MenuBarItemButton optionToggleFastRender = new MenuBarItemButton(I18n.format("app." + ApplicationModelCreator.getApp().getInfo().getFormattedId() + ".fast_render.toggle"), Icons.WRENCH);
 				optionToggleFastRender.setTooltip(TextFormatting.GRAY + I18n.format("app." + ApplicationModelCreator.getApp().getInfo().getFormattedId() + ".tooltip.fast_render.toggle"), 150);
 				optionToggleFastRender.setClickListener((mouseX, mouseY, mouseButton) -> {
 					fastRender = !fastRender;
+					this.markDirty();
 				});
 				menuBarOptions.add(optionToggleFastRender);
 			}
@@ -356,7 +357,7 @@ public class ApplicationModelCreator extends Application {
 			menuBar.add(menuBarMore);
 
 			{
-				MenuBarButton moreExamples = new MenuBarButton(I18n.format("app." + ApplicationModelCreator.getApp().getInfo().getFormattedId() + ".examples"), Icons.FILE);
+				MenuBarItemButton moreExamples = new MenuBarItemButton(I18n.format("app." + ApplicationModelCreator.getApp().getInfo().getFormattedId() + ".examples"), Icons.FILE);
 				moreExamples.setTooltip(TextFormatting.GRAY + I18n.format("app." + ApplicationModelCreator.getApp().getInfo().getFormattedId() + ".tooltip.not_added"), 150);
 				moreExamples.setClickListener((mouseX, mouseY, mouseButton) -> {
 					// DialogGitweb dialog = new DialogGitweb(this, "modelcreator.app/pages/models");
@@ -365,9 +366,9 @@ public class ApplicationModelCreator extends Application {
 				});
 				menuBarMore.add(moreExamples);
 
-				menuBarMore.add(new MenuBarButtonDivider());
+				menuBarMore.add(new MenuBarItemDivider());
 
-				MenuBarButton moreGithub = new MenuBarButton(I18n.format("app." + ApplicationModelCreator.getApp().getInfo().getFormattedId() + ".github")) {
+				MenuBarItemButton moreGithub = new MenuBarItemButton(I18n.format("app." + ApplicationModelCreator.getApp().getInfo().getFormattedId() + ".github")) {
 					@Override
 					public void render(Laptop laptop, Minecraft mc, int x, int y, int mouseX, int mouseY, boolean windowActive, int buttonsWidth, int buttonsHeight, float partialTicks) {
 						if (this.isVisible()) {
@@ -401,7 +402,7 @@ public class ApplicationModelCreator extends Application {
 				});
 				menuBarMore.add(moreGithub);
 
-				MenuBarButton moreSubmitABug = new MenuBarButton(I18n.format("app." + ApplicationModelCreator.getApp().getInfo().getFormattedId() + ".submit_bug"), Icons.ERROR);
+				MenuBarItemButton moreSubmitABug = new MenuBarItemButton(I18n.format("app." + ApplicationModelCreator.getApp().getInfo().getFormattedId() + ".submit_bug"), Icons.ERROR);
 				moreSubmitABug.setTooltip(TextFormatting.GRAY + I18n.format("app." + ApplicationModelCreator.getApp().getInfo().getFormattedId() + ".tooltip.submit_bug"), 150);
 				moreSubmitABug.setClickListener((mouseX, mouseY, mouseButton) -> {
 					try {

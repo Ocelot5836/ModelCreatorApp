@@ -14,7 +14,7 @@ import net.minecraft.client.Minecraft;
  * 
  * @author Ocelot5836
  */
-public interface IMenuBarButton {
+public interface IMenuBarItemComponent {
 
 	/**
 	 * Called each time the menu bar is updated. (20 times per second)

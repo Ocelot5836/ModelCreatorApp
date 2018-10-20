@@ -6,7 +6,6 @@ import javax.annotation.Nullable;
 
 import org.lwjgl.util.vector.Vector3f;
 
-import com.google.common.collect.Lists;
 import com.ocelot.api.libs.NBTHelper;
 import com.ocelot.api.utils.NamedBufferedImage;
 import com.ocelot.mod.lib.Lib;
@@ -17,7 +16,6 @@ import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.nbt.NBTTagList;
 import net.minecraft.util.EnumFacing;
 import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.common.util.INBTSerializable;
@@ -304,16 +302,25 @@ public class Cube implements Cloneable, INBTSerializable<NBTTagCompound> {
 
 	public NBTTagCompound serializeNBT(@Nullable List<NamedBufferedImage> textures) {
 		NBTTagCompound nbt = new NBTTagCompound();
-		nbt.setTag("position", NBTHelper.setVector(this.position));
-		nbt.setTag("size", NBTHelper.setVector(this.size));
-		nbt.setTag("rotation", NBTHelper.setVector(this.rotation));
-		nbt.setTag("rotationPoint", NBTHelper.setVector(this.rotationPoint));
+		if (this.position.x != 0 && this.position.y != 0 && this.position.z != 0) {
+			nbt.setTag("position", NBTHelper.setVector(this.position));
+		}
+		if (this.size.x != 1 && this.size.y != 1 && this.size.z != 1) {
+			nbt.setTag("size", NBTHelper.setVector(this.size));
+		}
+		if (this.rotation.x != 0 && this.rotation.y != 0 && this.rotation.z != 0) {
+			nbt.setTag("rotation", NBTHelper.setVector(this.rotation));
+		}
+		if (this.rotationPoint.x != 8 && this.rotationPoint.y != 8 && this.rotationPoint.z != 8) {
+			nbt.setTag("rotationPoint", NBTHelper.setVector(this.rotationPoint));
+		}
 
 		NBTTagCompound faces = new NBTTagCompound();
 		for (int i = 0; i < EnumFacing.values().length; i++) {
 			EnumFacing facing = EnumFacing.values()[i];
 			Face face = this.getFace(facing);
 			if (face != Face.NULL_FACE) {
+				NBTTagCompound tag = new NBTTagCompound();
 				int textureId = -1;
 				if (face.getTexture() != null && textures != null) {
 					NamedBufferedImage texture = face.getTexture();
@@ -331,7 +338,9 @@ public class Cube implements Cloneable, INBTSerializable<NBTTagCompound> {
 						textures.add(texture);
 					}
 				}
-				faces.setTag(facing.getName2(), face.serializeNBT(textureId));
+				tag.setTag("face", face.serializeNBT());
+				tag.setInteger("textureId", textureId);
+				faces.setTag(facing.getName2(), tag);
 			}
 		}
 		nbt.setTag("faces", faces);
@@ -343,23 +352,23 @@ public class Cube implements Cloneable, INBTSerializable<NBTTagCompound> {
 
 	@Override
 	public void deserializeNBT(NBTTagCompound nbt) {
+		this.deserializeNBT(nbt, null);
+	}
+
+	public void deserializeNBT(NBTTagCompound nbt, @Nullable List<NamedBufferedImage> textures) {
 		this.position = NBTHelper.getVector3f(nbt.getCompoundTag("position"));
 		this.size = NBTHelper.getVector3f(nbt.getCompoundTag("size"));
 		this.rotation = NBTHelper.getVector3f(nbt.getCompoundTag("rotation"));
 		this.rotationPoint = NBTHelper.getVector3f(nbt.getCompoundTag("rotationPoint"));
 
 		NBTTagCompound faces = nbt.getCompoundTag("faces");
-		List<NamedBufferedImage> textures = Lists.<NamedBufferedImage>newArrayList();
-
-		NBTTagList texturesTag = nbt.getTagList("textures", Constants.NBT.TAG_COMPOUND);
-		for (int i = 0; i < texturesTag.tagCount(); i++) {
-			textures.add(NamedBufferedImage.fromTag(texturesTag.getCompoundTagAt(i)));
-		}
 
 		for (int i = 0; i < EnumFacing.values().length; i++) {
 			EnumFacing facing = EnumFacing.values()[i];
 			if (faces.hasKey(facing.getName2(), Constants.NBT.TAG_COMPOUND)) {
-				this.setFace(facing, Face.fromTag(this, faces.getCompoundTag(facing.getName2()), textures));
+				NBTTagCompound tag = faces.getCompoundTag(facing.getName2()).getCompoundTag("face");
+				int textureId = faces.getCompoundTag(facing.getName2()).getInteger("textureId");
+				this.setFace(facing, Face.fromTag(this, tag, textureId != -1 ? textures.get(textureId) : null));
 			} else {
 				this.setFace(facing, Face.NULL_FACE);
 			}
@@ -367,6 +376,12 @@ public class Cube implements Cloneable, INBTSerializable<NBTTagCompound> {
 
 		this.name = nbt.getString("name");
 		this.shade = nbt.getBoolean("shade");
+	}
+
+	public static Cube fromTag(NBTTagCompound nbt, @Nullable List<NamedBufferedImage> textures) {
+		Cube cube = new Cube();
+		cube.deserializeNBT(nbt, textures);
+		return cube;
 	}
 
 	public static Cube fromTag(NBTTagCompound nbt) {

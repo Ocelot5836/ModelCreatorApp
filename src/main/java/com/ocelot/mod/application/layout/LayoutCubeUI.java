@@ -133,7 +133,6 @@ public class LayoutCubeUI extends Layout {
 		addCube.setToolTip("New Element", "Adds another element to the workspace");
 		addCube.setClickListener((mouseX, mouseY, mouseButton) -> {
 			ApplicationModelCreator.getApp().addCube(0, 0, 0, 1, 1, 1, 0, 0, 0);
-			this.updateCube(cubes.getSelectedItem());
 		});
 		this.addComponent(addCube);
 
@@ -443,11 +442,6 @@ public class LayoutCubeUI extends Layout {
 			this.cube.getFace(this.selectedFace).setFill(this.faceFill.isSelected());
 			this.cube.getFace(this.selectedFace).setAutoUV(this.faceAutoUV.isSelected());
 		}
-	}
-
-	@Override
-	public void renderOverlay(Laptop laptop, Minecraft mc, int mouseX, int mouseY, boolean windowActive) {
-		super.renderOverlay(laptop, mc, mouseX, mouseY, windowActive);
 	}
 
 	private void updateRotation() {

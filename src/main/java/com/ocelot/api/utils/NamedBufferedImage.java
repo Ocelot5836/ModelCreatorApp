@@ -75,6 +75,20 @@ public class NamedBufferedImage implements INBTSerializable<NBTTagCompound> {
 		this.image = NBTHelper.getBufferedImage(nbt.getCompoundTag("image"));
 		this.location = new ResourceLocation(nbt.getString("location"));
 	}
+	
+	@Override
+	public int hashCode() {
+		return 31 * this.image.hashCode() + this.location.hashCode();
+	}
+	
+	@Override
+	public boolean equals(Object obj) {
+		if(obj instanceof NamedBufferedImage) {
+			NamedBufferedImage image = (NamedBufferedImage) obj;
+			return image.image.equals(this.image) && image.location.equals(this.location);
+		}
+		return super.equals(obj);
+	}
 
 	/**
 	 * Creates a new named image from a tag.

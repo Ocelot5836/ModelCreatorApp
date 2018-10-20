@@ -3,7 +3,7 @@
   "modid": "mca",
   "name": "Model Creator Application",
   "description": "A recreation of MrCrayfish's Model Creator in Minecraft",
-  "version": "0.3.4",
+  "version": "0.3.5",
   "mcversion": "[1.12,1.2.2]",
   "url": "",
   "updateUrl": "",

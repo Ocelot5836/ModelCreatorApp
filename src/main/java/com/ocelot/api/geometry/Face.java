@@ -1,6 +1,5 @@
 package com.ocelot.api.geometry;
 
-import java.util.List;
 import java.util.Map;
 
 import javax.annotation.Nullable;
@@ -22,7 +21,6 @@ import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.common.util.INBTSerializable;
 
 public class Face implements Cloneable, INBTSerializable<NBTTagCompound> {
@@ -449,11 +447,8 @@ public class Face implements Cloneable, INBTSerializable<NBTTagCompound> {
 		return this.copy();
 	}
 
-	public NBTTagCompound serializeNBT(int textureId) {
+	public NBTTagCompound serializeNBT() {
 		NBTTagCompound nbt = new NBTTagCompound();
-		if (textureId != -1) {
-			nbt.setInteger("textureId", textureId);
-		}
 		nbt.setTag("textureCoords", NBTHelper.setVector(this.textureCoords));
 		nbt.setFloat("rotation", this.rotation);
 		nbt.setBoolean("cullFace", this.cullFace);
@@ -464,12 +459,9 @@ public class Face implements Cloneable, INBTSerializable<NBTTagCompound> {
 		return nbt;
 	}
 
-	public void deserializeNBT(NBTTagCompound nbt, List<NamedBufferedImage> textures) {
-		if (nbt.hasKey("textureId", Constants.NBT.TAG_INT) && textures != null) {
-			int textureId = nbt.getInteger("textureId");
-			if (textureId < textures.size()) {
-				this.texture = new NamedBufferedImage(textures.get(textureId).getImage(), textures.get(textureId).getLocation());
-			}
+	public void deserializeNBT(NBTTagCompound nbt, @Nullable NamedBufferedImage texture) {
+		if (texture != null) {
+			this.texture = texture;
 		}
 		this.textureCoords = NBTHelper.getVector4f(nbt.getCompoundTag("textureCoords"));
 		this.rotation = nbt.getFloat("rotation");
@@ -480,20 +472,15 @@ public class Face implements Cloneable, INBTSerializable<NBTTagCompound> {
 		this.faceDirection = EnumFacing.getFront(nbt.getInteger("facingDirection"));
 	}
 
-	public static Face fromTag(Cube parentCube, NBTTagCompound nbt, List<NamedBufferedImage> textures) {
-		Face face = new Face(parentCube);
-		face.deserializeNBT(nbt, textures);
-		return face;
-	}
-
-	@Override
-	public NBTTagCompound serializeNBT() {
-		return this.serializeNBT(-1);
-	}
-
 	@Override
 	public void deserializeNBT(NBTTagCompound nbt) {
 		this.deserializeNBT(nbt, null);
+	}
+
+	public static Face fromTag(Cube parentCube, NBTTagCompound nbt, @Nullable NamedBufferedImage textures) {
+		Face face = new Face(parentCube);
+		face.deserializeNBT(nbt, textures);
+		return face;
 	}
 
 	public static Face fromTag(Cube parentCube, NBTTagCompound nbt) {
@@ -501,6 +488,9 @@ public class Face implements Cloneable, INBTSerializable<NBTTagCompound> {
 	}
 
 	public static void clearCache() {
+		for(ResourceLocation location : TEXTURE_CACHE.keySet()) {
+			TextureUtils.deleteTexture(TEXTURE_CACHE.get(location));
+		}
 		TEXTURE_CACHE.clear();
 	}
 }

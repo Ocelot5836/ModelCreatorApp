@@ -14,18 +14,14 @@ import org.lwjgl.util.vector.Vector3f;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import com.google.gson.JsonPrimitive;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
 import com.ocelot.api.utils.NamedBufferedImage;
 import com.ocelot.mod.ModelCreator;
-import com.ocelot.mod.Usernames;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.resources.I18n;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.fml.common.Loader;
 
 public class Model {
 
@@ -50,7 +46,7 @@ public class Model {
 				Face face = faces[i];
 				if (face != Face.NULL_FACE) {
 					NamedBufferedImage texture = face.getTexture();
-					if (texture != null) {
+					if (!this.textures.contains(texture) && texture != null) {
 						this.textures.add(texture);
 					}
 				}
@@ -66,10 +62,11 @@ public class Model {
 			JsonArray elements = new JsonArray();
 
 			/** global properties */
-			json.addProperty("ambientOcclusion", src.ambientOcclusion);
+			if (!src.ambientOcclusion) {
+				json.addProperty("ambientOcclusion", src.ambientOcclusion);
+			}
 
 			/** Textures */
-			int nextId = 0;
 			Map<ResourceLocation, NamedBufferedImage> addedImages = new HashMap<ResourceLocation, NamedBufferedImage>();
 			for (int i = 0; i < src.textures.size(); i++) {
 				NamedBufferedImage image = src.textures.get(i);
@@ -77,10 +74,11 @@ public class Model {
 					addedImages.put(image.getLocation(), image);
 				}
 			}
-			int i = 0;
+
+			int id = 0;
 			for (ResourceLocation location : addedImages.keySet()) {
-				textures.addProperty(Integer.toString(i), String.valueOf(src.textures.get(i).getLocation()).replaceAll("textures/", "").replaceAll(".png", ""));
-				i++;
+				textures.addProperty(Integer.toString(id), String.valueOf(location).replaceAll("textures/", "").replaceAll(".png", ""));
+				id++;
 			}
 
 			if (src.particle != null && src.particle.getLocation() != null) {
@@ -144,10 +142,12 @@ public class Model {
 				}
 
 				/** shade */
-				cubeObj.addProperty("shade", cube.shouldShade());
+				if (!cube.shouldShade()) {
+					cubeObj.addProperty("shade", cube.shouldShade());
+				}
 
 				/** faces */
-				for (i = 0; i < EnumFacing.values().length; i++) {
+				for (int i = 0; i < EnumFacing.values().length; i++) {
 					EnumFacing facing = EnumFacing.values()[i];
 					Face face = cube.getFace(facing);
 					if (face == null || face.getTexture() == null || face.getTextureCoords() == null || !face.isEnabled())
@@ -157,11 +157,13 @@ public class Model {
 
 					/** texture */
 					int textureID = -1;
-					for (int j = 0; j < src.textures.size(); j++) {
-						if (src.textures.get(j).getLocation().toString().equalsIgnoreCase(face.getTexture().getLocation().toString())) {
+					int j = 0;
+					for (ResourceLocation location : addedImages.keySet()) {
+						if (location.toString().equalsIgnoreCase(face.getTexture().getLocation().toString())) {
 							textureID = j;
 							break;
 						}
+						j++;
 					}
 					faceObj.addProperty("texture", "#" + textureID);
 
@@ -181,7 +183,9 @@ public class Model {
 					faceObj.add("uv", uv);
 
 					/** texture rotation */
-					faceObj.addProperty("rotation", face.getRotation());
+					if (face.getRotation() != 0) {
+						faceObj.addProperty("rotation", face.getRotation());
+					}
 
 					/** cull face */
 					if (face.isCullFace()) {

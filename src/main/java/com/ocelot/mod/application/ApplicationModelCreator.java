@@ -39,9 +39,9 @@ import com.ocelot.mod.ModelCreator;
 import com.ocelot.mod.Usernames;
 import com.ocelot.mod.application.component.ComponentModelArea;
 import com.ocelot.mod.application.component.MenuBar;
+import com.ocelot.mod.application.component.MenuBarItem;
 import com.ocelot.mod.application.component.MenuBarItemButton;
 import com.ocelot.mod.application.component.MenuBarItemDivider;
-import com.ocelot.mod.application.component.MenuBarItem;
 import com.ocelot.mod.application.layout.LayoutCubeUI;
 import com.ocelot.mod.application.task.TaskNotificationCopy;
 import com.ocelot.mod.lib.Lib;
@@ -445,11 +445,8 @@ public class ApplicationModelCreator extends Application {
 	}
 
 	@Override
-	public void handleMouseClick(int mouseX, int mouseY, int mouseButton) {
-		super.handleMouseClick(mouseX, mouseY, mouseButton);
-		if (!running) {
-			Laptop.getSystem().closeApplication(this.getInfo());
-		}
+	public void render(Laptop laptop, Minecraft mc, int x, int y, int mouseX, int mouseY, boolean active, float partialTicks) {
+		super.render(laptop, mc, x, y, mouseX, mouseY, active, partialTicks);
 	}
 
 	@Override
@@ -602,19 +599,6 @@ public class ApplicationModelCreator extends Application {
 			if (MODEL_CREATOR_SAVE_VERSION.equalsIgnoreCase(version)) {
 				ApplicationModelCreator.getApp().removeAllCubes();
 				ApplicationModelCreator.getApp().loadedImages.clear();
-				if (data.hasKey("cubes", Constants.NBT.TAG_LIST)) {
-					NBTTagList list = data.getTagList("cubes", Constants.NBT.TAG_COMPOUND);
-					for (NBTBase base : list) {
-						if (base instanceof NBTTagCompound) {
-							ApplicationModelCreator.getApp().addCube(Cube.fromTag((NBTTagCompound) base));
-						}
-					}
-				}
-
-				ApplicationModelCreator.getApp().setAmbientOcclusion(data.getBoolean("ambientOcclusion"));
-				if (data.hasKey("particle", Constants.NBT.TAG_COMPOUND)) {
-					ApplicationModelCreator.getApp().setParticle(NamedBufferedImage.fromTag(data.getCompoundTag("particle")));
-				}
 
 				NBTTagList textures = data.getTagList("textures", Constants.NBT.TAG_COMPOUND);
 				for (NBTBase base : textures) {
@@ -622,6 +606,20 @@ public class ApplicationModelCreator extends Application {
 						NamedBufferedImage image = NamedBufferedImage.fromTag((NBTTagCompound) base);
 						ApplicationModelCreator.getApp().addImage(image.getLocation(), image.getImage());
 					}
+				}
+				
+				if (data.hasKey("cubes", Constants.NBT.TAG_LIST)) {
+					NBTTagList list = data.getTagList("cubes", Constants.NBT.TAG_COMPOUND);
+					for (NBTBase base : list) {
+						if (base instanceof NBTTagCompound) {
+							ApplicationModelCreator.getApp().addCube(Cube.fromTag((NBTTagCompound) base, ApplicationModelCreator.getApp().loadedImages));
+						}
+					}
+				}
+
+				ApplicationModelCreator.getApp().setAmbientOcclusion(data.getBoolean("ambientOcclusion"));
+				if (data.hasKey("particle", Constants.NBT.TAG_COMPOUND)) {
+					ApplicationModelCreator.getApp().setParticle(NamedBufferedImage.fromTag(data.getCompoundTag("particle")));
 				}
 
 				return true;

@@ -93,7 +93,11 @@ public class DialogTextureManager extends Dialog {
 											}
 										}
 
-										return ApplicationModelCreator.addImage(new ResourceLocation("textures/" + Reference.MOD_ID + ".pixel_painter/" + file.getName() + ".png"), image);
+										boolean close = ApplicationModelCreator.addImage(new ResourceLocation("textures/" + Reference.MOD_ID + ".pixel_painter/" + file.getName() + ".png"), image);
+										if (close) {
+											this.close();
+										}
+										return close;
 									}
 								}
 							}

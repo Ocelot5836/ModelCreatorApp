@@ -329,15 +329,15 @@ public class Face implements Cloneable, INBTSerializable<NBTTagCompound> {
 		}
 	}
 
-	public void loadTexture() {
-		if (Lib.resourceExists(texture.getLocation())) {
-			this.textureLocation = texture.getLocation();
+	private void loadTexture() {
+		if (Lib.resourceExists(this.texture.getLocation())) {
+			this.textureLocation = this.texture.getLocation();
 		} else {
-			if (!TEXTURE_CACHE.containsKey(texture.getLocation())) {
-				this.textureLocation = TextureUtils.createBufferedImageTexture(texture.getImage());
-				TEXTURE_CACHE.put(texture.getLocation(), this.textureLocation);
+			if (!TEXTURE_CACHE.containsKey(this.texture.getLocation())) {
+				this.textureLocation = TextureUtils.createBufferedImageTexture(this.texture.getImage());
+				TEXTURE_CACHE.put(this.texture.getLocation(), this.textureLocation);
 			} else {
-				this.textureLocation = TEXTURE_CACHE.get(texture.getLocation());
+				this.textureLocation = TEXTURE_CACHE.get(this.texture.getLocation());
 			}
 		}
 	}
@@ -430,7 +430,6 @@ public class Face implements Cloneable, INBTSerializable<NBTTagCompound> {
 		if (face == NULL_FACE)
 			return NULL_FACE;
 		Face newFace = new Face(face.parentCube, face.faceDirection);
-		face.loadTexture();
 		newFace.textureLocation = face.textureLocation;
 		newFace.texture = face.texture;
 		newFace.textureCoords.set(face.textureCoords);
@@ -488,7 +487,7 @@ public class Face implements Cloneable, INBTSerializable<NBTTagCompound> {
 	}
 
 	public static void clearCache() {
-		for(ResourceLocation location : TEXTURE_CACHE.keySet()) {
+		for (ResourceLocation location : TEXTURE_CACHE.keySet()) {
 			TextureUtils.deleteTexture(TEXTURE_CACHE.get(location));
 		}
 		TEXTURE_CACHE.clear();

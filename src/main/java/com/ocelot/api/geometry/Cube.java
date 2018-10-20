@@ -119,11 +119,6 @@ public class Cube implements Cloneable, INBTSerializable<NBTTagCompound> {
 		return this;
 	}
 
-	public Cube removeFace(EnumFacing face) {
-		this.faces[face.getIndex()] = Face.NULL_FACE;
-		return this;
-	}
-
 	public Cube resetFace(EnumFacing side) {
 		this.faces[side.getIndex()] = new Face(this, side);
 		return this;

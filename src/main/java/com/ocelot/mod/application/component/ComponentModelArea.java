@@ -18,6 +18,7 @@ import com.ocelot.mod.application.ApplicationModelCreator;
 import com.ocelot.mod.lib.Lib;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.RenderHelper;
@@ -70,7 +71,10 @@ public class ComponentModelArea extends Component {
 			this.camera.rotate(partialTicks);
 
 			GlStateManager.disableTexture2D();
-
+			
+			ScaledResolution res = new ScaledResolution(mc);
+			
+			GlStateManager.glLineWidth(res.getScaleFactor());
 			GlStateManager.scale(0.5, 0.5, 0.5);
 			GlStateManager.color(140f / 255f, 140f / 255f, 153f / 255f, 1);
 			{

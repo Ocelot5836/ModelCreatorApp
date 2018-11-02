@@ -18,11 +18,6 @@ import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 
 /**
- * <em><b>Copyright (c) 2018 Ocelot5836.</b></em>
- * 
- * <br>
- * </br>
- * 
  * The main mod class.
  * 
  * @author Ocelot5836
@@ -33,9 +28,11 @@ public class ModelCreator {
 	/** The mod id */
 	public static final String MOD_ID = "mca";
 	/** The current version of the mod */
-	public static final String VERSION = "1.0.0";
+	public static final String VERSION = "1.0.1";
 	/** The id for the model creator app */
 	public static final ResourceLocation MODEL_CREATOR_ID = new ResourceLocation(MOD_ID, "mc");
+	/** The formatted id for the model creator app */
+	public static final String FORMATTED_MODEL_CREATOR_ID = MODEL_CREATOR_ID.getResourceDomain() + "." + MODEL_CREATOR_ID.getResourcePath();
 
 	/** The mod's instance. Probably not too useful but might as well have it */
 	@Instance(MOD_ID)

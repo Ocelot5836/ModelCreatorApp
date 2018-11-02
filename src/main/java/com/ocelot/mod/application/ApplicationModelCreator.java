@@ -207,7 +207,7 @@ public class ApplicationModelCreator extends Application {
 					}
 
 					Toolkit.getDefaultToolkit().getSystemClipboard().setContents(new StringSelection(String.valueOf(data)), null);
-					TaskManager.sendTask(new TaskNotificationCopy(TextFormatting.BOLD + "Copied", "File NBT to Clipboard", Icons.COPY));
+					TaskManager.sendTask(new TaskNotificationCopy(TextFormatting.BOLD + I18n.format("app." + ApplicationModelCreator.getApp().getInfo().getFormattedId() + ".copy.title"), I18n.format("app." + ApplicationModelCreator.getApp().getInfo().getFormattedId() + ".copy.desc"), Icons.COPY));
 				});
 				menuBarFile.add(fileCopyProject);
 
@@ -238,7 +238,7 @@ public class ApplicationModelCreator extends Application {
 										e.printStackTrace();
 									}
 
-									TaskManager.sendTask(new TaskNotificationCopy(TextFormatting.BOLD + "Export Location", "Copied To Clipboard", Icons.EXPORT));
+									TaskManager.sendTask(new TaskNotificationCopy(TextFormatting.BOLD + I18n.format("app." + ApplicationModelCreator.getApp().getInfo().getFormattedId() + ".export.title"), I18n.format("app." + ApplicationModelCreator.getApp().getInfo().getFormattedId() + ".export.title"), Icons.EXPORT));
 									return true;
 								}
 							}
@@ -354,7 +354,6 @@ public class ApplicationModelCreator extends Application {
 				MenuBarItemButton moreExamples = new MenuBarItemButton(I18n.format("app." + ApplicationModelCreator.getApp().getInfo().getFormattedId() + ".examples"), Icons.FILE);
 				moreExamples.setTooltip(TextFormatting.GRAY + I18n.format("app." + ApplicationModelCreator.getApp().getInfo().getFormattedId() + ".tooltip.not_added"), 150);
 				moreExamples.setClickListener((mouseX, mouseY, mouseButton) -> {
-					// DialogGitweb dialog = new DialogGitweb(this, "modelcreator.app/pages/models");
 					Dialog.Message dialog = new Dialog.Message("Visit\n" + TextFormatting.DARK_BLUE + "modelcreator.app/pages/models" + TextFormatting.RESET + "\nfor examples. (This will be removed in a future) update");
 					this.openDialog(dialog);
 				});
@@ -579,8 +578,6 @@ public class ApplicationModelCreator extends Application {
 		}
 		data.setTag("textures", texturesList);
 
-		System.out.println(data);
-
 		Dialog.SaveFile saveDialog = new Dialog.SaveFile(ApplicationModelCreator.getApp(), data);
 		saveDialog.setResponseHandler(responseHandler);
 		ApplicationModelCreator.getApp().openDialog(saveDialog);
@@ -618,16 +615,6 @@ public class ApplicationModelCreator extends Application {
 
 				return true;
 			} else {
-				// if (version.equalsIgnoreCase(ModelCreatorFileConverter.MODEL_CREATOR_SAVE_VERSION_10)) {
-				// Dialog.Confirmation confirm = new Dialog.Confirmation(I18n.format("app.mca.mc.dialog.project.can_convert", version, ModelCreatorFileConverter.MODEL_CREATOR_SAVE_VERSION_11));
-				// confirm.setPositiveListener((mouseX, mouseY, mouseButton) -> {
-				// file.setData(ModelCreatorFileConverter.convert10To11(file.getData()));
-				// loadProjectFromFile(file);
-				// });
-				// ApplicationModelCreator.getApp().openDialog(confirm);
-				// return false;
-				// }
-
 				openErrorDialog(I18n.format("app.mca.mc.dialog.project.wrong_version", version));
 				return false;
 			}

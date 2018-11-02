@@ -1,9 +1,13 @@
-# Misc names
+# Misc
 app.mca.mc.cube.name=Cube
 app.mca.mc.json.comment=Model generated using %s's Model Creator. Original model creator: %s
 app.mca.mc.author_note=Model Creator by %s
 app.mca.mc.welcome.title=Welcome
 app.mca.mc.welcome.info=Thank you for installing this application! Please note this app is still in development and is mainly only released to learn about unknown bugs. Either way, I hope you enjoy making models in this app!
+app.mca.mc.copy.title=Copied
+app.mca.mc.copy.desc=File NBT to Clipboard
+app.mca.mc.export.title=Export Location
+app.mca.mc.export.desc=Copied To Clipboard
 
 # Dialogs
 app.mca.mc.dialog.error=Error
@@ -13,6 +17,13 @@ app.mca.mc.dialog.project.wrong_version=This project was designed for version '%
 app.mca.mc.dialog.project.can_convert=This project was designed for version '%s' of the model creator but can be converted to version '%s'. Do you want to convert?
 app.mca.mc.dialog.project.open.fail=Could not open %s
 app.mca.mc.dialog.project.open.success=Opened %s successfully
+
+# Texture Manager Dialog
+app.mca.mc.texturemanager.title=Texture Manager
+app.mca.mc.texturemanager.import=Import
+app.mca.mc.texturemanager.close=Close
+app.mca.mc.texturemanager.input=Please Input the texture location you wish to use.
+app.mca.mc.texturemanager.open=Open Pixel Painter File
 
 # Menu Bar
 

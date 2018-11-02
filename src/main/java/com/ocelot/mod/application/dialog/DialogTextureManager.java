@@ -19,8 +19,10 @@ import com.mrcrayfish.device.object.AppInfo;
 import com.ocelot.api.utils.Lib;
 import com.ocelot.api.utils.NamedBufferedImage;
 import com.ocelot.api.utils.TextureUtils;
+import com.ocelot.mod.ModelCreator;
 import com.ocelot.mod.application.ApplicationModelCreator;
 
+import net.minecraft.client.resources.I18n;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.StringUtils;
@@ -44,7 +46,7 @@ public class DialogTextureManager extends Dialog {
 
 	@Override
 	public void init(@Nullable NBTTagCompound intent) {
-		this.setTitle("Texture Manager");
+		this.setTitle(I18n.format("app." + ApplicationModelCreator.getApp().getInfo().getFormattedId() + ".texturemanager.title"));
 		layoutMain = new Layout(150, 100);
 
 		buttonApply = new Button(0, layoutMain.height - 20, layoutMain.width / 3, 20, "Apply");
@@ -55,17 +57,17 @@ public class DialogTextureManager extends Dialog {
 		});
 		layoutMain.addComponent(buttonApply);
 
-		buttonImport = new Button(buttonApply.left + layoutMain.width / 3, layoutMain.height - 20, layoutMain.width / 3, 20, "Import");
+		buttonImport = new Button(buttonApply.left + layoutMain.width / 3, layoutMain.height - 20, layoutMain.width / 3, 20, I18n.format("app." + ApplicationModelCreator.getApp().getInfo().getFormattedId() + ".texturemanager.import"));
 
 		buttonImport.setClickListener((mouseX, mouseY, mouseButton) -> {
-			Dialog.Input inputTextureLocation = new Dialog.Input("Please Input the texture location you wish to use.") {
+			Dialog.Input inputTextureLocation = new Dialog.Input(I18n.format("app." + ApplicationModelCreator.getApp().getInfo().getFormattedId() + ".texturemanager.input")) {
 				@Override
 				public void init(@Nullable NBTTagCompound intent) {
 					super.init(intent);
 					this.defaultLayout.height -= 5;
 					super.init(intent);
 
-					Button buttonOpenPixelPainterFile = new Button(5, this.getHeight() - 40, this.getWidth() - 10, 16, "Open Pixel Painter File", Icons.PICTURE);
+					Button buttonOpenPixelPainterFile = new Button(5, this.getHeight() - 40, this.getWidth() - 10, 16, I18n.format("app." + ApplicationModelCreator.getApp().getInfo().getFormattedId() + ".texturemanager.open"), Icons.PICTURE);
 					buttonOpenPixelPainterFile.setClickListener((mouseX, mouseY, mouseButton) -> {
 						Dialog.OpenFile openFile = new Dialog.OpenFile(ApplicationModelCreator.getApp()) {
 							@Override
@@ -134,7 +136,7 @@ public class DialogTextureManager extends Dialog {
 
 		layoutMain.addComponent(buttonImport);
 
-		buttonClose = new Button(buttonImport.left + layoutMain.width / 3, layoutMain.height - 20, layoutMain.width / 3, 20, "Close");
+		buttonClose = new Button(buttonImport.left + layoutMain.width / 3, layoutMain.height - 20, layoutMain.width / 3, 20, I18n.format("app." + ApplicationModelCreator.getApp().getInfo().getFormattedId() + ".texturemanager.close"));
 		buttonClose.setClickListener((mouseX, mouseY, mouseButton) -> {
 			this.close();
 		});

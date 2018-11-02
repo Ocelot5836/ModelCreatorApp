@@ -492,7 +492,7 @@ public class LayoutCubeUI extends Layout {
 			this.shade.setSelected(cube.shouldShade());
 		}
 		this.cube = cube;
-		this.cubeName.setText(String.valueOf(cube));
+		this.cubeName.setText(cube == null ? "" : cube.getName());
 	}
 
 	public void updateCubes(List<Cube> cubes) {

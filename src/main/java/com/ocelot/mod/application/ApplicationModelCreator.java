@@ -45,7 +45,6 @@ import com.ocelot.mod.application.component.MenuBarItemDivider;
 import com.ocelot.mod.application.layout.LayoutCubeUI;
 import com.ocelot.mod.application.task.TaskNotificationCopy;
 import com.ocelot.mod.lib.Lib;
-import com.ocelot.mod.lib.ModelCreatorFileConverter;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
@@ -71,7 +70,7 @@ import net.minecraftforge.common.util.Constants;
  */
 public class ApplicationModelCreator extends Application {
 
-	public static final String MODEL_CREATOR_SAVE_VERSION = ModelCreatorFileConverter.MODEL_CREATOR_SAVE_VERSION_10;
+	public static final String MODEL_CREATOR_SAVE_VERSION = "1.0";
 
 	private static ApplicationModelCreator app;
 	private static boolean running;
@@ -607,7 +606,7 @@ public class ApplicationModelCreator extends Application {
 						ApplicationModelCreator.getApp().addImage(image.getLocation(), image.getImage());
 					}
 				}
-				
+
 				if (data.hasKey("cubes", Constants.NBT.TAG_LIST)) {
 					NBTTagList list = data.getTagList("cubes", Constants.NBT.TAG_COMPOUND);
 					for (NBTBase base : list) {

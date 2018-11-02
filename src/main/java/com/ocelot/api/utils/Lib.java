@@ -1,4 +1,4 @@
-package com.ocelot.mod.lib;
+package com.ocelot.api.utils;
 
 import java.awt.image.BufferedImage;
 import java.io.IOException;
@@ -22,11 +22,6 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 /**
- * <em><b>Copyright (c) 2018 Ocelot5836.</b></em>
- * 
- * <br>
- * </br>
- * 
  * Contains some basic library methods.
  * 
  * @author Ocelot5836

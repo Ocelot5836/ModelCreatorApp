@@ -3,18 +3,12 @@ package com.ocelot.api.utils;
 import java.awt.image.BufferedImage;
 
 import com.google.common.base.MoreObjects;
-import com.ocelot.api.libs.NBTHelper;
 
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.util.INBTSerializable;
 
 /**
- * <em><b>Copyright (c) 2018 Ocelot5836.</b></em>
- * 
- * <br>
- * </br>
- * 
  * This is an image that is bound to a location.
  * 
  * @author Ocelot5836

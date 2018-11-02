@@ -23,7 +23,7 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 /**
- * <em><b>Copyright (c) 2018 Ocelot5836.</b></em>
+ * Contains some useful methods that can be used inside of a GUI.
  * 
  * @author Ocelot5836
  */

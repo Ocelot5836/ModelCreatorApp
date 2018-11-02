@@ -7,9 +7,9 @@ import javax.annotation.Nullable;
 import org.lwjgl.util.vector.Vector3f;
 
 import com.google.common.base.MoreObjects;
-import com.ocelot.api.libs.NBTHelper;
+import com.ocelot.api.utils.Lib;
+import com.ocelot.api.utils.NBTHelper;
 import com.ocelot.api.utils.NamedBufferedImage;
-import com.ocelot.mod.lib.Lib;
 
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.GlStateManager;

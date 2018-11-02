@@ -16,7 +16,7 @@ import com.ocelot.api.utils.GuiUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
 
-public class MenuBarItem implements Iterable<IMenuBarItemComponent> {
+public class MenuBarItem implements Iterable<MenuBarItemComponent> {
 
 	private boolean visible;
 	private int width;
@@ -36,7 +36,7 @@ public class MenuBarItem implements Iterable<IMenuBarItemComponent> {
 	private int menuColor;
 
 	private ClickListener clickListener;
-	private List<IMenuBarItemComponent> components;
+	private List<MenuBarItemComponent> components;
 	private int buttonsWidth;
 	private int buttonsHeight;
 
@@ -58,7 +58,7 @@ public class MenuBarItem implements Iterable<IMenuBarItemComponent> {
 		this.menuColor = Color.LIGHT_GRAY.getRGB();
 
 		this.clickListener = null;
-		this.components = new ArrayList<IMenuBarItemComponent>();
+		this.components = new ArrayList<MenuBarItemComponent>();
 		this.buttonsWidth = 0;
 	}
 
@@ -70,7 +70,7 @@ public class MenuBarItem implements Iterable<IMenuBarItemComponent> {
 			tooltipTick = hovered ? tooltipTick + 1 : 0;
 		}
 		
-		for(IMenuBarItemComponent component : this.components) {
+		for(MenuBarItemComponent component : this.components) {
 			component.handleTick();
 		}
 	}
@@ -144,7 +144,7 @@ public class MenuBarItem implements Iterable<IMenuBarItemComponent> {
 	public void renderButtons(Laptop laptop, Minecraft mc, int x, int y, int mouseX, int mouseY, boolean windowActive, float partialTicks) {
 		Gui.drawRect(x, y + this.height, x + this.buttonsWidth + 2, y + this.height + this.buttonsHeight, this.menuColor);
 		int currentHeight = this.height;
-		for (IMenuBarItemComponent component : this.components) {
+		for (MenuBarItemComponent component : this.components) {
 			component.render(laptop, mc, x + 1, y + currentHeight + component.getPadding(), mouseX, mouseY, windowActive, this.buttonsWidth, this.buttonsHeight, partialTicks);
 			currentHeight += component.getHeight() + component.getPadding() * 2;
 		}
@@ -165,7 +165,7 @@ public class MenuBarItem implements Iterable<IMenuBarItemComponent> {
 	 *            if the window is active (at front)
 	 */
 	public void renderButtonsOverlay(Laptop laptop, Minecraft mc, int mouseX, int mouseY, boolean windowActive) {
-		for (IMenuBarItemComponent component : this.components) {
+		for (MenuBarItemComponent component : this.components) {
 			component.renderOverlay(laptop, mc, mouseX, mouseY, windowActive);
 		}
 	}
@@ -175,7 +175,7 @@ public class MenuBarItem implements Iterable<IMenuBarItemComponent> {
 			this.clickListener.onClick(mouseX, mouseY, mouseButton);
 		}
 
-		for (IMenuBarItemComponent component : this.components) {
+		for (MenuBarItemComponent component : this.components) {
 			if (component.isHovered() && component.handleMouseClick(mouseX, mouseY, mouseButton)) {
 				return true;
 			}
@@ -185,7 +185,7 @@ public class MenuBarItem implements Iterable<IMenuBarItemComponent> {
 
 	private void updateMenuSize() {
 		this.buttonsHeight = 0;
-		for (IMenuBarItemComponent component : this.components) {
+		for (MenuBarItemComponent component : this.components) {
 			if (component.getWidth() > this.buttonsWidth) {
 				this.buttonsWidth = component.getWidth();
 			}
@@ -193,19 +193,19 @@ public class MenuBarItem implements Iterable<IMenuBarItemComponent> {
 		}
 	}
 
-	public void add(IMenuBarItemComponent component) {
+	public void add(MenuBarItemComponent component) {
 		if (component != null) {
 			this.components.add(component);
 			this.updateMenuSize();
 		}
 	}
 
-	public void addAll(Collection<? extends IMenuBarItemComponent> components) {
+	public void addAll(Collection<? extends MenuBarItemComponent> components) {
 		this.components.addAll(components);
 		this.updateMenuSize();
 	}
 
-	public void sort(Comparator<IMenuBarItemComponent> comparator) {
+	public void sort(Comparator<MenuBarItemComponent> comparator) {
 		Collections.sort(this.components, comparator);
 	}
 
@@ -218,13 +218,13 @@ public class MenuBarItem implements Iterable<IMenuBarItemComponent> {
 	}
 
 	@Override
-	public Iterator<IMenuBarItemComponent> iterator() {
+	public Iterator<MenuBarItemComponent> iterator() {
 		return this.components.iterator();
 	}
 
 	public void deselect() {
 		this.hovered = false;
-		for (IMenuBarItemComponent component : this.components) {
+		for (MenuBarItemComponent component : this.components) {
 			component.deselect();
 		}
 	}

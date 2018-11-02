@@ -1,4 +1,4 @@
-package com.ocelot.api.libs;
+package com.ocelot.api.utils;
 
 import java.nio.FloatBuffer;
 
@@ -14,11 +14,6 @@ import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 
 /**
- * <em><b>Copyright (c) 2018 Ocelot5836.</b></em>
- * 
- * <br>
- * </br>
- * 
  * Handles any methods that have to deal with rendering things onto the screen.
  * 
  * @author Ocelot5836

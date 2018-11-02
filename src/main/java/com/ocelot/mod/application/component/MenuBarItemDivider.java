@@ -8,7 +8,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.renderer.GlStateManager;
 
-public class MenuBarItemDivider implements IMenuBarItemComponent {
+public class MenuBarItemDivider implements MenuBarItemComponent {
 
 	private int padding;
 	private int color;

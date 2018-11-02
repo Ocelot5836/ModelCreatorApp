@@ -12,10 +12,10 @@ import com.mrcrayfish.device.util.GLHelper;
 import com.ocelot.api.geometry.Camera;
 import com.ocelot.api.geometry.Cube;
 import com.ocelot.api.geometry.Face;
+import com.ocelot.api.utils.Lib;
 import com.ocelot.api.utils.NamedBufferedImage;
 import com.ocelot.mod.Usernames;
 import com.ocelot.mod.application.ApplicationModelCreator;
-import com.ocelot.mod.lib.Lib;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.ScaledResolution;

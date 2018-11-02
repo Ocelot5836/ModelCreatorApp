@@ -1,4 +1,4 @@
-package com.ocelot.api.libs;
+package com.ocelot.api.utils;
 
 import java.awt.image.BufferedImage;
 
@@ -9,11 +9,6 @@ import org.lwjgl.util.vector.Vector4f;
 import net.minecraft.nbt.NBTTagCompound;
 
 /**
- * <em><b>Copyright (c) 2018 Ocelot5836.</b></em>
- * 
- * <br>
- * </br>
- * 
  * Contains some helper methods when attempting to read/write to NBT.
  * 
  * @author Ocelot5836

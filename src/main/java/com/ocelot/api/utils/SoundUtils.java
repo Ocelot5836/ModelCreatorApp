@@ -6,11 +6,6 @@ import net.minecraft.client.audio.Sound;
 import net.minecraft.init.SoundEvents;
 
 /**
- * <em><b>Copyright (c) 2017 Ocelot5836.</b></em>
- * 
- * <br>
- * </br>
- * 
  * This class holds some useful methods for managing sounds.
  * 
  * @author Ocelot5836

@@ -33,6 +33,7 @@ import com.ocelot.api.geometry.Cube;
 import com.ocelot.api.geometry.Face;
 import com.ocelot.api.geometry.Model;
 import com.ocelot.api.utils.GuiUtils;
+import com.ocelot.api.utils.Lib;
 import com.ocelot.api.utils.NamedBufferedImage;
 import com.ocelot.api.utils.TextureUtils;
 import com.ocelot.mod.ModelCreator;
@@ -44,7 +45,6 @@ import com.ocelot.mod.application.component.MenuBarItemButton;
 import com.ocelot.mod.application.component.MenuBarItemDivider;
 import com.ocelot.mod.application.layout.LayoutCubeUI;
 import com.ocelot.mod.application.task.TaskNotificationCopy;
-import com.ocelot.mod.lib.Lib;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
@@ -59,11 +59,6 @@ import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.common.util.Constants;
 
 /**
- * <em><b>Copyright (c) 2018 Ocelot5836.</b></em>
- * 
- * <br>
- * </br>
- * 
  * The main application class for the Minecraft Model Creator.
  * 
  * @author Ocelot5836

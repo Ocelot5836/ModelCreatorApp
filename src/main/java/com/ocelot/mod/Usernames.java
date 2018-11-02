@@ -3,11 +3,6 @@ package com.ocelot.mod;
 import com.ocelot.api.utils.GuiUtils;
 
 /**
- * <em><b>Copyright (c) 2018 Ocelot5836.</b></em>
- * 
- * <br>
- * </br>
- * 
  * Contains some useful usernames of players from their UUID.
  * 
  * @author Ocelot5836

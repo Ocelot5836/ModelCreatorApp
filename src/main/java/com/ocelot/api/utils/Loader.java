@@ -1,4 +1,4 @@
-package com.ocelot.api.libs;
+package com.ocelot.api.utils;
 
 import java.awt.image.BufferedImage;
 import java.nio.ByteBuffer;
@@ -6,11 +6,6 @@ import java.nio.ByteBuffer;
 import org.lwjgl.BufferUtils;
 
 /**
- * <em><b>Copyright (c) 2018 The Zerra Team.</b></em>
- * 
- * <br>
- * </br>
- * 
  * Has the capability to load data to and from memory.
  * 
  * @author Ocelot5836

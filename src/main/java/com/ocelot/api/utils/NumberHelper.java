@@ -11,11 +11,6 @@ import javax.script.SimpleBindings;
 import com.google.common.collect.Maps;
 
 /**
- * <em><b>Copyright (c) 2018 Ocelot5836.</b></em>
- * 
- * <br>
- * </br>
- * 
  * Contains methods to help with numbers.
  * 
  * @author Ocelot5836

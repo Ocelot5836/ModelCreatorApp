@@ -3,11 +3,6 @@ package com.ocelot.api.utils;
 import java.util.Calendar;
 
 /**
- * <em><b>Copyright (c) 2018 Ocelot5836.</b></em>
- * 
- * <br>
- * </br>
- * 
  * Contains methods that check if the current time is a special event.
  * 
  * @author Ocelot5836

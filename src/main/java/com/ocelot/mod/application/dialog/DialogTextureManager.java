@@ -16,10 +16,10 @@ import com.mrcrayfish.device.api.app.ScrollableLayout;
 import com.mrcrayfish.device.api.app.component.Button;
 import com.mrcrayfish.device.api.app.component.Image;
 import com.mrcrayfish.device.object.AppInfo;
+import com.ocelot.api.utils.Lib;
 import com.ocelot.api.utils.NamedBufferedImage;
 import com.ocelot.api.utils.TextureUtils;
 import com.ocelot.mod.application.ApplicationModelCreator;
-import com.ocelot.mod.lib.Lib;
 
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ResourceLocation;

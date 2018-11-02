@@ -1,4 +1,4 @@
-package com.ocelot.api.libs;
+package com.ocelot.api.utils;
 
 import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
@@ -11,11 +11,6 @@ import java.nio.ShortBuffer;
 import org.lwjgl.BufferUtils;
 
 /**
- * <em><b>Copyright (c) 2018 Ocelot5836.</b></em>
- * 
- * <br>
- * </br>
- * 
  * Allows the ability to easily store data in the buffers for the default data types.
  * 
  * @author Ocelot5836

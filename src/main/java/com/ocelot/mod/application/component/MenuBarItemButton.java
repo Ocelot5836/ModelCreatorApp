@@ -9,15 +9,15 @@ import com.mrcrayfish.device.api.app.listener.ClickListener;
 import com.mrcrayfish.device.api.utils.RenderUtil;
 import com.mrcrayfish.device.core.Laptop;
 import com.ocelot.api.utils.GuiUtils;
+import com.ocelot.api.utils.Lib;
 import com.ocelot.api.utils.TextureUtils;
-import com.ocelot.mod.lib.Lib;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.StringUtils;
 
-public class MenuBarItemButton implements IMenuBarItemComponent {
+public class MenuBarItemButton implements MenuBarItemComponent {
 
 	private boolean visible;
 	private boolean enabled;

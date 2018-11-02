@@ -8,6 +8,7 @@ import org.lwjgl.opengl.GL11;
 import org.lwjgl.util.vector.Vector3f;
 import org.lwjgl.util.vector.Vector4f;
 
+import com.google.common.base.MoreObjects;
 import com.google.common.collect.Maps;
 import com.ocelot.api.libs.NBTHelper;
 import com.ocelot.api.utils.NamedBufferedImage;
@@ -23,7 +24,7 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.util.INBTSerializable;
 
-public class Face implements Cloneable, INBTSerializable<NBTTagCompound> {
+public class Face implements INBTSerializable<NBTTagCompound> {
 
 	private static final Map<ResourceLocation, ResourceLocation> TEXTURE_CACHE = Maps.<ResourceLocation, ResourceLocation>newHashMap();
 
@@ -441,11 +442,6 @@ public class Face implements Cloneable, INBTSerializable<NBTTagCompound> {
 		return newFace;
 	}
 
-	@Override
-	public Object clone() throws CloneNotSupportedException {
-		return this.copy();
-	}
-
 	public NBTTagCompound serializeNBT() {
 		NBTTagCompound nbt = new NBTTagCompound();
 		nbt.setTag("textureCoords", NBTHelper.setVector(this.textureCoords));
@@ -474,6 +470,11 @@ public class Face implements Cloneable, INBTSerializable<NBTTagCompound> {
 	@Override
 	public void deserializeNBT(NBTTagCompound nbt) {
 		this.deserializeNBT(nbt, null);
+	}
+	
+	@Override
+	public String toString() {
+		return MoreObjects.toStringHelper(this).add("texture", this.texture).add("textureCoords", this.textureCoords).add("rotation", this.rotation).add("cullFace", this.cullFace).add("enabled", this.enabled).add("autoUV", this.autoUV).add("fill", this.fill).add("direction", this.faceDirection).toString();
 	}
 
 	public static Face fromTag(Cube parentCube, NBTTagCompound nbt, @Nullable NamedBufferedImage textures) {

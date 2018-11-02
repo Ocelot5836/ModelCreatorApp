@@ -6,6 +6,7 @@ import javax.annotation.Nullable;
 
 import org.lwjgl.util.vector.Vector3f;
 
+import com.google.common.base.MoreObjects;
 import com.ocelot.api.libs.NBTHelper;
 import com.ocelot.api.utils.NamedBufferedImage;
 import com.ocelot.mod.lib.Lib;
@@ -20,7 +21,7 @@ import net.minecraft.util.EnumFacing;
 import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.common.util.INBTSerializable;
 
-public class Cube implements Cloneable, INBTSerializable<NBTTagCompound> {
+public class Cube implements INBTSerializable<NBTTagCompound> {
 
 	private Vector3f position;
 	private Vector3f size;
@@ -281,13 +282,8 @@ public class Cube implements Cloneable, INBTSerializable<NBTTagCompound> {
 	}
 
 	@Override
-	public Object clone() throws CloneNotSupportedException {
-		return this.copy();
-	}
-
-	@Override
 	public String toString() {
-		return this.getName();
+		return MoreObjects.toStringHelper(this).add("name", this.name).add("position", this.position).add("size", this.size).add("rotation", this.rotation).add("rotationPoint", this.rotationPoint).add("faces", this.faces).add("shade", this.shade).add("hasTransparency", this.hasTransparency).toString();
 	}
 
 	@Override

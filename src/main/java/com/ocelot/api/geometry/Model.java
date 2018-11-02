@@ -11,6 +11,7 @@ import javax.imageio.ImageIO;
 
 import org.lwjgl.util.vector.Vector3f;
 
+import com.google.common.base.MoreObjects;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;

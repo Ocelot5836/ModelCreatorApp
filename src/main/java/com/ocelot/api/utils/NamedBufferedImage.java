@@ -2,6 +2,7 @@ package com.ocelot.api.utils;
 
 import java.awt.image.BufferedImage;
 
+import com.google.common.base.MoreObjects;
 import com.ocelot.api.libs.NBTHelper;
 
 import net.minecraft.nbt.NBTTagCompound;
@@ -75,19 +76,24 @@ public class NamedBufferedImage implements INBTSerializable<NBTTagCompound> {
 		this.image = NBTHelper.getBufferedImage(nbt.getCompoundTag("image"));
 		this.location = new ResourceLocation(nbt.getString("location"));
 	}
-	
+
 	@Override
 	public int hashCode() {
 		return 31 * this.image.hashCode() + this.location.hashCode();
 	}
-	
+
 	@Override
 	public boolean equals(Object obj) {
-		if(obj instanceof NamedBufferedImage) {
+		if (obj instanceof NamedBufferedImage) {
 			NamedBufferedImage image = (NamedBufferedImage) obj;
 			return image.image.equals(this.image) && image.location.equals(this.location);
 		}
 		return super.equals(obj);
+	}
+
+	@Override
+	public String toString() {
+		return MoreObjects.toStringHelper(this).add("image", this.image).add("location", this.location).add("hasTransparency", this.hasTransparency).toString();
 	}
 
 	/**
@@ -100,7 +106,7 @@ public class NamedBufferedImage implements INBTSerializable<NBTTagCompound> {
 	public static NamedBufferedImage fromTag(NBTTagCompound nbt) {
 		NamedBufferedImage image = new NamedBufferedImage();
 		image.deserializeNBT(nbt);
-		
+
 		image.hasTransparency = false;
 		for (int y = 0; y < image.getImage().getHeight(); y++) {
 			for (int x = 0; x < image.getImage().getWidth(); x++) {
@@ -110,7 +116,7 @@ public class NamedBufferedImage implements INBTSerializable<NBTTagCompound> {
 				}
 			}
 		}
-		
+
 		return image;
 	}
 }

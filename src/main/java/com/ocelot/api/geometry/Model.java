@@ -11,7 +11,6 @@ import javax.imageio.ImageIO;
 
 import org.lwjgl.util.vector.Vector3f;
 
-import com.google.common.base.MoreObjects;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonDeserializer;
@@ -57,19 +56,19 @@ public class Model {
 			}
 		}
 	}
-	
+
 	public List<NamedBufferedImage> getTextures() {
 		return textures;
 	}
-	
+
 	public List<Cube> getCubes() {
 		return cubes;
 	}
-	
+
 	public boolean isAmbientOcclusion() {
 		return ambientOcclusion;
 	}
-	
+
 	public NamedBufferedImage getParticle() {
 		return particle;
 	}

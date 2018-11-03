@@ -122,7 +122,7 @@ public class ApplicationModelCreator extends Application {
 				fileNew.setClickListener((mouseX, mouseY, mouseButton) -> {
 					List<Cube> cubes = modelArea.getCubes();
 					if (cubes.isEmpty()) {
-						removeAllCubes();
+						clearProject();
 					} else {
 						Dialog.Confirmation confirmation = new Dialog.Confirmation(I18n.format("app." + ApplicationModelCreator.getApp().getInfo().getFormattedId() + ".dialog.confirmation.save"));
 						confirmation.setPositiveListener((mouseX1, mouseY1, mouseButton1) -> {
@@ -548,6 +548,26 @@ public class ApplicationModelCreator extends Application {
 			images.add(new NamedBufferedImage(image, location));
 		}
 		return true;
+	}
+	
+	public static void loadModelJson(String json) {
+		List<Cube> cubes = ApplicationModelCreator.getApp().modelArea.getCubes();
+		
+		if (cubes.isEmpty()) {
+			clearProject();
+		} else {
+			Dialog.Confirmation confirmation = new Dialog.Confirmation(I18n.format("app." + ApplicationModelCreator.getApp().getInfo().getFormattedId() + ".dialog.confirmation.save"));
+			confirmation.setPositiveListener((mouseX1, mouseY1, mouseButton1) -> {
+				saveProjectToFile(cubes, ApplicationModelCreator.getApp().loadedImages, ApplicationModelCreator.getApp().modelArea.hasAmbientOcclusion(), ApplicationModelCreator.getApp().modelArea.getParticle());
+			});
+			confirmation.setNegativeListener((mouseX2, mouseY2, mouseButton2) -> {
+				clearProject();
+			});
+			ApplicationModelCreator.getApp().openDialog(confirmation);
+		}
+		
+		Gson gson = new GsonBuilder().registerTypeAdapter(Model.class, new Model.Deserializer()).create();
+		Model model = gson.fromJson(json, Model.class);
 	}
 
 	public static String createModelJson(List<Cube> cubes, String jsonName, boolean ambientOcclusion, NamedBufferedImage particle) {

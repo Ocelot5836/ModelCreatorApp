@@ -13,8 +13,11 @@ import org.lwjgl.util.vector.Vector3f;
 
 import com.google.common.base.MoreObjects;
 import com.google.gson.JsonArray;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
 import com.ocelot.api.utils.NamedBufferedImage;
@@ -53,6 +56,22 @@ public class Model {
 				}
 			}
 		}
+	}
+	
+	public List<NamedBufferedImage> getTextures() {
+		return textures;
+	}
+	
+	public List<Cube> getCubes() {
+		return cubes;
+	}
+	
+	public boolean isAmbientOcclusion() {
+		return ambientOcclusion;
+	}
+	
+	public NamedBufferedImage getParticle() {
+		return particle;
 	}
 
 	public static class Serializer implements JsonSerializer<Model> {
@@ -233,6 +252,13 @@ public class Model {
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
+		}
+	}
+
+	public static class Deserializer implements JsonDeserializer<Model> {
+		@Override
+		public Model deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
+			return null;
 		}
 	}
 }

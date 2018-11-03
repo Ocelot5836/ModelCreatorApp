@@ -25,6 +25,34 @@ app.mca.mc.texturemanager.close=Close
 app.mca.mc.texturemanager.input=Please Input the texture location you wish to use.
 app.mca.mc.texturemanager.open=Open Pixel Painter File
 
+# UI
+app.mca.mc.ui.search_placeholder=Search...
+app.mca.mc.ui.new=New Element
+app.mca.mc.ui.new.tooltip=Adds another element to the workspace
+app.mca.mc.ui.remove=Remove Element
+app.mca.mc.ui.remove.tooltip=Removes the selected element from the workspace
+app.mca.mc.ui.copy=Duplicate Element
+app.mca.mc.ui.copy.tooltip=Adds a copy of the selected element to the workspace
+
+app.mca.mc.ui.label.position=Position
+app.mca.mc.ui.label.size=Size
+app.mca.mc.ui.label.shade=Shade
+app.mca.mc.ui.label.ambient_occlusion=Ambient Occlusion
+app.mca.mc.ui.button.particle=Particle
+app.mca.mc.ui.button.particle_set=Particle Set
+app.mca.mc.ui.label.rotation=Rotation
+app.mca.mc.ui.label.face=Face
+app.mca.mc.ui.button.texture=Texture
+app.mca.mc.ui.button.clear=Clear
+app.mca.mc.ui.button.copy=Copy
+app.mca.mc.ui.button.paste=Paste
+app.mca.mc.ui.label.uv=UV
+app.mca.mc.ui.label.rotation=Rotation
+app.mca.mc.ui.label.cull=Cull
+app.mca.mc.ui.label.fill=Fill
+app.mca.mc.ui.label.enable=Enable
+app.mca.mc.ui.label.auto_uv=Auto UV
+
 # Menu Bar
 
 # Tooltips

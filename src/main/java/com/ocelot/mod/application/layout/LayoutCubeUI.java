@@ -33,6 +33,7 @@ import com.ocelot.mod.application.dialog.DialogTextureManager;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.client.resources.I18n;
 import net.minecraft.util.EnumFacing;
 
 public class LayoutCubeUI extends Layout {
@@ -104,7 +105,7 @@ public class LayoutCubeUI extends Layout {
 	@Override
 	public void init(Layout layout) {
 		cubesSearch = new TextField(0, 0, this.width);
-		cubesSearch.setPlaceholder("Search...");
+		cubesSearch.setPlaceholder(I18n.format("app." + ApplicationModelCreator.getApp().getInfo().getFormattedId() + ".ui.search_placeholder"));
 		cubesSearch.setKeyListener((c) -> {
 			this.cubes.setItems(cubesCopy.stream().filter((cube) -> {
 				return StringUtils.containsIgnoreCase(cube.getName(), cubesSearch.getText());
@@ -147,14 +148,14 @@ public class LayoutCubeUI extends Layout {
 				RenderUtil.drawRectWithTexture(x + contentX, y + 3, 0, 0, 10, 10, 20, 20, 200, 200);
 			}
 		};
-		addCube.setToolTip("New Element", "Adds another element to the workspace");
+		addCube.setToolTip(I18n.format("app." + ApplicationModelCreator.getApp().getInfo().getFormattedId() + ".ui.new"), I18n.format("app." + ApplicationModelCreator.getApp().getInfo().getFormattedId() + ".ui.new.tooltip"));
 		addCube.setClickListener((mouseX, mouseY, mouseButton) -> {
 			ApplicationModelCreator.getApp().addCube(0, 0, 0, 1, 1, 1, 0, 0, 0);
 		});
 		this.addComponent(addCube);
 
 		deleteCube = new Button(1 * (buttonWidth + buttonPadding), cubes.top + cubes.getHeight(), buttonWidth, buttonHeight, Icons.TRASH);
-		deleteCube.setToolTip("Remove Element", "Removes the selected element from the workspace");
+		deleteCube.setToolTip(I18n.format("app." + ApplicationModelCreator.getApp().getInfo().getFormattedId() + ".ui.remove"), I18n.format("app." + ApplicationModelCreator.getApp().getInfo().getFormattedId() + ".ui.remove.tooltip"));
 		deleteCube.setClickListener((mouseX, mouseY, mouseButton) -> {
 			if (cube != null) {
 				ApplicationModelCreator.getApp().removeCube(cubes.getSelectedIndex());
@@ -164,7 +165,7 @@ public class LayoutCubeUI extends Layout {
 		this.addComponent(deleteCube);
 
 		copyCube = new Button(2 * (buttonWidth + buttonPadding), cubes.top + cubes.getHeight(), buttonWidth, buttonHeight, Icons.COPY);
-		copyCube.setToolTip("Duplicate Element", "Adds a copy of the selected element to the workspace");
+		copyCube.setToolTip(I18n.format("app." + ApplicationModelCreator.getApp().getInfo().getFormattedId() + ".ui.copy"), I18n.format("app." + ApplicationModelCreator.getApp().getInfo().getFormattedId() + ".ui.copy.tooltip"));
 		copyCube.setClickListener((mouseX, mouseY, mouseButton) -> {
 			if (cube != null) {
 				ApplicationModelCreator.getApp().addCube(cube.copy());
@@ -218,7 +219,7 @@ public class LayoutCubeUI extends Layout {
 			positionZ = new LayoutNumberIncrementer(2 + (objectOptions.width / 3 - 3) * 2, 15, objectOptions.width / 3 - 4, 40, 0);
 			objectOptions.addComponent(positionZ);
 
-			Label positionLabel = new Label("Position", 5, 5);
+			Label positionLabel = new Label(I18n.format("app." + ApplicationModelCreator.getApp().getInfo().getFormattedId() + ".ui.label.position"), 5, 5);
 			positionLabel.setTextColor(Color.BLACK);
 			positionLabel.setShadow(false);
 			objectOptions.addComponent(positionLabel);
@@ -232,23 +233,23 @@ public class LayoutCubeUI extends Layout {
 			sizeZ = new LayoutNumberIncrementer(2 + (objectOptions.width / 3 - 3) * 2, positionZ.height + 32, objectOptions.width / 3 - 4, 40, 0);
 			objectOptions.addComponent(sizeZ);
 
-			Label sizeLabel = new Label("Size", 5, 60);
+			Label sizeLabel = new Label(I18n.format("app." + ApplicationModelCreator.getApp().getInfo().getFormattedId() + ".ui.label.size"), 5, 60);
 			sizeLabel.setTextColor(Color.BLACK);
 			sizeLabel.setShadow(false);
 			objectOptions.addComponent(sizeLabel);
 
-			shade = new CheckBox("Shade", 5, 118);
+			shade = new CheckBox(I18n.format("app." + ApplicationModelCreator.getApp().getInfo().getFormattedId() + ".ui.label.shade"), 5, 118);
 			shade.setTextColor(Color.BLACK);
 			objectOptions.addComponent(shade);
 
-			ambientOcclusion = new CheckBox("Ambient Occ...", 5, 130);
+			ambientOcclusion = new CheckBox(RenderUtil.clipStringToWidth(I18n.format("app." + ApplicationModelCreator.getApp().getInfo().getFormattedId() + ".ui.label.ambient_occlusion"), objectOptions.width - 20), 5, 130);
 			ambientOcclusion.setTextColor(Color.BLACK);
 			ambientOcclusion.setClickListener((mouseX, mouseY, mouseButton) -> {
 				ApplicationModelCreator.getApp().setAmbientOcclusion(this.ambientOcclusion.isSelected());
 			});
 			objectOptions.addComponent(ambientOcclusion);
 
-			particle = new Button(5, 145, objectOptions.width - 10, 16, "Particle", Icons.PICTURE);
+			particle = new Button(5, 145, objectOptions.width - 10, 16, I18n.format("app." + ApplicationModelCreator.getApp().getInfo().getFormattedId() + ".ui.button.particle"), Icons.PICTURE);
 			particle.setClickListener((mouseX, mouseY, mouseButton) -> {
 				DialogTextureManager textureManager = new DialogTextureManager();
 				textureManager.setCloseListener(() -> {
@@ -289,7 +290,7 @@ public class LayoutCubeUI extends Layout {
 			});
 			rotationOptions.addComponent(rotation);
 
-			Label rotationLabel = new Label("Rotation", 5, 5);
+			Label rotationLabel = new Label(I18n.format("app." + ApplicationModelCreator.getApp().getInfo().getFormattedId() + ".ui.label.rotation"), 5, 5);
 			rotationLabel.setTextColor(Color.BLACK);
 			rotationLabel.setShadow(false);
 			rotationOptions.addComponent(rotationLabel);
@@ -301,7 +302,7 @@ public class LayoutCubeUI extends Layout {
 			textureOptions = new ScrollableLayout(0, cubes.top + buttonHeight + cubes.getHeight() + 16 + 12, this.width, 270, this.height - (cubes.top + buttonHeight + cubes.getHeight() + 16 + 12));
 			textureOptions.setScrollSpeed(10);
 
-			Label faceLabel = new Label("Face", 5, 5);
+			Label faceLabel = new Label(I18n.format("app." + ApplicationModelCreator.getApp().getInfo().getFormattedId() + ".ui.label.face"), 5, 5);
 			faceLabel.setTextColor(Color.BLACK);
 			faceLabel.setShadow(false);
 			textureOptions.addComponent(faceLabel);
@@ -329,7 +330,7 @@ public class LayoutCubeUI extends Layout {
 			textureLabel.setShadow(false);
 			textureOptions.addComponent(textureLabel);
 
-			faceImage = new Button(5, 45, textureOptions.width - 10, 16, "Texture", Icons.PICTURE);
+			faceImage = new Button(5, 45, textureOptions.width - 10, 16, I18n.format("app." + ApplicationModelCreator.getApp().getInfo().getFormattedId() + ".ui.button.texture"), Icons.PICTURE);
 			faceImage.setClickListener((mouseX, mouseY, mouseButton) -> {
 				DialogTextureManager textureManager = new DialogTextureManager();
 				textureManager.setCloseListener(() -> {
@@ -343,7 +344,7 @@ public class LayoutCubeUI extends Layout {
 			});
 			textureOptions.addComponent(faceImage);
 
-			faceDeleteImage = new Button(5, 65, textureOptions.width - 10, 16, "Clear", Icons.FORBIDDEN);
+			faceDeleteImage = new Button(5, 65, textureOptions.width - 10, 16, I18n.format("app." + ApplicationModelCreator.getApp().getInfo().getFormattedId() + ".ui.button.clear"), Icons.FORBIDDEN);
 			faceDeleteImage.setClickListener((mouseX, mouseY, mouseButton) -> {
 				if (this.cube != null) {
 					if (GuiScreen.isShiftKeyDown()) {
@@ -357,7 +358,7 @@ public class LayoutCubeUI extends Layout {
 			});
 			textureOptions.addComponent(faceDeleteImage);
 
-			faceCopyImage = new Button(5, 85, textureOptions.width - 10, 16, "Copy", Icons.COPY);
+			faceCopyImage = new Button(5, 85, textureOptions.width - 10, 16, I18n.format("app." + ApplicationModelCreator.getApp().getInfo().getFormattedId() + ".ui.button.copy"), Icons.COPY);
 			faceCopyImage.setClickListener((mouseX, mouseY, mouseButton) -> {
 				if (this.cube != null) {
 					this.copiedTexture = this.cube.getFace(selectedFace).getTexture();
@@ -366,7 +367,7 @@ public class LayoutCubeUI extends Layout {
 			});
 			textureOptions.addComponent(faceCopyImage);
 
-			facePasteImage = new Button(5, 105, textureOptions.width - 10, 16, "Paste", Icons.CLIPBOARD);
+			facePasteImage = new Button(5, 105, textureOptions.width - 10, 16, I18n.format("app." + ApplicationModelCreator.getApp().getInfo().getFormattedId() + ".ui.button.paste"), Icons.CLIPBOARD);
 			facePasteImage.setClickListener((mouseX, mouseY, mouseButton) -> {
 				if (this.cube != null && this.copiedTexture != null) {
 					if (GuiScreen.isShiftKeyDown()) {
@@ -380,7 +381,7 @@ public class LayoutCubeUI extends Layout {
 			});
 			textureOptions.addComponent(facePasteImage);
 
-			Label uvLabel = new Label("UV", 5, 125);
+			Label uvLabel = new Label(I18n.format("app." + ApplicationModelCreator.getApp().getInfo().getFormattedId() + ".ui.label.uv"), 5, 125);
 			uvLabel.setTextColor(Color.BLACK);
 			uvLabel.setShadow(false);
 			textureOptions.addComponent(uvLabel);
@@ -397,7 +398,7 @@ public class LayoutCubeUI extends Layout {
 			faceHeight = new LayoutNumberIncrementer(2 + textureOptions.width - (textureOptions.width - 4) / 4 - 8, 135, (textureOptions.width - 10) / 4, 40, 16);
 			textureOptions.addComponent(faceHeight);
 
-			Label rotationLabel = new Label("Rotation", 5, 180);
+			Label rotationLabel = new Label(I18n.format("app." + ApplicationModelCreator.getApp().getInfo().getFormattedId() + ".ui.label.rotation"), 5, 180);
 			rotationLabel.setTextColor(Color.BLACK);
 			rotationLabel.setShadow(false);
 			textureOptions.addComponent(rotationLabel);
@@ -411,19 +412,19 @@ public class LayoutCubeUI extends Layout {
 			});
 			textureOptions.addComponent(faceRotation);
 
-			faceCull = new CheckBox("Cull", 5, 210);
+			faceCull = new CheckBox(I18n.format("app." + ApplicationModelCreator.getApp().getInfo().getFormattedId() + ".ui.label.cull"), 5, 210);
 			faceCull.setTextColor(Color.BLACK);
 			textureOptions.addComponent(faceCull);
 
-			faceFill = new CheckBox("Fill", 5, 225);
+			faceFill = new CheckBox(I18n.format("app." + ApplicationModelCreator.getApp().getInfo().getFormattedId() + ".ui.label.fill"), 5, 225);
 			faceFill.setTextColor(Color.BLACK);
 			textureOptions.addComponent(faceFill);
 
-			faceEnable = new CheckBox("Enable", 5, 240);
+			faceEnable = new CheckBox(I18n.format("app." + ApplicationModelCreator.getApp().getInfo().getFormattedId() + ".ui.label.enable"), 5, 240);
 			faceEnable.setTextColor(Color.BLACK);
 			textureOptions.addComponent(faceEnable);
 
-			faceAutoUV = new CheckBox("Auto UV", 5, 255);
+			faceAutoUV = new CheckBox(I18n.format("app." + ApplicationModelCreator.getApp().getInfo().getFormattedId() + ".ui.label.auto_uv"), 5, 255);
 			faceAutoUV.setTextColor(Color.BLACK);
 			textureOptions.addComponent(faceAutoUV);
 
@@ -526,6 +527,6 @@ public class LayoutCubeUI extends Layout {
 	}
 
 	public void setParticle(NamedBufferedImage particle) {
-		this.particle.setText(particle == null ? "Particle" : "Particle Set");
+		this.particle.setText(particle == null ? I18n.format("app." + ApplicationModelCreator.getApp().getInfo().getFormattedId() + ".ui.button.particle") : I18n.format("app." + ApplicationModelCreator.getApp().getInfo().getFormattedId() + ".ui.button.particle_set"));
 	}
 }

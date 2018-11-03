@@ -150,8 +150,6 @@ public class LayoutCubeUI extends Layout {
 		addCube.setToolTip("New Element", "Adds another element to the workspace");
 		addCube.setClickListener((mouseX, mouseY, mouseButton) -> {
 			ApplicationModelCreator.getApp().addCube(0, 0, 0, 1, 1, 1, 0, 0, 0);
-			cubes.setSelectedIndex(cubes.size() - 1);
-			this.updateCube(cubes.getSelectedItem());
 		});
 		this.addComponent(addCube);
 

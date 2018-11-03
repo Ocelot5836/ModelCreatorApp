@@ -32,7 +32,7 @@ public class Cube implements INBTSerializable<NBTTagCompound> {
 	private boolean shade;
 	private boolean hasTransparency;
 
-	protected Cube() {
+	public Cube() {
 		this(0, 0, 0, 0, 0, 0, 0, 0, 0);
 	}
 

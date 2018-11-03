@@ -46,7 +46,7 @@ public class Face implements INBTSerializable<NBTTagCompound> {
 		this(parentCube, null);
 	}
 
-	protected Face(Cube parentCube, EnumFacing faceDirection) {
+	public Face(Cube parentCube, @Nullable EnumFacing faceDirection) {
 		this.parentCube = parentCube;
 		this.faceDirection = faceDirection;
 		this.textureLocation = null;

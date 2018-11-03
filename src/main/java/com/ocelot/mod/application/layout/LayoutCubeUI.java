@@ -107,6 +107,8 @@ public class LayoutCubeUI extends Layout {
 		cubesSearch = new TextField(0, 0, this.width);
 		cubesSearch.setPlaceholder(I18n.format("app." + ApplicationModelCreator.getApp().getInfo().getFormattedId() + ".ui.search_placeholder"));
 		cubesSearch.setKeyListener((c) -> {
+			this.cubes.setSelectedIndex(-1);
+			this.updateCube(null);
 			this.cubes.setItems(cubesCopy.stream().filter((cube) -> {
 				return StringUtils.containsIgnoreCase(cube.getName(), cubesSearch.getText());
 			}).collect(Collectors.toList()));

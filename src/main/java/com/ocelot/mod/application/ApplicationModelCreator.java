@@ -68,7 +68,6 @@ public class ApplicationModelCreator extends Application {
 	public static final String MODEL_CREATOR_SAVE_VERSION = "1.0";
 
 	private static ApplicationModelCreator app;
-	private static boolean running;
 	private static boolean enableTransparency;
 	private static boolean fastRender;
 
@@ -85,7 +84,6 @@ public class ApplicationModelCreator extends Application {
 	@Override
 	public void init(@Nullable NBTTagCompound intent) {
 		app = this;
-		running = true;
 		enableTransparency = false;
 		fastRender = false;
 
@@ -261,24 +259,26 @@ public class ApplicationModelCreator extends Application {
 				menuBarFile.add(new MenuBarItemDivider());
 
 				MenuBarItemButton fileExit = new MenuBarItemButton(I18n.format("app." + ApplicationModelCreator.getApp().getInfo().getFormattedId() + ".exit"), Icons.POWER_OFF);
-				fileExit.setTooltip(TextFormatting.GRAY + I18n.format("app." + ApplicationModelCreator.getApp().getInfo().getFormattedId() + ".tooltip.exit"));
-				fileExit.setClickListener((mouseX, mouseY, mouseButton) -> {
-					if (modelArea.getCubes().isEmpty()) {
-						Laptop.getSystem().closeApplication(this.getInfo());
-					} else {
-						Dialog.Confirmation confirmation = new Dialog.Confirmation(I18n.format("app." + ApplicationModelCreator.getApp().getInfo().getFormattedId() + ".dialog.confirmation.save"));
-						confirmation.setPositiveListener((mouseX1, mouseY1, mouseButton1) -> {
-							saveProjectToFile(modelArea.getCubes(), loadedImages, modelArea.hasAmbientOcclusion(), modelArea.getParticle(), (success1, file1) -> {
-								running = false;
-								return true;
-							});
-						});
-						confirmation.setNegativeListener((mouseX1, mouseY1, mouseButton1) -> {
-							running = false;
-						});
-						openDialog(confirmation);
-					}
-				});
+				fileExit.setTooltip(TextFormatting.GRAY + I18n.format("app." + ApplicationModelCreator.getApp().getInfo().getFormattedId() + ".tooltip.broken"), 150);
+				fileExit.setEnabled(false);
+				// fileExit.setTooltip(TextFormatting.GRAY + I18n.format("app." + ApplicationModelCreator.getApp().getInfo().getFormattedId() + ".tooltip.exit"));
+				// fileExit.setClickListener((mouseX, mouseY, mouseButton) -> {
+				// if (modelArea.getCubes().isEmpty()) {
+				// Laptop.getSystem().closeApplication(this.getInfo());
+				// } else {
+				// Dialog.Confirmation confirmation = new Dialog.Confirmation(I18n.format("app." + ApplicationModelCreator.getApp().getInfo().getFormattedId() + ".dialog.confirmation.save"));
+				// confirmation.setPositiveListener((mouseX1, mouseY1, mouseButton1) -> {
+				// saveProjectToFile(modelArea.getCubes(), loadedImages, modelArea.hasAmbientOcclusion(), modelArea.getParticle(), (success1, file1) -> {
+				// Laptop.getSystem().closeApplication(this.getInfo());
+				// return true;
+				// });
+				// });
+				// confirmation.setNegativeListener((mouseX1, mouseY1, mouseButton1) -> {
+				// Laptop.getSystem().closeApplication(this.getInfo());
+				// });
+				// openDialog(confirmation);
+				// }
+				// });
 				menuBarFile.add(fileExit);
 			}
 
@@ -455,7 +455,6 @@ public class ApplicationModelCreator extends Application {
 	@Override
 	public void onClose() {
 		clearProject();
-		running = false;
 		this.modelArea.cleanUp();
 		this.mainLayout.clear();
 		this.cubeUI.clear();
@@ -465,7 +464,7 @@ public class ApplicationModelCreator extends Application {
 	public List<NamedBufferedImage> getLoadedImages() {
 		return loadedImages;
 	}
-	
+
 	public void updateCubes(List<Cube> cubes) {
 		modelArea.updateCubes(cubes);
 		cubeUI.updateCubes(cubes);
@@ -641,10 +640,6 @@ public class ApplicationModelCreator extends Application {
 
 	public static ApplicationModelCreator getApp() {
 		return app;
-	}
-
-	public static boolean isRunning() {
-		return running;
 	}
 
 	public static boolean isTransparencyEnabled() {

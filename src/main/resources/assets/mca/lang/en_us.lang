@@ -3,7 +3,7 @@ app.mca.mc.cube.name=Cube
 app.mca.mc.json.comment=Model generated using %s's Model Creator. Original model creator: %s
 app.mca.mc.author_note=Model Creator by %s
 app.mca.mc.welcome.title=Welcome
-app.mca.mc.welcome.info=Thank you for installing this application! Please note this app is still in development and may have some bugs. If you want those bugs tog et fixed, report them using the more tab. Either way, I hope you enjoy making models in this app!
+app.mca.mc.welcome.info=Thank you for installing this application! Please note this app is still in development and may have some bugs. If you want those bugs to get fixed, report them using the more tab. Either way, I hope you enjoy making models in this app!
 app.mca.mc.copy.title=Copied
 app.mca.mc.copy.desc=File NBT to Clipboard
 app.mca.mc.export.title=Export Location
@@ -29,6 +29,7 @@ app.mca.mc.texturemanager.open=Open Pixel Painter File
 
 # Tooltips
 app.mca.mc.tooltip.not_added=This feature has not been added yet
+app.mca.mc.tooltip.broken=This feature does not work properly and has been disabled temporarily
 
 # File Tooltips
 app.mca.mc.tooltip.new=New Model

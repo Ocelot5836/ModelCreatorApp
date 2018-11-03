@@ -168,6 +168,11 @@ public class ComponentModelArea extends Component {
 		this.faces.clear();
 	}
 
+	public void updateCubes(List<Cube> cubes) {
+		this.cubes.clear();
+		this.cubes.addAll(cubes);
+	}
+
 	public void clear() {
 		this.cubes.clear();
 	}

@@ -465,6 +465,11 @@ public class ApplicationModelCreator extends Application {
 	public List<NamedBufferedImage> getLoadedImages() {
 		return loadedImages;
 	}
+	
+	public void updateCubes(List<Cube> cubes) {
+		modelArea.updateCubes(cubes);
+		cubeUI.updateCubes(cubes);
+	}
 
 	public void addCube(float x, float y, float z, float sizeX, float sizeY, float sizeZ, float rotationX, float rotationY, float rotationZ) {
 		modelArea.addCube(x, y, z, sizeX, sizeY, sizeZ, rotationX, rotationY, rotationZ);

@@ -1,8 +1,11 @@
 package com.ocelot.mod.application.layout;
 
 import java.awt.Color;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.StringUtils;
 import org.lwjgl.util.vector.Vector4f;
 
 import com.mrcrayfish.device.api.app.Icons;
@@ -41,6 +44,8 @@ public class LayoutCubeUI extends Layout {
 	private NamedBufferedImage copiedTexture;
 	private Vector4f copiedTextureCoords;
 
+	private TextField cubesSearch;
+	private List<Cube> cubesCopy;
 	private SmoothItemList<Cube> cubes;
 
 	private ScrollableLayout objectOptions;
@@ -98,7 +103,19 @@ public class LayoutCubeUI extends Layout {
 
 	@Override
 	public void init(Layout layout) {
-		cubes = new SmoothItemList<>(0, 0, this.width, layout.height / 3);
+		cubesSearch = new TextField(0, 0, this.width);
+		cubesSearch.setPlaceholder("Search...");
+		cubesSearch.setKeyListener((c) -> {
+			this.cubes.setItems(cubesCopy.stream().filter((cube) -> {
+				return StringUtils.containsIgnoreCase(cube.getName(), cubesSearch.getText());
+			}).collect(Collectors.toList()));
+			return false;
+		});
+		this.addComponent(cubesSearch);
+
+		cubesCopy = new ArrayList<Cube>();
+
+		cubes = new SmoothItemList<>(0, cubesSearch.top + 16, this.width, layout.height / 3);
 		cubes.setBorderColor(new Color(164, 164, 164));
 		cubes.setInnerBorderColor(new Color(255, 255, 255, 0));
 		cubes.setScrollSpeed(5);
@@ -133,6 +150,8 @@ public class LayoutCubeUI extends Layout {
 		addCube.setToolTip("New Element", "Adds another element to the workspace");
 		addCube.setClickListener((mouseX, mouseY, mouseButton) -> {
 			ApplicationModelCreator.getApp().addCube(0, 0, 0, 1, 1, 1, 0, 0, 0);
+			cubes.setSelectedIndex(cubes.size() - 1);
+			this.updateCube(cubes.getSelectedItem());
 		});
 		this.addComponent(addCube);
 
@@ -497,6 +516,8 @@ public class LayoutCubeUI extends Layout {
 
 	public void updateCubes(List<Cube> cubes) {
 		this.cubes.setItems(cubes);
+		this.cubesCopy.clear();
+		this.cubesCopy.addAll(cubes);
 		if (this.cubes.size() == 0) {
 			this.updateCube(null);
 		}

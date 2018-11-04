@@ -170,10 +170,10 @@ public class Face implements INBTSerializable<NBTTagCompound> {
 					// GlStateManager.rotate(-90 + -this.rotation, 0, 0, 1);
 					// GlStateManager.translate(-this.parentCube.getSize().x * 8, this.parentCube.getSize().x * 8, -this.parentCube.getSize().y * 8);
 
-					this.pos(size.x * scale, 0, 0, EnumFacing.NORTH, textureCoords.x / 16f, textureCoords.y / 16f + textureCoords.w / 16f);
-					this.pos(0, 0, 0, EnumFacing.NORTH, textureCoords.x / 16f + textureCoords.z / 16f, textureCoords.y / 16f);
-					this.pos(0, -size.y * scale, 0, EnumFacing.NORTH, textureCoords.x / 16f + textureCoords.z / 16f, textureCoords.y / 16f);
-					this.pos(size.x * scale, -size.y * scale, 0, EnumFacing.NORTH, textureCoords.x / 16f, textureCoords.y / 16f);
+					this.pos(size.x * scale, 0, 0, EnumFacing.NORTH, textureCoords.x / 16f + textureCoords.z / 16f, textureCoords.y / 16f);
+					this.pos(0, 0, 0, EnumFacing.NORTH, textureCoords.x / 16f, textureCoords.y / 16f);
+					this.pos(0, -size.y * scale, 0, EnumFacing.NORTH, textureCoords.x / 16f, textureCoords.y / 16f + textureCoords.w / 16f);
+					this.pos(size.x * scale, -size.y * scale, 0, EnumFacing.NORTH, textureCoords.x / 16f + textureCoords.z / 16f, textureCoords.y / 16f + textureCoords.w / 16f);
 				}
 				Tessellator.getInstance().draw();
 			} else {
@@ -263,9 +263,9 @@ public class Face implements INBTSerializable<NBTTagCompound> {
 				buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX_NORMAL);
 				{
 					this.pos(size.x * scale, 0, size.z * scale, EnumFacing.EAST, textureCoords.x / 16f, textureCoords.y / 16f + textureCoords.w / 16f);
-					this.pos(size.x * scale, 0, 0, EnumFacing.EAST, textureCoords.x / 16f + textureCoords.z / 16f, textureCoords.y / 16f);
+					this.pos(size.x * scale, 0, 0, EnumFacing.EAST, textureCoords.x / 16f, textureCoords.y / 16f);
 					this.pos(size.x * scale, -size.y * scale, 0, EnumFacing.EAST, textureCoords.x / 16f + textureCoords.z / 16f, textureCoords.y / 16f);
-					this.pos(size.x * scale, -size.y * scale, size.z * scale, EnumFacing.EAST, textureCoords.x / 16f, textureCoords.y / 16f);
+					this.pos(size.x * scale, -size.y * scale, size.z * scale, EnumFacing.EAST, textureCoords.x / 16f + textureCoords.z / 16f, textureCoords.y / 16f + textureCoords.w / 16f);
 				}
 				Tessellator.getInstance().draw();
 			} else {

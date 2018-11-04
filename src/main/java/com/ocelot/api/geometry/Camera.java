@@ -7,6 +7,9 @@ import net.minecraft.client.renderer.GlStateManager;
 
 public class Camera {
 
+	private int lastMouseX;
+	private int lastMouseY;
+
 	private Vector3f origin;
 
 	private float distanceFromCenter;
@@ -36,11 +39,9 @@ public class Camera {
 		this.rotation = new Vector3f(rotation);
 		this.renderRotation = new Vector3f();
 
-		this.distanceFromCenter = 50;
-		this.angleAroundCenter = 0;
+		this.distanceFromCenter = 0;
+		this.angleAroundCenter = 135;
 		this.pitch = -45;
-		this.rotation.set(this.pitch, 45, 0);
-		this.lastRotation.set(this.pitch, 45, 0);
 	}
 
 	public void update() {
@@ -48,11 +49,10 @@ public class Camera {
 		this.lastRotation.set(this.rotation);
 
 		// this.calculateCameraPosition((float) (distanceFromCenter * Math.cos(Math.toRadians(pitch))), (float) (distanceFromCenter * Math.sin(Math.toRadians(pitch))));
-		// rotation.x = pitch;
-		// rotation.y = 180 - angleAroundCenter;
+		this.rotation.x = this.pitch;
+		this.rotation.y = 180 - this.angleAroundCenter;
 
-		 this.lastPosition.set(this.origin.x, this.origin.y, this.origin.z);
-		 this.position.set(this.origin.x, this.origin.y, this.origin.z);
+		this.position.set(this.origin.x, this.origin.y + distanceFromCenter, this.origin.z);
 	}
 
 	public void transform(float partialTicks) {
@@ -79,16 +79,22 @@ public class Camera {
 		this.position.set(this.origin.x - offsetX, this.origin.y + verticalDistance, this.origin.z - offsetZ);
 	}
 
-//	public void handleMouseDrag(int mouseX, int mouseY, int mouseButton) {
-//		if (mouseButton == 1) {
-//			pitch -= Mouse.getDY() * 0.8f;
-//			angleAroundCenter += Mouse.getDX() * 0.8f;
-//		}
-//	}
-//
-//	public void handleMouseScroll(int mouseX, int mouseY, boolean direction) {
-//		distanceFromCenter -= Mouse.getDWheel() * 0.1f;
-//	}
+	public void handleMouseDrag(int mouseX, int mouseY, int mouseButton) {
+		if (mouseButton == 1) {
+			pitch += mouseY - lastMouseY;
+			angleAroundCenter -= mouseX - lastMouseX;
+		}
+		this.updateMousePosition(mouseX, mouseY);
+	}
+
+	public void handleMouseScroll(int mouseX, int mouseY, boolean direction) {
+		distanceFromCenter += Mouse.getDWheel() * 0.05f;
+	}
+	
+	public void updateMousePosition(int mouseX, int mouseY) {
+		lastMouseX = mouseX;
+		lastMouseY = mouseY;
+	}
 
 	public Vector3f getOrigin() {
 		return origin;

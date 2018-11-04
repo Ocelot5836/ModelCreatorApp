@@ -12,6 +12,7 @@ import com.mrcrayfish.device.util.GLHelper;
 import com.ocelot.api.geometry.Camera;
 import com.ocelot.api.geometry.Cube;
 import com.ocelot.api.geometry.Face;
+import com.ocelot.api.utils.GuiUtils;
 import com.ocelot.api.utils.Lib;
 import com.ocelot.api.utils.NamedBufferedImage;
 import com.ocelot.mod.Usernames;
@@ -49,31 +50,38 @@ public class ComponentModelArea extends Component {
 
 	@Override
 	protected void render(Laptop laptop, Minecraft mc, int x, int y, int mouseX, int mouseY, boolean windowActive, float partialTicks) {
-
 		GLHelper.pushScissor(x, y, this.width, this.height);
 		GlStateManager.pushMatrix();
 		{
+			float cubeSize = 16f;
 			GlStateManager.enableDepth();
 
-			GlStateManager.translate(x, y, 0);
+			GlStateManager.translate(x + cubeSize * 1.5, y, 500);
 			this.camera.translate(partialTicks);
 
-			float cubeSize = 16f;
+			/** Render the text at the bottom */
+			{
+				GlStateManager.pushMatrix();
+				GlStateManager.disableCull();
+				GlStateManager.translate(cubeSize * 4, 0, cubeSize * 4);
+				this.camera.rotate(partialTicks);
+				GlStateManager.translate(cubeSize * -4, 0, cubeSize * -4);
+				GlStateManager.translate(0, 0, cubeSize * 8);
+				GlStateManager.rotate(90, 1, 0, 0);
+				mc.fontRenderer.drawString(I18n.format("app.mca.mc.author_note", Usernames.OCELOT5836), 0, 0, Color.WHITE.getRGB(), true);
+				GlStateManager.enableCull();
+				GlStateManager.popMatrix();
+			}
 
 			GlStateManager.pushMatrix();
+			GlStateManager.translate(cubeSize * 4, 0, cubeSize * 4);
 			this.camera.rotate(partialTicks);
-			GlStateManager.translate(0, 0, cubeSize * 8);
-			GlStateManager.rotate(90, 1, 0, 0);
-			mc.fontRenderer.drawString(I18n.format("app.mca.mc.author_note", Usernames.OCELOT5836), 0, 0, Color.WHITE.getRGB(), true);
-			GlStateManager.popMatrix();
-
-			GlStateManager.pushMatrix();
-			this.camera.rotate(partialTicks);
+			GlStateManager.translate(cubeSize * -4, 0, cubeSize * -4);
 
 			GlStateManager.disableTexture2D();
-			
+
 			ScaledResolution res = new ScaledResolution(mc);
-			
+
 			GlStateManager.glLineWidth(res.getScaleFactor());
 			GlStateManager.scale(0.5, 0.5, 0.5);
 			GlStateManager.color(140f / 255f, 140f / 255f, 153f / 255f, 1);
@@ -119,7 +127,7 @@ public class ComponentModelArea extends Component {
 				GlStateManager.popMatrix();
 			}
 
-			this.renderFaces(this.faces);
+			this.renderFaces(this.faces, cubeSize, partialTicks);
 			mc.entityRenderer.setupOverlayRendering();
 
 			GlStateManager.enableTexture2D();
@@ -130,8 +138,31 @@ public class ComponentModelArea extends Component {
 		GLHelper.popScissor();
 	}
 
-	private void renderFaces(List<Face> faces) {
-		this.camera.rotate(Minecraft.getMinecraft().getRenderPartialTicks());
+	@Override
+	protected void handleMouseDrag(int mouseX, int mouseY, int mouseButton) {
+		super.handleMouseDrag(mouseX, mouseY, mouseButton);
+
+		if (GuiUtils.isMouseInside(this.xPosition, this.yPosition, this.width, this.height, mouseX, mouseY)) {
+			this.camera.handleMouseDrag(mouseX, mouseY, mouseButton);
+		}
+	}
+
+	@Override
+	protected void handleMouseScroll(int mouseX, int mouseY, boolean direction) {
+		super.handleMouseScroll(mouseX, mouseY, direction);
+
+		if (GuiUtils.isMouseInside(this.xPosition, this.yPosition, this.width, this.height, mouseX, mouseY)) {
+			this.camera.handleMouseScroll(mouseX, mouseY, direction);
+		}
+	}
+
+	private void renderFaces(List<Face> faces, float cubeSize, float partialTicks) {
+		GlStateManager.pushMatrix();
+
+		GlStateManager.translate(cubeSize * 4, 0, cubeSize * 4);
+		this.camera.rotate(partialTicks);
+		GlStateManager.translate(cubeSize * -4, 0, cubeSize * -4);
+
 		faces.sort((face1, face2) -> {
 			if (face1.hasTransparency() && face2.hasTransparency()) {
 				Cube cube1 = face1.getParentCube();
@@ -154,7 +185,7 @@ public class ComponentModelArea extends Component {
 			GlStateManager.pushMatrix();
 			face.getParentCube().applyLighting();
 			face.getParentCube().applyRenderTransforms();
-			face.render(false, 16f);
+			face.render(false, cubeSize);
 			GlStateManager.popMatrix();
 		}
 
@@ -162,10 +193,12 @@ public class ComponentModelArea extends Component {
 			GlStateManager.pushMatrix();
 			face.getParentCube().applyLighting();
 			face.getParentCube().applyRenderTransforms();
-			face.render(true, 16f);
+			face.render(true, cubeSize);
 			GlStateManager.popMatrix();
 		}
 		this.faces.clear();
+
+		GlStateManager.popMatrix();
 	}
 
 	public void updateCubes(List<Cube> cubes) {

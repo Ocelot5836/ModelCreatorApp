@@ -1,9 +1,9 @@
 [
 {
-  "modid": "mca",
+  "modid": "omca",
   "name": "Model Creator Application",
   "description": "A recreation of MrCrayfish's Model Creator inside of Minecraft! Has all the features and abilities from the original, but also adds some new features and functionality.",
-  "version": "1.0.1",
+  "version": "2.0.0",
   "mcversion": "[1.12,1.2.2]",
   "url": "",
   "updateUrl": "",

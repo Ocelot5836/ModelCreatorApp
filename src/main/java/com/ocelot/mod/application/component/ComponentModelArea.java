@@ -137,6 +137,15 @@ public class ComponentModelArea extends Component {
 		GlStateManager.popMatrix();
 		GLHelper.popScissor();
 	}
+	
+	@Override
+	protected void handleMouseClick(int mouseX, int mouseY, int mouseButton) {
+		super.handleMouseClick(mouseX, mouseY, mouseButton);
+
+		if (mouseButton == 1 && GuiUtils.isMouseInside(this.xPosition, this.yPosition, this.width, this.height, mouseX, mouseY)) {
+			this.camera.updateMousePosition(mouseX, mouseY);
+		}
+	}
 
 	@Override
 	protected void handleMouseDrag(int mouseX, int mouseY, int mouseButton) {

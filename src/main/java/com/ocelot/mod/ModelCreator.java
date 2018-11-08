@@ -26,9 +26,9 @@ import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 public class ModelCreator {
 
 	/** The mod id */
-	public static final String MOD_ID = "mca";
+	public static final String MOD_ID = "omca";
 	/** The current version of the mod */
-	public static final String VERSION = "1.0.1";
+	public static final String VERSION = "2.0.0";
 	/** The id for the model creator app */
 	public static final ResourceLocation MODEL_CREATOR_ID = new ResourceLocation(MOD_ID, "mc");
 	/** The formatted id for the model creator app */

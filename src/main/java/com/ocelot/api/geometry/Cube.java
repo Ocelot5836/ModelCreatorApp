@@ -10,6 +10,7 @@ import com.google.common.base.MoreObjects;
 import com.ocelot.api.utils.Lib;
 import com.ocelot.api.utils.NBTHelper;
 import com.ocelot.api.utils.NamedBufferedImage;
+import com.ocelot.mod.application.ApplicationModelCreator;
 
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.GlStateManager;
@@ -46,7 +47,7 @@ public class Cube implements INBTSerializable<NBTTagCompound> {
 		this.rotation = new Vector3f(rotationX, rotationY, rotationZ);
 		this.rotationPoint = new Vector3f(8, 8, 8);
 		this.faces = new Face[] { new Face(this, EnumFacing.DOWN), new Face(this, EnumFacing.UP), new Face(this, EnumFacing.NORTH), new Face(this, EnumFacing.SOUTH), new Face(this, EnumFacing.WEST), new Face(this, EnumFacing.EAST) };
-		this.name = I18n.format("app.mca.mc.cube.name");
+		this.name = I18n.format("app." + ApplicationModelCreator.getApp().getInfo().getFormattedId() + ".cube.name");
 		this.shade = true;
 		this.hasTransparency = false;
 	}

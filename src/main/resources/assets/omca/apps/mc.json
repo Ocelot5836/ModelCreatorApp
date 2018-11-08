@@ -2,8 +2,8 @@
 	"name": "Model Creator",
 	"author": "Ocelot5836",
 	"description": "A recreation of MrCrayfish's Model Creator inside of Minecraft! Has all the features and abilities from the original, but also adds some new features and functionality.",
-	"version": "1.0.1",
-	"icon": "mca:textures/app/icon/mc.png",
+	"version": "2.0.0",
+	"icon": "omca:textures/app/icon/mc.png",
 	"screenshots": [
 		"https://raw.githubusercontent.com/Ocelot5836/storage/master/mods/device-mod/modelcreator/screenshot1.png",
 		"https://raw.githubusercontent.com/Ocelot5836/storage/master/mods/device-mod/modelcreator/screenshot2.png",

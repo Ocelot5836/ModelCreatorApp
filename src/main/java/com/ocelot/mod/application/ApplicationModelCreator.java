@@ -32,6 +32,7 @@ import com.ocelot.api.geometry.Camera;
 import com.ocelot.api.geometry.Cube;
 import com.ocelot.api.geometry.Face;
 import com.ocelot.api.geometry.Model;
+import com.ocelot.api.geometry.ModelData;
 import com.ocelot.api.utils.GuiUtils;
 import com.ocelot.api.utils.Lib;
 import com.ocelot.api.utils.NamedBufferedImage;
@@ -571,7 +572,7 @@ public class ApplicationModelCreator extends Application {
 	}
 
 	public static String createModelJson(List<Cube> cubes, String jsonName, boolean ambientOcclusion, NamedBufferedImage particle) {
-		Model model = new Model(cubes, jsonName, ambientOcclusion, particle);
+		Model model = new Model(jsonName, new ModelData(cubes, ambientOcclusion, particle));
 		Gson gson = new GsonBuilder().registerTypeAdapter(Model.class, new Model.Serializer()).setPrettyPrinting().create();
 
 		return "{\n  \"_comment\": \"" + I18n.format("app.mca.mc.json.comment", Usernames.OCELOT5836, "https://mrcrayfish.com/tools?id=mc") + "\"," + gson.toJson(model).substring(1);

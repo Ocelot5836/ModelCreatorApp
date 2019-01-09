@@ -2,7 +2,6 @@ package com.ocelot.api.geometry;
 
 import java.io.File;
 import java.lang.reflect.Type;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -28,67 +27,38 @@ import net.minecraft.util.ResourceLocation;
 
 public class Model {
 
-	private List<NamedBufferedImage> textures;
-
-	private List<Cube> cubes;
 	private String jsonName;
-	private boolean ambientOcclusion;
-	private NamedBufferedImage particle;
+	private ModelData data;
 
-	public Model(List<Cube> cubes, String jsonName, boolean ambientOcclusion, NamedBufferedImage particle) {
-		this.textures = new ArrayList<NamedBufferedImage>();
-		this.cubes = new ArrayList<Cube>(cubes);
+	public Model(String jsonName, ModelData data) {
 		this.jsonName = jsonName;
-		this.ambientOcclusion = ambientOcclusion;
-		this.particle = particle;
-
-		int nextId = 0;
-		for (Cube cube : cubes) {
-			Face[] faces = cube.getFaces();
-			for (int i = 0; i < faces.length; i++) {
-				Face face = faces[i];
-				if (face != Face.NULL_FACE) {
-					NamedBufferedImage texture = face.getTexture();
-					if (!this.textures.contains(texture) && texture != null) {
-						this.textures.add(texture);
-					}
-				}
-			}
-		}
+		this.data = data;
 	}
-
-	public List<NamedBufferedImage> getTextures() {
-		return textures;
+	
+	public String getJsonName() {
+		return jsonName;
 	}
-
-	public List<Cube> getCubes() {
-		return cubes;
-	}
-
-	public boolean isAmbientOcclusion() {
-		return ambientOcclusion;
-	}
-
-	public NamedBufferedImage getParticle() {
-		return particle;
+	
+	public ModelData getData() {
+		return data;
 	}
 
 	public static class Serializer implements JsonSerializer<Model> {
 		@Override
 		public JsonElement serialize(Model src, Type typeOfSrc, JsonSerializationContext context) {
+			ModelData data = src.getData();
 			JsonObject json = new JsonObject();
 			JsonObject textures = new JsonObject();
 			JsonArray elements = new JsonArray();
 
 			/** global properties */
-			if (!src.ambientOcclusion) {
-				json.addProperty("ambientOcclusion", src.ambientOcclusion);
+			if (!data.isAmbientOcclusion()) {
+				json.addProperty("ambientOcclusion", data.isAmbientOcclusion());
 			}
 
 			/** Textures */
 			Map<ResourceLocation, NamedBufferedImage> addedImages = new HashMap<ResourceLocation, NamedBufferedImage>();
-			for (int i = 0; i < src.textures.size(); i++) {
-				NamedBufferedImage image = src.textures.get(i);
+			for (NamedBufferedImage image : data.getTextures()) {
 				if (!addedImages.containsKey(image.getLocation())) {
 					addedImages.put(image.getLocation(), image);
 				}
@@ -100,13 +70,13 @@ public class Model {
 				id++;
 			}
 
-			if (src.particle != null && src.particle.getLocation() != null) {
-				textures.addProperty("particle", src.particle.getLocation().toString().replaceAll("textures/", "").replaceAll(".png", ""));
+			if (data.getParticle() != null && data.getParticle().getLocation() != null) {
+				textures.addProperty("particle", data.getParticle().getLocation().toString().replaceAll("textures/", "").replaceAll(".png", ""));
 			}
 			json.add("textures", textures);
 
 			/** Elements */
-			for (Cube cube : src.cubes) {
+			for (Cube cube : data.getCubes()) {
 				JsonObject cubeObj = new JsonObject();
 				JsonArray from = new JsonArray();
 				JsonArray to = new JsonArray();
@@ -219,12 +189,12 @@ public class Model {
 			}
 			json.add("elements", elements);
 
-			this.saveTexturesToDisc(src.jsonName, src.textures, src.particle);
+			this.saveTexturesToDisc(src.jsonName, data.getTextures(), data.getParticle());
 
 			return json;
 		}
 
-		private void saveTexturesToDisc(String jsonName, List<NamedBufferedImage> textures, NamedBufferedImage particle) {
+		private void saveTexturesToDisc(String jsonName, NamedBufferedImage[] textures, NamedBufferedImage particle) {
 			try {
 				File folder = new File(Minecraft.getMinecraft().mcDataDir, ModelCreator.MOD_ID + "-export/" + jsonName + "/textures");
 				if (folder.exists()) {

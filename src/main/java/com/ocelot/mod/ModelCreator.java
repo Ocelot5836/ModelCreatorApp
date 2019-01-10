@@ -42,6 +42,7 @@ public class ModelCreator {
 	@EventHandler
 	public void pre(FMLPreInitializationEvent event) {
 		NumberHelper.init();
+		Usernames.init();
 		logger = event.getModLog();
 	}
 

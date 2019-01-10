@@ -68,7 +68,7 @@ public class ComponentModelArea extends Component {
 				GlStateManager.translate(cubeSize * -4, 0, cubeSize * -4);
 				GlStateManager.translate(0, 0, cubeSize * 8);
 				GlStateManager.rotate(90, 1, 0, 0);
-				mc.fontRenderer.drawString(I18n.format("app.mca.mc.author_note", Usernames.OCELOT5836), 0, 0, Color.WHITE.getRGB(), true);
+				mc.fontRenderer.drawString(I18n.format("app." + ApplicationModelCreator.getApp().getInfo().getFormattedId() + ".author_note", Usernames.getOcelot5836Username()), 0, 0, Color.WHITE.getRGB(), true);
 				GlStateManager.enableCull();
 				GlStateManager.popMatrix();
 			}
@@ -137,7 +137,7 @@ public class ComponentModelArea extends Component {
 		GlStateManager.popMatrix();
 		GLHelper.popScissor();
 	}
-	
+
 	@Override
 	protected void handleMouseClick(int mouseX, int mouseY, int mouseButton) {
 		super.handleMouseClick(mouseX, mouseY, mouseButton);

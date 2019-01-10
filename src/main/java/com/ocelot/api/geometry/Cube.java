@@ -34,7 +34,7 @@ public class Cube implements INBTSerializable<NBTTagCompound> {
 	private boolean hasTransparency;
 
 	public Cube() {
-		this(0, 0, 0, 0, 0, 0, 0, 0, 0);
+		this(0, 0, 0, 1, 1, 1, 0, 0, 0);
 	}
 
 	public Cube(Vector3f position, Vector3f size, Vector3f rotation) {

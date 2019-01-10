@@ -111,6 +111,8 @@ public class ModelData implements INBTSerializable<NBTTagCompound> {
 
 	@Override
 	public void deserializeNBT(NBTTagCompound nbt) {
+		System.out.println(nbt);
+		
 		if (nbt.hasKey("textures", Constants.NBT.TAG_LIST)) {
 			NBTTagList textures = nbt.getTagList("textures", Constants.NBT.TAG_COMPOUND);
 			for (int i = 0; i < textures.tagCount(); i++) {
@@ -118,11 +120,12 @@ public class ModelData implements INBTSerializable<NBTTagCompound> {
 			}
 		}
 
-		if (nbt.hasKey("cubes", Constants.NBT.TAG_COMPOUND)) {
+		if (nbt.hasKey("cubes", Constants.NBT.TAG_LIST)) {
 			NBTTagList cubes = nbt.getTagList("cubes", Constants.NBT.TAG_COMPOUND);
 			for (int i = 0; i < cubes.tagCount(); i++) {
-				this.cubes.add(new Cube(cubes.getCompoundTagAt(i)));
+				this.cubes.add(new Cube(cubes.getCompoundTagAt(i), this.textures));
 			}
+			System.out.println(cubes);
 		}
 
 		if (nbt.hasKey("ambientOcclusion", Constants.NBT.TAG_BYTE)) {
@@ -132,5 +135,7 @@ public class ModelData implements INBTSerializable<NBTTagCompound> {
 		if (nbt.hasKey("particle", Constants.NBT.TAG_COMPOUND)) {
 			this.particle = new NamedBufferedImage(nbt.getCompoundTag("particle"));
 		}
+		
+		System.out.println();
 	}
 }

@@ -81,7 +81,7 @@ public class Camera {
 
 	public void handleMouseDrag(int mouseX, int mouseY, int mouseButton) {		
 		if (mouseButton == 1) {
-			pitch += mouseY - lastMouseY;
+			pitch -= mouseY - lastMouseY;
 			angleAroundCenter -= mouseX - lastMouseX;
 			this.updateMousePosition(mouseX, mouseY);
 		}

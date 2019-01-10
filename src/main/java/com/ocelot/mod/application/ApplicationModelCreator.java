@@ -571,8 +571,7 @@ public class ApplicationModelCreator extends Application {
 	public static String createModelJson(List<Cube> cubes, String jsonName, boolean ambientOcclusion, NamedBufferedImage particle) {
 		Model model = new Model(jsonName, new ModelData(cubes, ambientOcclusion, particle));
 		Gson gson = new GsonBuilder().registerTypeAdapter(Model.class, new Model.Serializer()).setPrettyPrinting().create();
-
-		return "{\n  \"_comment\": \"" + I18n.format("app.mca.mc.json.comment", Usernames.OCELOT5836, "https://mrcrayfish.com/tools?id=mc") + "\"," + gson.toJson(model).substring(1);
+		return "{\n  \"_comment\": \"" + I18n.format("app.mca.mc.json.comment", Usernames.getOcelot5836Username(), "https://mrcrayfish.com/tools?id=mc") + "\"," + gson.toJson(model).substring(1);
 	}
 
 	public static void saveProjectToFile(List<Cube> cubes, boolean ambientOcclusion, NamedBufferedImage particle) {

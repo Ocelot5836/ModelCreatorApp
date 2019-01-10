@@ -358,13 +358,16 @@ public class Cube implements INBTSerializable<NBTTagCompound> {
 	}
 
 	public void deserializeNBT(NBTTagCompound nbt, @Nullable List<NamedBufferedImage> textures) {
-		this.position = NBTHelper.getVector3f(nbt.getCompoundTag("position"));
-		this.size = NBTHelper.getVector3f(nbt.getCompoundTag("size"));
-		this.rotation = NBTHelper.getVector3f(nbt.getCompoundTag("rotation"));
-		this.rotationPoint = NBTHelper.getVector3f(nbt.getCompoundTag("rotationPoint"));
+		if (nbt.hasKey("position", Constants.NBT.TAG_COMPOUND))
+			this.position = NBTHelper.getVector3f(nbt.getCompoundTag("position"));
+		if (nbt.hasKey("size", Constants.NBT.TAG_COMPOUND))
+			this.size = NBTHelper.getVector3f(nbt.getCompoundTag("size"));
+		if (nbt.hasKey("rotation", Constants.NBT.TAG_COMPOUND))
+			this.rotation = NBTHelper.getVector3f(nbt.getCompoundTag("rotation"));
+		if (nbt.hasKey("rotationPoint", Constants.NBT.TAG_COMPOUND))
+			this.rotationPoint = NBTHelper.getVector3f(nbt.getCompoundTag("rotationPoint"));
 
 		NBTTagCompound faces = nbt.getCompoundTag("faces");
-
 		for (int i = 0; i < EnumFacing.values().length; i++) {
 			EnumFacing facing = EnumFacing.values()[i];
 			if (faces.hasKey(facing.getName2(), Constants.NBT.TAG_COMPOUND)) {

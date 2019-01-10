@@ -82,6 +82,8 @@ public class ComponentModelArea extends Component {
 
 			ScaledResolution res = new ScaledResolution(mc);
 
+			GL11.glEnable(GL11.GL_LINE_SMOOTH);
+			GlStateManager.enableBlend();
 			GlStateManager.glLineWidth(res.getScaleFactor());
 			GlStateManager.scale(0.5, 0.5, 0.5);
 			GlStateManager.color(140f / 255f, 140f / 255f, 153f / 255f, 1);
@@ -108,6 +110,8 @@ public class ComponentModelArea extends Component {
 				}
 				tessellator.draw();
 			}
+			GlStateManager.disableBlend();
+			GL11.glDisable(GL11.GL_LINE_SMOOTH);
 
 			GlStateManager.popMatrix();
 

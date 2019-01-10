@@ -18,14 +18,16 @@ import org.lwjgl.util.vector.Vector3f;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.mrcrayfish.device.MrCrayfishDeviceMod;
 import com.mrcrayfish.device.api.app.Application;
 import com.mrcrayfish.device.api.app.Dialog;
 import com.mrcrayfish.device.api.app.Dialog.ResponseHandler;
 import com.mrcrayfish.device.api.app.Icons;
 import com.mrcrayfish.device.api.app.Layout;
 import com.mrcrayfish.device.api.app.Layout.Background;
+import com.mrcrayfish.device.api.app.Notification;
+import com.mrcrayfish.device.api.app.listener.ClickListener;
 import com.mrcrayfish.device.api.io.File;
-import com.mrcrayfish.device.api.task.TaskManager;
 import com.mrcrayfish.device.api.utils.RenderUtil;
 import com.mrcrayfish.device.core.Laptop;
 import com.ocelot.api.geometry.Camera;
@@ -45,13 +47,11 @@ import com.ocelot.mod.application.component.MenuBarItem;
 import com.ocelot.mod.application.component.MenuBarItemButton;
 import com.ocelot.mod.application.component.MenuBarItemDivider;
 import com.ocelot.mod.application.layout.LayoutCubeUI;
-import com.ocelot.mod.application.task.TaskNotificationCopy;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.resources.I18n;
-import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.util.ResourceLocation;
@@ -66,7 +66,7 @@ import net.minecraftforge.common.util.Constants;
  */
 public class ApplicationModelCreator extends Application {
 
-	public static final String MODEL_CREATOR_SAVE_VERSION = "1.0";
+	public static final String MODEL_CREATOR_SAVE_VERSION = ApplicationModelCreatorSaveFormatter.MODEL_CREATOR_SAVE_VERSION_11;
 
 	private static ApplicationModelCreator app;
 	private static boolean enableTransparency;
@@ -121,13 +121,13 @@ public class ApplicationModelCreator extends Application {
 				MenuBarItemButton fileNew = new MenuBarItemButton(I18n.format("app." + ApplicationModelCreator.getApp().getInfo().getFormattedId() + ".new"), Icons.NEW_FILE);
 				fileNew.setTooltip(TextFormatting.GRAY + I18n.format("app." + ApplicationModelCreator.getApp().getInfo().getFormattedId() + ".tooltip.new"));
 				fileNew.setClickListener((mouseX, mouseY, mouseButton) -> {
-					List<Cube> cubes = modelArea.getCubes();
+					List<Cube> cubes = this.modelArea.getCubes();
 					if (cubes.isEmpty()) {
 						clearProject();
 					} else {
 						Dialog.Confirmation confirmation = new Dialog.Confirmation(I18n.format("app." + ApplicationModelCreator.getApp().getInfo().getFormattedId() + ".dialog.confirmation.save"));
 						confirmation.setPositiveListener((mouseX1, mouseY1, mouseButton1) -> {
-							saveProjectToFile(cubes, loadedImages, modelArea.hasAmbientOcclusion(), modelArea.getParticle());
+							saveProjectToFile(cubes, this.modelArea.hasAmbientOcclusion(), this.modelArea.getParticle());
 						});
 						confirmation.setNegativeListener((mouseX2, mouseY2, mouseButton2) -> {
 							clearProject();
@@ -146,12 +146,12 @@ public class ApplicationModelCreator extends Application {
 					openDialog.setFilter(this);
 					openDialog.setResponseHandler((success, file) -> {
 						if (success) {
-							if (modelArea.getCubes().isEmpty()) {
+							if (this.modelArea.getCubes().isEmpty()) {
 								loadProjectFromFile(file);
 							} else {
 								Dialog.Confirmation confirmation = new Dialog.Confirmation(I18n.format("app." + ApplicationModelCreator.getApp().getInfo().getFormattedId() + ".dialog.confirmation.save"));
 								confirmation.setPositiveListener((mouseX1, mouseY1, mouseButton1) -> {
-									saveProjectToFile(modelArea.getCubes(), loadedImages, modelArea.hasAmbientOcclusion(), modelArea.getParticle(), (success1, file1) -> {
+									saveProjectToFile(this.modelArea.getCubes(), this.modelArea.hasAmbientOcclusion(), this.modelArea.getParticle(), (success1, file1) -> {
 										if (success1) {
 											return loadProjectFromFile(file1);
 										}
@@ -175,7 +175,7 @@ public class ApplicationModelCreator extends Application {
 				MenuBarItemButton fileSaveProject = new MenuBarItemButton(I18n.format("app." + ApplicationModelCreator.getApp().getInfo().getFormattedId() + ".save"), Icons.SAVE);
 				fileSaveProject.setTooltip(TextFormatting.GRAY + I18n.format("app." + ApplicationModelCreator.getApp().getInfo().getFormattedId() + ".tooltip.save"));
 				fileSaveProject.setClickListener((mouseX, mouseY, mouseButton) -> {
-					saveProjectToFile(modelArea.getCubes(), loadedImages, modelArea.hasAmbientOcclusion(), modelArea.getParticle());
+					saveProjectToFile(this.modelArea.getCubes(), this.modelArea.hasAmbientOcclusion(), this.modelArea.getParticle());
 				});
 				menuBarFile.add(fileSaveProject);
 
@@ -206,7 +206,7 @@ public class ApplicationModelCreator extends Application {
 					}
 
 					Toolkit.getDefaultToolkit().getSystemClipboard().setContents(new StringSelection(String.valueOf(data)), null);
-					TaskManager.sendTask(new TaskNotificationCopy(TextFormatting.BOLD + I18n.format("app." + ApplicationModelCreator.getApp().getInfo().getFormattedId() + ".copy.title"), I18n.format("app." + ApplicationModelCreator.getApp().getInfo().getFormattedId() + ".copy.desc"), Icons.COPY));
+					MrCrayfishDeviceMod.proxy.showNotification(new Notification(Icons.COPY, TextFormatting.BOLD + I18n.format("app." + ApplicationModelCreator.getApp().getInfo().getFormattedId() + ".copy.title"), I18n.format("app." + ApplicationModelCreator.getApp().getInfo().getFormattedId() + ".copy.desc")).toTag());
 				});
 				menuBarFile.add(fileCopyProject);
 
@@ -237,7 +237,7 @@ public class ApplicationModelCreator extends Application {
 										e.printStackTrace();
 									}
 
-									TaskManager.sendTask(new TaskNotificationCopy(TextFormatting.BOLD + I18n.format("app." + ApplicationModelCreator.getApp().getInfo().getFormattedId() + ".export.title"), I18n.format("app." + ApplicationModelCreator.getApp().getInfo().getFormattedId() + ".export.title"), Icons.EXPORT));
+									MrCrayfishDeviceMod.proxy.showNotification(new Notification(Icons.EXPORT, TextFormatting.BOLD + I18n.format("app." + ApplicationModelCreator.getApp().getInfo().getFormattedId() + ".export.title"), I18n.format("app." + ApplicationModelCreator.getApp().getInfo().getFormattedId() + ".export.desc")).toTag());
 									return true;
 								}
 							}
@@ -467,38 +467,38 @@ public class ApplicationModelCreator extends Application {
 	}
 
 	public void updateCubes(List<Cube> cubes) {
-		modelArea.updateCubes(cubes);
-		cubeUI.updateCubes(cubes);
+		this.modelArea.updateCubes(cubes);
+		this.cubeUI.updateCubes(cubes);
 	}
 
 	public void addCube(float x, float y, float z, float sizeX, float sizeY, float sizeZ, float rotationX, float rotationY, float rotationZ) {
-		modelArea.addCube(x, y, z, sizeX, sizeY, sizeZ, rotationX, rotationY, rotationZ);
-		cubeUI.updateCubes(modelArea.getCubes());
+		this.modelArea.addCube(x, y, z, sizeX, sizeY, sizeZ, rotationX, rotationY, rotationZ);
+		this.cubeUI.updateCubes(this.modelArea.getCubes());
 	}
 
 	public void addCube(Cube cube) {
-		modelArea.addCube(cube);
-		cubeUI.updateCubes(modelArea.getCubes());
+		this.modelArea.addCube(cube);
+		this.cubeUI.updateCubes(this.modelArea.getCubes());
 	}
 
 	public void removeAllCubes() {
-		modelArea.clear();
-		cubeUI.updateCubes(modelArea.getCubes());
+		this.modelArea.clear();
+		this.cubeUI.updateCubes(this.modelArea.getCubes());
 	}
 
 	public void removeCube(int index) {
-		modelArea.removeCube(index);
-		cubeUI.updateCubes(modelArea.getCubes());
+		this.modelArea.removeCube(index);
+		this.cubeUI.updateCubes(this.modelArea.getCubes());
 	}
 
 	public void setAmbientOcclusion(boolean ambientOcclusion) {
-		modelArea.setAmbientOcclusion(ambientOcclusion);
-		cubeUI.setAmbientOcclusion(ambientOcclusion);
+		this.modelArea.setAmbientOcclusion(ambientOcclusion);
+		this.cubeUI.setAmbientOcclusion(ambientOcclusion);
 	}
 
 	public void setParticle(NamedBufferedImage image) {
-		modelArea.setParticle(image);
-		cubeUI.setParticle(image);
+		this.modelArea.setParticle(image);
+		this.cubeUI.setParticle(image);
 	}
 
 	private java.io.File saveToDisc(String json, String jsonName) {
@@ -508,10 +508,7 @@ public class ApplicationModelCreator extends Application {
 			if (!folder.exists()) {
 				folder.mkdirs();
 			}
-
-			if (jsonFile.createNewFile()) {
-			} else {
-			}
+			jsonFile.createNewFile();
 
 			FileOutputStream stream = new FileOutputStream(jsonFile);
 			IOUtils.write(json, stream, Charset.defaultCharset());
@@ -550,23 +547,23 @@ public class ApplicationModelCreator extends Application {
 		}
 		return true;
 	}
-	
+
 	public static void loadModelJson(String json) {
 		List<Cube> cubes = ApplicationModelCreator.getApp().modelArea.getCubes();
-		
+
 		if (cubes.isEmpty()) {
 			clearProject();
 		} else {
 			Dialog.Confirmation confirmation = new Dialog.Confirmation(I18n.format("app." + ApplicationModelCreator.getApp().getInfo().getFormattedId() + ".dialog.confirmation.save"));
 			confirmation.setPositiveListener((mouseX1, mouseY1, mouseButton1) -> {
-				saveProjectToFile(cubes, ApplicationModelCreator.getApp().loadedImages, ApplicationModelCreator.getApp().modelArea.hasAmbientOcclusion(), ApplicationModelCreator.getApp().modelArea.getParticle());
+				saveProjectToFile(cubes, ApplicationModelCreator.getApp().modelArea.hasAmbientOcclusion(), ApplicationModelCreator.getApp().modelArea.getParticle());
 			});
 			confirmation.setNegativeListener((mouseX2, mouseY2, mouseButton2) -> {
 				clearProject();
 			});
 			ApplicationModelCreator.getApp().openDialog(confirmation);
 		}
-		
+
 		Gson gson = new GsonBuilder().registerTypeAdapter(Model.class, new Model.Deserializer()).create();
 		Model model = gson.fromJson(json, Model.class);
 	}
@@ -578,30 +575,15 @@ public class ApplicationModelCreator extends Application {
 		return "{\n  \"_comment\": \"" + I18n.format("app.mca.mc.json.comment", Usernames.OCELOT5836, "https://mrcrayfish.com/tools?id=mc") + "\"," + gson.toJson(model).substring(1);
 	}
 
-	public static void saveProjectToFile(List<Cube> cubes, List<NamedBufferedImage> textures, boolean ambientOcclusion, NamedBufferedImage particle) {
-		saveProjectToFile(cubes, textures, ambientOcclusion, particle, null);
+	public static void saveProjectToFile(List<Cube> cubes, boolean ambientOcclusion, NamedBufferedImage particle) {
+		saveProjectToFile(cubes, ambientOcclusion, particle, null);
 	}
 
-	public static void saveProjectToFile(List<Cube> cubes, List<NamedBufferedImage> textures, boolean ambientOcclusion, NamedBufferedImage particle, ResponseHandler<File> responseHandler) {
+	public static void saveProjectToFile(List<Cube> cubes, boolean ambientOcclusion, NamedBufferedImage particle, @Nullable ResponseHandler<File> responseHandler) {
 		NBTTagCompound data = new NBTTagCompound();
+
 		data.setString("version", MODEL_CREATOR_SAVE_VERSION);
-
-		NBTTagList cubesList = new NBTTagList();
-		for (Cube cube : cubes) {
-			cubesList.appendTag(cube.serializeNBT(textures));
-		}
-		data.setTag("cubes", cubesList);
-
-		data.setBoolean("ambientOcclusion", ambientOcclusion);
-		if (particle != null) {
-			data.setTag("particle", particle.serializeNBT());
-		}
-
-		NBTTagList texturesList = new NBTTagList();
-		for (NamedBufferedImage image : textures) {
-			texturesList.appendTag(image.serializeNBT());
-		}
-		data.setTag("textures", texturesList);
+		data.setTag("modelData", new ModelData(cubes, ambientOcclusion, particle).serializeNBT());
 
 		Dialog.SaveFile saveDialog = new Dialog.SaveFile(ApplicationModelCreator.getApp(), data);
 		saveDialog.setResponseHandler(responseHandler);
@@ -610,33 +592,20 @@ public class ApplicationModelCreator extends Application {
 
 	public static boolean loadProjectFromFile(File file) {
 		NBTTagCompound data = file.getData();
+
 		if (data.hasKey("version", Constants.NBT.TAG_STRING)) {
 			String version = data.getString("version");
+
 			if (MODEL_CREATOR_SAVE_VERSION.equalsIgnoreCase(version)) {
-				ApplicationModelCreator.getApp().removeAllCubes();
-				ApplicationModelCreator.getApp().loadedImages.clear();
+				loadModelData(new ModelData(data.getCompoundTag("modelData")));
+				return true;
+			} else if (ApplicationModelCreatorSaveFormatter.MODEL_CREATOR_SAVE_VERSION_10.equals(version)) {
+				NBTTagCompound newData = ApplicationModelCreatorSaveFormatter.convert10to11(data);
+				loadModelData(new ModelData(newData.getCompoundTag("modelData")));
 
-				NBTTagList textures = data.getTagList("textures", Constants.NBT.TAG_COMPOUND);
-				for (NBTBase base : textures) {
-					if (base instanceof NBTTagCompound) {
-						NamedBufferedImage image = NamedBufferedImage.fromTag((NBTTagCompound) base);
-						ApplicationModelCreator.getApp().addImage(image.getLocation(), image.getImage());
-					}
-				}
-
-				if (data.hasKey("cubes", Constants.NBT.TAG_LIST)) {
-					NBTTagList list = data.getTagList("cubes", Constants.NBT.TAG_COMPOUND);
-					for (NBTBase base : list) {
-						if (base instanceof NBTTagCompound) {
-							ApplicationModelCreator.getApp().addCube(Cube.fromTag((NBTTagCompound) base, ApplicationModelCreator.getApp().loadedImages));
-						}
-					}
-				}
-
-				ApplicationModelCreator.getApp().setAmbientOcclusion(data.getBoolean("ambientOcclusion"));
-				if (data.hasKey("particle", Constants.NBT.TAG_COMPOUND)) {
-					ApplicationModelCreator.getApp().setParticle(NamedBufferedImage.fromTag(data.getCompoundTag("particle")));
-				}
+				openConfirmation(I18n.format("app.omca.mc.dialog.convert"), I18n.format("app.omca.mc.dialog.project.can_convert", version, ApplicationModelCreatorSaveFormatter.MODEL_CREATOR_SAVE_VERSION_11), (mouseX, mouseY, mouseButton) -> {
+					file.setData(newData);
+				}, null);
 
 				return true;
 			} else {
@@ -649,14 +618,43 @@ public class ApplicationModelCreator extends Application {
 		}
 	}
 
+	private static void loadModelData(ModelData data) {
+		ApplicationModelCreator.getApp().removeAllCubes();
+		ApplicationModelCreator.getApp().loadedImages.clear();
+
+		NamedBufferedImage[] textures = data.getTextures();
+		for (NamedBufferedImage texture : textures) {
+			ApplicationModelCreator.getApp().addImage(texture.getLocation(), texture.getImage());
+		}
+
+		Cube[] cubes = data.getCubes();
+		for (Cube cube : cubes) {
+			ApplicationModelCreator.getApp().addCube(cube);
+		}
+
+		ApplicationModelCreator.getApp().setAmbientOcclusion(data.isAmbientOcclusion());
+
+		if (data.getParticle() != null) {
+			ApplicationModelCreator.getApp().setParticle(data.getParticle());
+		}
+	}
+
 	public static void openErrorDialog(String content) {
 		openMessageDialog(I18n.format("app.mca.mc.dialog.error"), content);
 	}
 
 	public static void openMessageDialog(String title, String content) {
-		Dialog.Message error = new Dialog.Message(content);
-		error.setTitle(title);
-		ApplicationModelCreator.getApp().openDialog(error);
+		Dialog.Message message = new Dialog.Message(content);
+		message.setTitle(title);
+		ApplicationModelCreator.getApp().openDialog(message);
+	}
+
+	public static void openConfirmation(String title, String content, @Nullable ClickListener positiveListener, @Nullable ClickListener negativeListener) {
+		Dialog.Confirmation confirmation = new Dialog.Confirmation(content);
+		confirmation.setTitle(title);
+		confirmation.setPositiveListener(positiveListener);
+		confirmation.setNegativeListener(negativeListener);
+		ApplicationModelCreator.getApp().openDialog(confirmation);
 	}
 
 	public static ApplicationModelCreator getApp() {

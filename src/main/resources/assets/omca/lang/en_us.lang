@@ -11,6 +11,7 @@ app.omca.mc.export.desc=Copied To Clipboard
 
 # Dialogs
 app.omca.mc.dialog.error=Error
+app.omca.mc.dialog.convert=Conversion
 app.omca.mc.dialog.confirmation.save=Do you want to save your progress?
 app.omca.mc.dialog.project.fail_file_open=Could not open file '%s'
 app.omca.mc.dialog.project.wrong_version=This project was designed for version '%s' of the model creator and could not be opened.

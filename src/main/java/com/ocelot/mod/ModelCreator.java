@@ -3,10 +3,8 @@ package com.ocelot.mod;
 import org.apache.logging.log4j.Logger;
 
 import com.mrcrayfish.device.api.ApplicationManager;
-import com.mrcrayfish.device.api.task.TaskManager;
 import com.ocelot.api.utils.NumberHelper;
 import com.ocelot.mod.application.ApplicationModelCreator;
-import com.ocelot.mod.application.task.TaskNotificationCopy;
 
 import net.minecraft.launchwrapper.Launch;
 import net.minecraft.util.ResourceLocation;
@@ -28,7 +26,7 @@ public class ModelCreator {
 	/** The mod id */
 	public static final String MOD_ID = "omca";
 	/** The current version of the mod */
-	public static final String VERSION = "2.0.0";
+	public static final String VERSION = "2.1";
 	/** The id for the model creator app */
 	public static final ResourceLocation MODEL_CREATOR_ID = new ResourceLocation(MOD_ID, "mc");
 	/** The formatted id for the model creator app */
@@ -49,8 +47,6 @@ public class ModelCreator {
 
 	@EventHandler
 	public void init(FMLInitializationEvent event) {
-		TaskManager.registerTask(TaskNotificationCopy.class);
-
 		ApplicationManager.registerApplication(MODEL_CREATOR_ID, ApplicationModelCreator.class);
 	}
 

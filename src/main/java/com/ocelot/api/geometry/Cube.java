@@ -52,6 +52,16 @@ public class Cube implements INBTSerializable<NBTTagCompound> {
 		this.hasTransparency = false;
 	}
 
+	public Cube(NBTTagCompound nbt) {
+		this();
+		this.deserializeNBT(nbt);
+	}
+
+	public Cube(NBTTagCompound nbt, @Nullable List<NamedBufferedImage> textures) {
+		this();
+		this.deserializeNBT(nbt, textures);
+	}
+
 	public void applyRenderTransforms() {
 		float scale = 16f;
 
@@ -368,17 +378,5 @@ public class Cube implements INBTSerializable<NBTTagCompound> {
 
 		this.name = nbt.getString("name");
 		this.shade = nbt.getBoolean("shade");
-	}
-
-	public static Cube fromTag(NBTTagCompound nbt, @Nullable List<NamedBufferedImage> textures) {
-		Cube cube = new Cube();
-		cube.deserializeNBT(nbt, textures);
-		return cube;
-	}
-
-	public static Cube fromTag(NBTTagCompound nbt) {
-		Cube cube = new Cube();
-		cube.deserializeNBT(nbt);
-		return cube;
 	}
 }

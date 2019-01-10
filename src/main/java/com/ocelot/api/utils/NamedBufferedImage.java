@@ -36,6 +36,21 @@ public class NamedBufferedImage implements INBTSerializable<NBTTagCompound> {
 		}
 	}
 
+	public NamedBufferedImage(NBTTagCompound nbt) {
+		this.image = null;
+		this.location = null;
+		this.hasTransparency = false;
+		this.deserializeNBT(nbt);
+		for (int y = 0; y < image.getHeight(); y++) {
+			for (int x = 0; x < image.getWidth(); x++) {
+				if (((image.getRGB(x, y) << 24) & 0xff) != 255 && ((image.getRGB(x, y) << 24) & 0xff) != 0) {
+					this.hasTransparency = true;
+					break;
+				}
+			}
+		}
+	}
+
 	/**
 	 * @return The image that contains the RGB data
 	 */
@@ -88,29 +103,5 @@ public class NamedBufferedImage implements INBTSerializable<NBTTagCompound> {
 	@Override
 	public String toString() {
 		return MoreObjects.toStringHelper(this).add("image", this.image).add("location", this.location).add("hasTransparency", this.hasTransparency).toString();
-	}
-
-	/**
-	 * Creates a new named image from a tag.
-	 * 
-	 * @param nbt
-	 *            The tag that contains the data
-	 * @return The image created from that data
-	 */
-	public static NamedBufferedImage fromTag(NBTTagCompound nbt) {
-		NamedBufferedImage image = new NamedBufferedImage();
-		image.deserializeNBT(nbt);
-
-		image.hasTransparency = false;
-		for (int y = 0; y < image.getImage().getHeight(); y++) {
-			for (int x = 0; x < image.getImage().getWidth(); x++) {
-				if (((image.getImage().getRGB(x, y) << 24) & 0xff) != 255 && ((image.getImage().getRGB(x, y) << 24) & 0xff) != 0) {
-					image.hasTransparency = true;
-					break;
-				}
-			}
-		}
-
-		return image;
 	}
 }

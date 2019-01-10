@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.lwjgl.opengl.GL11;
+import org.lwjgl.util.glu.Project;
 
 import com.mrcrayfish.device.api.app.Component;
 import com.mrcrayfish.device.core.Laptop;
@@ -55,7 +56,7 @@ public class ComponentModelArea extends Component {
 		{
 			float cubeSize = 16f;
 			GlStateManager.enableDepth();
-
+			
 			GlStateManager.translate(x + cubeSize * 1.5, y, 500);
 			this.camera.translate(partialTicks);
 
@@ -72,7 +73,7 @@ public class ComponentModelArea extends Component {
 				GlStateManager.enableCull();
 				GlStateManager.popMatrix();
 			}
-
+			
 			GlStateManager.pushMatrix();
 			GlStateManager.translate(cubeSize * 4, 0, cubeSize * 4);
 			this.camera.rotate(partialTicks);
@@ -120,7 +121,6 @@ public class ComponentModelArea extends Component {
 				GlStateManager.enableBlend();
 				GlStateManager.tryBlendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
 			} else {
-				GlStateManager.disableAlpha();
 				GlStateManager.disableBlend();
 			}
 
@@ -132,8 +132,8 @@ public class ComponentModelArea extends Component {
 			}
 
 			this.renderFaces(this.faces, cubeSize, partialTicks);
+			
 			mc.entityRenderer.setupOverlayRendering();
-
 			GlStateManager.enableTexture2D();
 			GlStateManager.disableDepth();
 			RenderHelper.disableStandardItemLighting();

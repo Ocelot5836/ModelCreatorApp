@@ -427,7 +427,7 @@ public class Face implements INBTSerializable<NBTTagCompound> {
 		return copy(this);
 	}
 
-	public Face copy(Face face) {
+	public static Face copy(Face face) {
 		if (face == NULL_FACE)
 			return NULL_FACE;
 		Face newFace = new Face(face.parentCube, face.faceDirection);

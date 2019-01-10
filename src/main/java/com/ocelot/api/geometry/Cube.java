@@ -281,8 +281,8 @@ public class Cube implements INBTSerializable<NBTTagCompound> {
 		return copy(this);
 	}
 
-	public Cube copy(Cube cube) {
-		Cube newCube = new Cube(cube.position.x, cube.position.y, cube.position.z, cube.size.x, cube.size.y, cube.size.z, cube.rotation.x, cube.rotation.y, cube.rotation.z);
+	public static Cube copy(Cube cube) {
+		Cube newCube = new Cube(cube.position, cube.size, cube.rotation);
 		newCube.rotationPoint.set(cube.rotationPoint);
 		for (int i = 0; i < newCube.faces.length; i++) {
 			newCube.faces[i] = cube.faces[i].copy();
@@ -304,18 +304,10 @@ public class Cube implements INBTSerializable<NBTTagCompound> {
 
 	public NBTTagCompound serializeNBT(@Nullable List<NamedBufferedImage> textures) {
 		NBTTagCompound nbt = new NBTTagCompound();
-		if (this.position.x != 0 && this.position.y != 0 && this.position.z != 0) {
-			nbt.setTag("position", NBTHelper.setVector(this.position));
-		}
-		if (this.size.x != 1 && this.size.y != 1 && this.size.z != 1) {
-			nbt.setTag("size", NBTHelper.setVector(this.size));
-		}
-		if (this.rotation.x != 0 && this.rotation.y != 0 && this.rotation.z != 0) {
-			nbt.setTag("rotation", NBTHelper.setVector(this.rotation));
-		}
-		if (this.rotationPoint.x != 8 && this.rotationPoint.y != 8 && this.rotationPoint.z != 8) {
-			nbt.setTag("rotationPoint", NBTHelper.setVector(this.rotationPoint));
-		}
+		nbt.setTag("position", NBTHelper.setVector(this.position));
+		nbt.setTag("size", NBTHelper.setVector(this.size));
+		nbt.setTag("rotation", NBTHelper.setVector(this.rotation));
+		nbt.setTag("rotationPoint", NBTHelper.setVector(this.rotationPoint));
 
 		NBTTagCompound faces = new NBTTagCompound();
 		for (int i = 0; i < EnumFacing.values().length; i++) {
@@ -358,14 +350,10 @@ public class Cube implements INBTSerializable<NBTTagCompound> {
 	}
 
 	public void deserializeNBT(NBTTagCompound nbt, @Nullable List<NamedBufferedImage> textures) {
-		if (nbt.hasKey("position", Constants.NBT.TAG_COMPOUND))
-			this.position = NBTHelper.getVector3f(nbt.getCompoundTag("position"));
-		if (nbt.hasKey("size", Constants.NBT.TAG_COMPOUND))
-			this.size = NBTHelper.getVector3f(nbt.getCompoundTag("size"));
-		if (nbt.hasKey("rotation", Constants.NBT.TAG_COMPOUND))
-			this.rotation = NBTHelper.getVector3f(nbt.getCompoundTag("rotation"));
-		if (nbt.hasKey("rotationPoint", Constants.NBT.TAG_COMPOUND))
-			this.rotationPoint = NBTHelper.getVector3f(nbt.getCompoundTag("rotationPoint"));
+		this.position = NBTHelper.getVector3f(nbt.getCompoundTag("position"));
+		this.size = NBTHelper.getVector3f(nbt.getCompoundTag("size"));
+		this.rotation = NBTHelper.getVector3f(nbt.getCompoundTag("rotation"));
+		this.rotationPoint = NBTHelper.getVector3f(nbt.getCompoundTag("rotationPoint"));
 
 		NBTTagCompound faces = nbt.getCompoundTag("faces");
 		for (int i = 0; i < EnumFacing.values().length; i++) {

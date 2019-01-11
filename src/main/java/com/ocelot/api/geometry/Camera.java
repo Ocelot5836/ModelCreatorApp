@@ -1,6 +1,5 @@
 package com.ocelot.api.geometry;
 
-import org.lwjgl.input.Mouse;
 import org.lwjgl.util.vector.Vector3f;
 
 import net.minecraft.client.renderer.GlStateManager;
@@ -47,7 +46,7 @@ public class Camera {
 	public void update() {
 		this.lastPosition.set(this.position);
 		this.lastRotation.set(this.rotation);
-		
+
 		// this.calculateCameraPosition((float) (distanceFromCenter * Math.cos(Math.toRadians(pitch))), (float) (distanceFromCenter * Math.sin(Math.toRadians(pitch))));
 		this.rotation.x = this.pitch;
 		this.rotation.y = 180 - this.angleAroundCenter;
@@ -79,18 +78,18 @@ public class Camera {
 		this.position.set(this.origin.x - offsetX, this.origin.y + verticalDistance, this.origin.z - offsetZ);
 	}
 
-	public void handleMouseDrag(int mouseX, int mouseY, int mouseButton) {		
+	public void handleMouseDrag(int mouseX, int mouseY, int mouseButton) {
 		if (mouseButton == 1) {
-			pitch -= mouseY - lastMouseY;
+			pitch += mouseY - lastMouseY;
 			angleAroundCenter -= mouseX - lastMouseX;
 			this.updateMousePosition(mouseX, mouseY);
 		}
 	}
 
 	public void handleMouseScroll(int mouseX, int mouseY, boolean direction) {
-		distanceFromCenter += Mouse.getDWheel() * 0.05f;
+		// distanceFromCenter += Mouse.getDWheel() * 0.05f;
 	}
-	
+
 	public void updateMousePosition(int mouseX, int mouseY) {
 		lastMouseX = mouseX;
 		lastMouseY = mouseY;

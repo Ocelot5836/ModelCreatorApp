@@ -110,9 +110,7 @@ public class ModelData implements INBTSerializable<NBTTagCompound> {
 	}
 
 	@Override
-	public void deserializeNBT(NBTTagCompound nbt) {
-		System.out.println(nbt);
-		
+	public void deserializeNBT(NBTTagCompound nbt) {		
 		if (nbt.hasKey("textures", Constants.NBT.TAG_LIST)) {
 			NBTTagList textures = nbt.getTagList("textures", Constants.NBT.TAG_COMPOUND);
 			for (int i = 0; i < textures.tagCount(); i++) {

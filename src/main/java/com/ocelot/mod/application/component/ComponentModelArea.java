@@ -55,8 +55,10 @@ public class ComponentModelArea extends Component {
 		GlStateManager.pushMatrix();
 		{
 			float cubeSize = 16f;
+			ScaledResolution res = new ScaledResolution(mc);
+
 			GlStateManager.enableDepth();
-			
+	        
 			GlStateManager.translate(x + cubeSize * 1.5, y, 500);
 			this.camera.translate(partialTicks);
 
@@ -73,7 +75,7 @@ public class ComponentModelArea extends Component {
 				GlStateManager.enableCull();
 				GlStateManager.popMatrix();
 			}
-			
+
 			GlStateManager.pushMatrix();
 			GlStateManager.translate(cubeSize * 4, 0, cubeSize * 4);
 			this.camera.rotate(partialTicks);
@@ -81,10 +83,9 @@ public class ComponentModelArea extends Component {
 
 			GlStateManager.disableTexture2D();
 
-			ScaledResolution res = new ScaledResolution(mc);
-
 			GL11.glEnable(GL11.GL_LINE_SMOOTH);
 			GlStateManager.enableBlend();
+			GlStateManager.tryBlendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
 			GlStateManager.glLineWidth(res.getScaleFactor());
 			GlStateManager.scale(0.5, 0.5, 0.5);
 			GlStateManager.color(140f / 255f, 140f / 255f, 153f / 255f, 1);
@@ -132,7 +133,7 @@ public class ComponentModelArea extends Component {
 			}
 
 			this.renderFaces(this.faces, cubeSize, partialTicks);
-			
+
 			mc.entityRenderer.setupOverlayRendering();
 			GlStateManager.enableTexture2D();
 			GlStateManager.disableDepth();

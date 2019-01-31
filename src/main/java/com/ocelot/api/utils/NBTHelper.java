@@ -1,12 +1,19 @@
 package com.ocelot.api.utils;
 
 import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
 
+import javax.imageio.ImageIO;
+
+import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.io.output.ByteArrayOutputStream;
 import org.lwjgl.util.vector.Vector2f;
 import org.lwjgl.util.vector.Vector3f;
 import org.lwjgl.util.vector.Vector4f;
 
 import net.minecraft.nbt.NBTTagCompound;
+import scala.reflect.io.ZipArchive;
 
 /**
  * Contains some helper methods when attempting to read/write to NBT.
@@ -61,12 +68,37 @@ public class NBTHelper {
 	}
 
 	/**
+	 * Saves a {@link BufferedImage} to a Base64 encoded string.
+	 * 
+	 * @param image
+	 *            The image to encode
+	 * @return The encoded string that the image was saved to
+	 */
+	public static String encodeBufferedImage(BufferedImage image) {
+		String imageString = null;
+		ByteArrayOutputStream stream = new ByteArrayOutputStream();
+
+		try {
+			ImageIO.write(image, "PNG", stream);
+			byte[] imageBytes = stream.toByteArray();
+
+			imageString = Base64.encodeBase64String(imageBytes);
+
+			stream.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return imageString;
+	}
+
+	/**
 	 * Saves a {@link BufferedImage} to NBT.
 	 * 
 	 * @param image
-	 *            The image to save to NBT.
+	 *            The image to write to NBT
 	 * @return The tag that the image was saved to
 	 */
+	@Deprecated
 	public static NBTTagCompound setBufferedImage(BufferedImage image) {
 		NBTTagCompound nbt = new NBTTagCompound();
 		int width = image.getWidth();
@@ -138,12 +170,32 @@ public class NBTHelper {
 	}
 
 	/**
+	 * Reads a buffered image from a Base64 encoded string.
+	 * 
+	 * @param imageString
+	 *            The encoded image as a string
+	 * @return The image created from the string
+	 */
+	public static BufferedImage getBufferedImage(String imageString) {
+		BufferedImage image = null;
+		try {
+			ByteArrayInputStream bis = new ByteArrayInputStream(Base64.decodeBase64(imageString));
+			image = ImageIO.read(bis);
+			bis.close();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return image;
+	}
+
+	/**
 	 * Reads a buffered image from NBT.
 	 * 
 	 * @param nbt
-	 *            The tag that contains the vector
+	 *            The image inside of an {@link NBTTagCompound}
 	 * @return The image created from the tag
 	 */
+	@Deprecated
 	public static BufferedImage getBufferedImage(NBTTagCompound nbt) {
 		int width = nbt.getInteger("width");
 		int height = nbt.getInteger("height");
@@ -174,13 +226,24 @@ public class NBTHelper {
 				image.setRGB(x, y, pixelColor);
 			}
 		}
+		
+		
 
 		return image;
 	}
 
 	public static void main(String[] args) {
-		BufferedImage image = new BufferedImage(16, 16, BufferedImage.TYPE_INT_RGB);
-		NBTTagCompound nbt = NBTHelper.setBufferedImage(image);
-		getBufferedImage(nbt);
+		BufferedImage image = new BufferedImage(4096, 4096, BufferedImage.TYPE_INT_RGB);
+		for (int i = 0; i < image.getWidth() * image.getHeight(); i++) {
+			image.setRGB(i % image.getWidth(), i / image.getHeight(), (int) (Math.random() * 255f));
+		}
+
+		long oldSnapshot = System.currentTimeMillis();
+		System.out.println(NBTHelper.setBufferedImage(image).toString().length());
+
+		long newSnapshot = System.currentTimeMillis();
+		System.out.println(NBTHelper.encodeBufferedImage(image).length());
+
+		System.out.println("Took " + (int) (System.currentTimeMillis() - oldSnapshot) + "ms for the old compression system and " + (int) (System.currentTimeMillis() - newSnapshot) + "ms for the new system. Difference of " + (int) ((System.currentTimeMillis() - oldSnapshot) - (System.currentTimeMillis() - newSnapshot)) + "ms.");
 	}
 }

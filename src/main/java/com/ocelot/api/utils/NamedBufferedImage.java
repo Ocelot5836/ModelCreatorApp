@@ -6,6 +6,7 @@ import com.google.common.base.MoreObjects;
 
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.common.util.INBTSerializable;
 
 /**
@@ -75,14 +76,14 @@ public class NamedBufferedImage implements INBTSerializable<NBTTagCompound> {
 	@Override
 	public NBTTagCompound serializeNBT() {
 		NBTTagCompound nbt = new NBTTagCompound();
-		nbt.setTag("image", NBTHelper.setBufferedImage(this.image));
+		nbt.setString("image", NBTHelper.encodeBufferedImage(this.image));
 		nbt.setString("location", this.location.toString());
 		return nbt;
 	}
 
 	@Override
 	public void deserializeNBT(NBTTagCompound nbt) {
-		this.image = NBTHelper.getBufferedImage(nbt.getCompoundTag("image"));
+		this.image = nbt.hasKey("image", Constants.NBT.TAG_COMPOUND) ? NBTHelper.getBufferedImage(nbt.getCompoundTag("image")) : NBTHelper.getBufferedImage(nbt.getString("image"));
 		this.location = new ResourceLocation(nbt.getString("location"));
 	}
 

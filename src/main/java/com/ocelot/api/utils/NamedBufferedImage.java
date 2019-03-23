@@ -1,6 +1,7 @@
 package com.ocelot.api.utils;
 
 import java.awt.image.BufferedImage;
+import java.util.Objects;
 
 import com.google.common.base.MoreObjects;
 
@@ -89,7 +90,7 @@ public class NamedBufferedImage implements INBTSerializable<NBTTagCompound> {
 
 	@Override
 	public int hashCode() {
-		return 31 * this.image.hashCode() + this.location.hashCode();
+		return Objects.hash(this.image, this.location);
 	}
 
 	@Override

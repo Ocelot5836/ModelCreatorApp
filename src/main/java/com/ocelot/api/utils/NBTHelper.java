@@ -233,7 +233,7 @@ public class NBTHelper {
 	}
 
 	public static void main(String[] args) {
-		BufferedImage image = new BufferedImage(4096, 4096, BufferedImage.TYPE_INT_RGB);
+		BufferedImage image = new BufferedImage(512, 512, BufferedImage.TYPE_INT_RGB);
 		for (int i = 0; i < image.getWidth() * image.getHeight(); i++) {
 			image.setRGB(i % image.getWidth(), i / image.getHeight(), (int) (Math.random() * 255f));
 		}

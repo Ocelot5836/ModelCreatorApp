@@ -3,7 +3,7 @@
   "modid": "omca",
   "name": "Model Creator Application",
   "description": "A recreation of MrCrayfish's Model Creator inside of Minecraft! Has all the features and abilities from the original, but also adds some new features and functionality.",
-  "version": "2.1",
+  "version": "2.1.0",
   "mcversion": "[1.12,1.2.2]",
   "url": "https://minecraft.curseforge.com/projects/model-creator-app",
   "updateUrl": "https://raw.githubusercontent.com/Ocelot5836/storage/master/mods/device-mod/modelcreator/update.json",

@@ -20,7 +20,7 @@ import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
  * 
  * @author Ocelot5836
  */
-@Mod(modid = ModelCreator.MOD_ID, version = ModelCreator.VERSION, useMetadata = true)
+@Mod(modid = ModelCreator.MOD_ID, version = ModelCreator.VERSION, updateJSON = "https://raw.githubusercontent.com/Ocelot5836/storage/master/mods/device-mod/modelcreator/update.json", useMetadata = true)
 public class ModelCreator {
 
 	/** The mod id */

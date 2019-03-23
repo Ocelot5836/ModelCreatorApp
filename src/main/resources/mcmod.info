@@ -9,7 +9,6 @@
   "updateUrl": "",
   "authorList": ["Ocelot5836"],
   "credits": "MrCrayfish for making the origionl model creator as well as the device mod",
-  "dependencies": ["required-after:cdm@[0.4.0,)"],
-  "parent": "cdm"
+  "dependencies": ["required-after:cdm@[0.4.0,)"]
 }
 ]

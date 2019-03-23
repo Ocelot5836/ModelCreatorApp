@@ -5,10 +5,10 @@
   "description": "A recreation of MrCrayfish's Model Creator inside of Minecraft! Has all the features and abilities from the original, but also adds some new features and functionality.",
   "version": "2.1",
   "mcversion": "[1.12,1.2.2]",
-  "url": "",
-  "updateUrl": "",
+  "url": "https://minecraft.curseforge.com/projects/model-creator-app",
+  "updateUrl": "https://raw.githubusercontent.com/Ocelot5836/storage/master/mods/device-mod/modelcreator/update.json",
   "authorList": ["Ocelot5836"],
-  "credits": "MrCrayfish for making the origionl model creator as well as the device mod",
+  "credits": "MrCrayfish for making the origional model creator as well as the device mod",
   "dependencies": ["required-after:cdm@[0.4.0,)"]
 }
 ]

@@ -26,7 +26,7 @@ public class ModelCreator {
 	/** The mod id */
 	public static final String MOD_ID = "omca";
 	/** The current version of the mod */
-	public static final String VERSION = "2.1";
+	public static final String VERSION = "2.1.0";
 	/** The id for the model creator app */
 	public static final ResourceLocation MODEL_CREATOR_ID = new ResourceLocation(MOD_ID, "mc");
 	/** The formatted id for the model creator app */

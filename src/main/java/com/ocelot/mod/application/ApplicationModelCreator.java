@@ -456,7 +456,7 @@ public class ApplicationModelCreator extends Application {
 	@Override
 	public void onClose() {
 		clearProject();
-		this.modelArea.cleanUp();
+		this.modelArea.dispose();
 		this.mainLayout.clear();
 		this.cubeUI.clear();
 		this.selectedCube = null;

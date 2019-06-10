@@ -1,5 +1,8 @@
 package com.ocelot.mod;
 
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
 import org.apache.logging.log4j.Logger;
 
 import com.mrcrayfish.device.api.ApplicationManager;
@@ -21,7 +24,8 @@ import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
  * @author Ocelot5836
  */
 @Mod(modid = ModelCreator.MOD_ID, version = ModelCreator.VERSION, updateJSON = "https://raw.githubusercontent.com/Ocelot5836/storage/master/mods/device-mod/modelcreator/update.json", useMetadata = true)
-public class ModelCreator {
+public class ModelCreator
+{
 
 	/** The mod id */
 	public static final String MOD_ID = "omca";
@@ -36,36 +40,45 @@ public class ModelCreator {
 	@Instance(MOD_ID)
 	public static ModelCreator instance;
 
+	private static ExecutorService pool;
+
 	/** The mod's logger */
 	private static Logger logger;
 
 	@EventHandler
-	public void pre(FMLPreInitializationEvent event) {
+	public void pre(FMLPreInitializationEvent event)
+	{
 		NumberHelper.init();
 		Usernames.init();
 		logger = event.getModLog();
+		pool = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
+		Runtime.getRuntime().addShutdownHook(new Thread(() -> this.pool.shutdown()));
 	}
 
 	@EventHandler
-	public void init(FMLInitializationEvent event) {
+	public void init(FMLInitializationEvent event)
+	{
 		ApplicationManager.registerApplication(MODEL_CREATOR_ID, ApplicationModelCreator.class);
 	}
 
 	@EventHandler
-	public void post(FMLPostInitializationEvent event) {
+	public void post(FMLPostInitializationEvent event)
+	{
 	}
 
 	/**
 	 * @return A logger that uses the mod id as the name
 	 */
-	public static Logger logger() {
+	public static Logger logger()
+	{
 		return logger;
 	}
 
 	/**
 	 * @return Whether or not the mod is in a deobfuscated environment
 	 */
-	public static boolean isDebug() {
+	public static boolean isDebug()
+	{
 		return (Boolean) Launch.blackboard.get("fml.deobfuscatedEnvironment");
 	}
 }
